@@ -1,0 +1,1588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drill Admin - Steve Sherman Billiards</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+
+        .admin-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .nav-btn.primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .nav-btn.secondary {
+            background: #f8f9fa;
+            color: #333;
+            border: 2px solid #667eea;
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .search-filter {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .search-input {
+            padding: 10px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            min-width: 200px;
+        }
+
+        .filter-select {
+            padding: 10px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .add-btn {
+            padding: 12px 25px;
+            background: linear-gradient(45deg, #28a745, #20c997);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .add-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
+        }
+
+        .drills-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .drills-table th {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .drills-table td {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            vertical-align: top;
+        }
+
+        .drills-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .drill-name {
+            font-weight: 600;
+            color: #333;
+            font-size: 16px;
+        }
+
+        .drill-category {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .category-beginner {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .category-intermediate {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .category-advanced {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .drill-skill {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .drill-score {
+            font-weight: 600;
+            color: #667eea;
+            font-size: 16px;
+        }
+
+        .drill-links {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .drill-link {
+            padding: 4px 8px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .drill-link:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+        }
+
+        .link-image {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .link-video {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .link-none {
+            background: #f5f5f5;
+            color: #999;
+            cursor: default;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-edit {
+            background: #ffc107;
+            color: #212529;
+        }
+
+        .btn-delete {
+            background: #dc3545;
+            color: white;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-content {
+            background: white;
+            margin: 2% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 95vh;
+            overflow-y: auto;
+            position: relative;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .modal-title {
+            font-size: 1.5em;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+            padding: 5px;
+        }
+
+        .close-btn:hover {
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 15px;
+        }
+
+        .form-col {
+            flex: 1;
+        }
+
+        .color-preview {
+            width: 30px;
+            height: 30px;
+            border-radius: 4px;
+            border: 2px solid #ddd;
+            margin-left: 10px;
+        }
+
+        /* Diagram Browser Styles */
+        .diagram-browser {
+            margin-top: 20px;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            background: #f8f9fa;
+        }
+
+        .diagram-browser-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .diagram-browser-title {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .browse-btn {
+            padding: 8px 16px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .browse-btn:hover {
+            background: #5a6fd8;
+        }
+
+        .selected-diagram {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 10px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+        }
+
+        .selected-diagram img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        .selected-diagram-info {
+            flex: 1;
+        }
+
+        .selected-diagram-name {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .selected-diagram-type {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .clear-selection-btn {
+            padding: 4px 8px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        /* Diagram Selection Modal */
+        .diagram-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .diagram-card {
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .diagram-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        .diagram-card.selected {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .diagram-card img {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 4px;
+            margin-bottom: 8px;
+        }
+
+        .diagram-card-name {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .diagram-card-type {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .diagram-search {
+            margin-bottom: 15px;
+        }
+
+        .diagram-search input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .btn-cancel {
+            padding: 12px 25px;
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .btn-save {
+            padding: 12px 25px;
+            background: linear-gradient(45deg, #28a745, #20c997);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .btn-cancel:hover, .btn-save:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-message, .success-message {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-style: italic;
+        }
+
+        @media (max-width: 768px) {
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-filter {
+                flex-direction: column;
+            }
+
+            .drills-table {
+                font-size: 14px;
+            }
+
+            .drills-table th,
+            .drills-table td {
+                padding: 10px;
+            }
+
+            .modal-content {
+                margin: 10px;
+                width: calc(100% - 20px);
+            }
+
+            .form-row {
+                flex-direction: column;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .diagram-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎱 Drill Administration</h1>
+        <p>Steve Sherman Billiards - Manage Your Training Drills</p>
+    </div>
+
+    <div class="container">
+        <div class="admin-nav">
+            <div class="nav-buttons">
+                <a href="drill-app.html" class="nav-btn secondary">← Back to Drill App</a>
+                <button class="nav-btn primary" onclick="refreshData()">🔄 Refresh Data</button>
+            </div>
+            <div class="user-info">
+                <span>Admin Panel | Version 4.0 - Diagram FK Integration</span>
+            </div>
+        </div>
+
+        <div class="controls">
+            <div class="search-filter">
+                <input type="text" class="search-input" id="searchInput" placeholder="Search drills...">
+                <select class="filter-select" id="categoryFilter">
+                    <option value="">All Categories</option>
+                </select>
+                <select class="filter-select" id="skillFilter">
+                    <option value="">All Skills</option>
+                </select>
+            </div>
+            <button class="add-btn" onclick="openAddModal()">+ Add New Drill</button>
+        </div>
+
+        <div id="messageContainer"></div>
+
+        <div id="drillsTableContainer">
+            <div class="loading">
+                <div class="spinner"></div>
+                Loading drills...
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Modal -->
+    <div id="drillModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">Add New Drill</h2>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+
+            <form id="drillForm">
+                <div class="form-group">
+                    <label class="form-label">Drill Name *</label>
+                    <input type="text" class="form-input" id="drillName" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-col">
+                        <label class="form-label">Category *</label>
+                        <select class="form-select" id="drillCategory" required>
+                            <option value="">Select Category</option>
+                        </select>
+                    </div>
+                    <div class="form-col">
+                        <label class="form-label">Skill *</label>
+                        <select class="form-select" id="drillSkill" required>
+                            <option value="">Select Skill</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-textarea" id="drillDescription" placeholder="Brief description of the drill..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Instructions</label>
+                    <textarea class="form-textarea" id="drillInstructions" placeholder="Detailed instructions for the drill..."></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-col">
+                        <label class="form-label">Max Score *</label>
+                        <input type="number" class="form-input" id="drillMaxScore" min="1" max="100" value="10" required>
+                    </div>
+                    <div class="form-col">
+                        <label class="form-label">Difficulty (1-5)</label>
+                        <input type="number" class="form-input" id="drillDifficulty" min="1" max="5" step="0.1" value="1.0">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-col">
+                        <label class="form-label">Estimated Time (minutes)</label>
+                        <input type="number" class="form-input" id="drillTime" min="1" max="120">
+                    </div>
+                    <div class="form-col">
+                        <label class="form-label">Color Code</label>
+                        <div style="display: flex; align-items: center;">
+                            <input type="color" class="form-input" id="drillColor" value="#667eea">
+                            <div class="color-preview" id="colorPreview"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Enhanced Diagram Selection with diagram_id -->
+                <div class="form-group">
+                    <label class="form-label">Diagram</label>
+                    <div class="diagram-browser">
+                        <div class="diagram-browser-header">
+                            <span class="diagram-browser-title">Select a diagram for this drill</span>
+                            <button type="button" class="browse-btn" onclick="openDiagramBrowser()">Browse Diagrams</button>
+                        </div>
+                        <div id="selectedDiagramContainer" style="display: none;">
+                            <div class="selected-diagram" id="selectedDiagram">
+                                <img id="selectedDiagramImg" src="" alt="Selected diagram">
+                                <div class="selected-diagram-info">
+                                    <div class="selected-diagram-name" id="selectedDiagramName"></div>
+                                    <div class="selected-diagram-type" id="selectedDiagramType"></div>
+                                </div>
+                                <button type="button" class="clear-selection-btn" onclick="clearDiagramSelection()">×</button>
+                            </div>
+                        </div>
+                        <div id="noDiagramSelected" style="padding: 15px; text-align: center; color: #666;">
+                            No diagram selected. Click "Browse Diagrams" to choose one.
+                        </div>
+                    </div>
+                    <!-- Hidden input to store the selected diagram ID (not URL anymore) -->
+                    <input type="hidden" id="drillDiagramId">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Video URL</label>
+                    <input type="url" class="form-input" id="drillVideoUrl" placeholder="https://youtube.com/watch?v=...">
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn-cancel" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="btn-save">Save Drill</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Diagram Browser Modal -->
+    <div id="diagramBrowserModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Select Diagram</h2>
+                <button class="close-btn" onclick="closeDiagramBrowser()">&times;</button>
+            </div>
+            
+            <div class="diagram-search">
+                <input type="text" id="diagramSearchInput" placeholder="Search diagrams..." onInput="filterDiagrams()">
+            </div>
+            
+            <div id="diagramsContainer">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    Loading diagrams...
+                </div>
+            </div>
+            
+            <div class="form-actions">
+                <button type="button" class="btn-cancel" onclick="closeDiagramBrowser()">Cancel</button>
+                <button type="button" class="btn-save" onclick="selectDiagram()" id="selectDiagramBtn" disabled>Select Diagram</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const API_BASE_URL = 'https://steveshermanbilliards.com/drill-api.php';
+        
+        // Global variables
+        let allDrills = [];
+        let allCategories = [];
+        let allSkills = [];
+        let allDiagrams = [];
+        let filteredDiagrams = [];
+        let selectedDiagramId = null;
+        let currentEditId = null;
+        let filteredDrills = [];
+
+        // ========================================
+        // API FUNCTIONS
+        // ========================================
+
+        async function apiRequest(endpoint, method = 'GET', data = null) {
+            try {
+                const options = {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                };
+                
+                if (data) {
+                    options.body = JSON.stringify(data);
+                }
+                
+                const url = `${API_BASE_URL}/${endpoint}`;
+                console.log('🌐 API Request:', method, url);
+                
+                const response = await fetch(url, options);
+                console.log('📡 API Response Status:', response.status);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const result = await response.json();
+                console.log('📄 API Result:', result);
+                
+                if (!result.success) {
+                    throw new Error(result.message || 'API request failed');
+                }
+                
+                return result.data;
+            } catch (error) {
+                console.error('❌ API Error:', error);
+                throw error;
+            }
+        }
+
+        // ========================================
+        // DRILL DISPLAY LAUNCH FUNCTION
+        // ========================================
+
+        function launchDrillDisplay(drillId) {
+            console.log('🚀 Launching drill display for ID:', drillId);
+            
+            // Create the URL for the drill display page
+            const displayUrl = `drill-display.html?drill_id=${drillId}`;
+            
+            // Open in a new window/tab
+            const newWindow = window.open(displayUrl, '_blank', 'width=1000,height=800,scrollbars=yes,resizable=yes');
+            
+            // Check if window was blocked by popup blocker
+            if (!newWindow || newWindow.closed || typeof newWindow.closed == 'undefined') {
+                // Popup blocked - show user a message
+                showMessage('Popup blocked! Please allow popups for this site and try again.', 'error');
+                console.warn('⚠️ Popup was blocked by browser');
+            } else {
+                console.log('✅ Drill display window opened successfully');
+            }
+        }
+
+        // ========================================
+        // INITIALIZATION
+        // ========================================
+
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🎯 Enhanced Drill Admin Interface Loading...');
+            initializeAdmin();
+            setupEventListeners();
+        });
+
+        async function initializeAdmin() {
+            try {
+                console.log('🚀 Loading data from API...');
+                showMessage('Loading drill data...', 'info');
+                
+                // Load all data including diagrams
+                const [categories, skills, drills, diagrams] = await Promise.all([
+                    apiRequest('categories'),
+                    apiRequest('skills'),
+                    apiRequest('drills'),
+                    apiRequest('diagrams')
+                ]);
+                
+                console.log('✅ Data loaded:', { categories, skills, drills, diagrams });
+                
+                allCategories = categories;
+                allSkills = skills;
+                allDrills = drills;
+                allDiagrams = diagrams;
+                filteredDrills = [...allDrills];
+                filteredDiagrams = [...allDiagrams];
+                
+                // Setup UI
+                setupFilters();
+                setupModalSelects();
+                renderDrillsTable();
+                
+                clearMessage();
+                console.log('✅ Enhanced Admin interface initialized');
+                
+            } catch (error) {
+                console.error('❌ Error initializing admin:', error);
+                showMessage('Failed to load drill data: ' + error.message, 'error');
+                
+                // Show helpful debugging info
+                const container = document.getElementById('drillsTableContainer');
+                container.innerHTML = `
+                    <div class="no-data">
+                        <h3>🔧 Connection Issue</h3>
+                        <p>Could not connect to the database API.</p>
+                        <p><strong>API URL:</strong> ${API_BASE_URL}</p>
+                        <p><strong>Error:</strong> ${error.message}</p>
+                        <button class="demo-btn" onclick="window.open('${API_BASE_URL}/categories', '_blank')">Test API Directly</button>
+                        <button class="demo-btn" onclick="initializeAdmin()">Retry Connection</button>
+                    </div>
+                `;
+            }
+        }
+
+        function setupEventListeners() {
+            // Search and filters
+            document.getElementById('searchInput').addEventListener('input', filterDrills);
+            document.getElementById('categoryFilter').addEventListener('change', filterDrills);
+            document.getElementById('skillFilter').addEventListener('change', filterDrills);
+            
+            // Form submission
+            document.getElementById('drillForm').addEventListener('submit', handleFormSubmit);
+            
+            // Color preview
+            document.getElementById('drillColor').addEventListener('input', updateColorPreview);
+            
+            // Modal close on outside click
+            document.getElementById('drillModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeModal();
+                }
+            });
+
+            // Diagram browser modal close
+            document.getElementById('diagramBrowserModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeDiagramBrowser();
+                }
+            });
+
+            // ESC key to close modal
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    if (document.getElementById('diagramBrowserModal').style.display === 'block') {
+                        closeDiagramBrowser();
+                    } else if (document.getElementById('drillModal').style.display === 'block') {
+                        closeModal();
+                    }
+                }
+            });
+        }
+
+        function setupFilters() {
+            // Category filter
+            const categoryFilter = document.getElementById('categoryFilter');
+            categoryFilter.innerHTML = '<option value="">All Categories</option>';
+            allCategories.forEach(cat => {
+                const option = document.createElement('option');
+                option.value = cat.id;
+                option.textContent = cat.display_name;
+                categoryFilter.appendChild(option);
+            });
+            
+            // Skill filter
+            const skillFilter = document.getElementById('skillFilter');
+            skillFilter.innerHTML = '<option value="">All Skills</option>';
+            allSkills.forEach(skill => {
+                const option = document.createElement('option');
+                option.value = skill.id;
+                option.textContent = skill.display_name;
+                skillFilter.appendChild(option);
+            });
+        }
+
+        function setupModalSelects() {
+            // Category select in modal
+            const categorySelect = document.getElementById('drillCategory');
+            categorySelect.innerHTML = '<option value="">Select Category</option>';
+            allCategories.forEach(cat => {
+                const option = document.createElement('option');
+                option.value = cat.id;
+                option.textContent = cat.display_name;
+                categorySelect.appendChild(option);
+            });
+            
+            // Skill select in modal
+            const skillSelect = document.getElementById('drillSkill');
+            skillSelect.innerHTML = '<option value="">Select Skill</option>';
+            allSkills.forEach(skill => {
+                const option = document.createElement('option');
+                option.value = skill.id;
+                option.textContent = skill.display_name;
+                skillSelect.appendChild(option);
+            });
+        }
+
+        // ========================================
+        // DIAGRAM BROWSER FUNCTIONS
+        // ========================================
+
+        function openDiagramBrowser() {
+            console.log('📖 Opening diagram browser');
+            selectedDiagramId = null;
+            document.getElementById('selectDiagramBtn').disabled = true;
+            document.getElementById('diagramBrowserModal').style.display = 'block';
+            
+            // Load diagrams if not already loaded
+            if (allDiagrams.length === 0) {
+                loadDiagrams();
+            } else {
+                renderDiagrams();
+            }
+        }
+
+        function closeDiagramBrowser() {
+            console.log('❌ Closing diagram browser');
+            document.getElementById('diagramBrowserModal').style.display = 'none';
+            selectedDiagramId = null;
+        }
+
+        async function loadDiagrams() {
+            try {
+                const container = document.getElementById('diagramsContainer');
+                container.innerHTML = '<div class="loading"><div class="spinner"></div>Loading diagrams...</div>';
+                
+                allDiagrams = await apiRequest('diagrams');
+                filteredDiagrams = [...allDiagrams];
+                renderDiagrams();
+                
+                console.log('✅ Diagrams loaded:', allDiagrams.length);
+            } catch (error) {
+                console.error('❌ Error loading diagrams:', error);
+                const container = document.getElementById('diagramsContainer');
+                container.innerHTML = `
+                    <div class="no-data">
+                        <p>Failed to load diagrams: ${error.message}</p>
+                        <button onclick="loadDiagrams()" class="browse-btn">Retry</button>
+                    </div>
+                `;
+            }
+        }
+
+        function renderDiagrams() {
+            const container = document.getElementById('diagramsContainer');
+            
+            if (filteredDiagrams.length === 0) {
+                container.innerHTML = '<div class="no-data">No diagrams found. Upload some diagrams first.</div>';
+                return;
+            }
+            
+            const grid = document.createElement('div');
+            grid.className = 'diagram-grid';
+            
+            filteredDiagrams.forEach(diagram => {
+                const card = document.createElement('div');
+                card.className = 'diagram-card';
+                card.onclick = () => selectDiagramCard(diagram.id);
+                
+                // Use thumbnail if available, otherwise use main image
+                const imageUrl = diagram.thumbnail_url || diagram.image_url || '/wp-content/uploads/diagrams/placeholder.jpg';
+                
+                card.innerHTML = `
+                    <img src="${imageUrl}" alt="${diagram.name}" onerror="this.src='/wp-content/uploads/diagrams/placeholder.jpg'">
+                    <div class="diagram-card-name">${diagram.name}</div>
+                    <div class="diagram-card-type">${diagram.diagram_type || 'drill'}</div>
+                `;
+                
+                grid.appendChild(card);
+            });
+            
+            container.innerHTML = '';
+            container.appendChild(grid);
+        }
+
+        function selectDiagramCard(diagramId) {
+            // Remove previous selection
+            document.querySelectorAll('.diagram-card.selected').forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            // Select new card
+            event.currentTarget.classList.add('selected');
+            selectedDiagramId = diagramId;
+            document.getElementById('selectDiagramBtn').disabled = false;
+            
+            console.log('📋 Diagram selected:', diagramId);
+        }
+
+        function selectDiagram() {
+            if (!selectedDiagramId) {
+                showMessage('Please select a diagram first', 'error');
+                return;
+            }
+            
+            const selectedDiagram = allDiagrams.find(d => d.id == selectedDiagramId);
+            if (!selectedDiagram) {
+                showMessage('Selected diagram not found', 'error');
+                return;
+            }
+            
+            // **CHANGED**: Store diagram ID instead of URL
+            document.getElementById('drillDiagramId').value = selectedDiagram.id;
+            
+            // Show selected diagram in the form
+            document.getElementById('selectedDiagramImg').src = selectedDiagram.thumbnail_url || selectedDiagram.image_url;
+            document.getElementById('selectedDiagramName').textContent = selectedDiagram.name;
+            document.getElementById('selectedDiagramType').textContent = selectedDiagram.diagram_type || 'drill';
+            
+            document.getElementById('selectedDiagramContainer').style.display = 'block';
+            document.getElementById('noDiagramSelected').style.display = 'none';
+            
+            closeDiagramBrowser();
+            console.log('✅ Diagram applied to drill - ID:', selectedDiagram.id, 'Name:', selectedDiagram.name);
+        }
+
+        function clearDiagramSelection() {
+            document.getElementById('drillDiagramId').value = '';
+            document.getElementById('selectedDiagramContainer').style.display = 'none';
+            document.getElementById('noDiagramSelected').style.display = 'block';
+            console.log('🗑️ Diagram selection cleared');
+        }
+
+        function filterDiagrams() {
+            const searchTerm = document.getElementById('diagramSearchInput').value.toLowerCase();
+            
+            filteredDiagrams = allDiagrams.filter(diagram => {
+                return diagram.name.toLowerCase().includes(searchTerm) ||
+                       (diagram.description && diagram.description.toLowerCase().includes(searchTerm)) ||
+                       (diagram.diagram_type && diagram.diagram_type.toLowerCase().includes(searchTerm));
+            });
+            
+            renderDiagrams();
+        }
+
+        // ========================================
+        // FILTERING & SEARCH
+        // ========================================
+
+        function filterDrills() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const categoryId = document.getElementById('categoryFilter').value;
+            const skillId = document.getElementById('skillFilter').value;
+            
+            filteredDrills = allDrills.filter(drill => {
+                const matchesSearch = drill.name.toLowerCase().includes(searchTerm) ||
+                                    (drill.description && drill.description.toLowerCase().includes(searchTerm));
+                const matchesCategory = !categoryId || drill.category_id == categoryId;
+                const matchesSkill = !skillId || drill.skill_id == skillId;
+                
+                return matchesSearch && matchesCategory && matchesSkill;
+            });
+            
+            renderDrillsTable();
+        }
+
+        // ========================================
+        // TABLE RENDERING
+        // ========================================
+
+        function renderDrillsTable() {
+            const container = document.getElementById('drillsTableContainer');
+            
+            if (filteredDrills.length === 0) {
+                container.innerHTML = '<div class="no-data">No drills found matching your criteria.</div>';
+                return;
+            }
+            
+            const table = `
+                <table class="drills-table">
+                    <thead>
+                        <tr>
+                            <th>Drill Name</th>
+                            <th>Category</th>
+                            <th>Skill</th>
+                            <th>Max Score</th>
+                            <th>Difficulty</th>
+                            <th>Resources</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${filteredDrills.map(drill => renderDrillRow(drill)).join('')}
+                    </tbody>
+                </table>
+            `;
+            
+            container.innerHTML = table;
+        }
+
+        function renderDrillRow(drill) {
+            const categoryClass = `category-${drill.category_name}`;
+            
+            // **CHANGED**: Check for diagram_id instead of image_url
+            const imageLink = drill.diagram_id ? 
+                `<span class="drill-link link-image" onclick="launchDrillDisplay(${drill.id})" title="View drill details">📋 View Drill</span>` : 
+                '<span class="drill-link link-none">No Diagram</span>';
+            
+            const videoLink = drill.video_url ? 
+                `<a href="${drill.video_url}" target="_blank" class="drill-link link-video">Video</a>` : 
+                '<span class="drill-link link-none">No Video</span>';
+            
+            return `
+                <tr data-drill-id="${drill.id}">
+                    <td>
+                        <div class="drill-name">${drill.name}</div>
+                        ${drill.description ? `<div style="color: #666; font-size: 13px; margin-top: 5px;">${drill.description}</div>` : ''}
+                    </td>
+                    <td>
+                        <span class="drill-category ${categoryClass}">${drill.category_display}</span>
+                    </td>
+                    <td>
+                        <span class="drill-skill">${drill.skill_display}</span>
+                    </td>
+                    <td>
+                        <span class="drill-score">${drill.max_score}</span>
+                    </td>
+                    <td>
+                        <span style="color: #666;">${drill.difficulty_rating || 1.0}/5</span>
+                    </td>
+                    <td>
+                        <div class="drill-links">
+                            ${imageLink}
+                            ${videoLink}
+                        </div>
+                    </td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="action-btn btn-edit" onclick="editDrill(${drill.id})" data-drill-id="${drill.id}">Edit</button>
+                            <button class="action-btn btn-delete" onclick="deleteDrill(${drill.id}, '${drill.name.replace(/'/g, "\\'")}')">Delete</button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }
+
+        // ========================================
+        // MODAL FUNCTIONS
+        // ========================================
+
+        function openAddModal() {
+            console.log('📝 Opening Add Modal');
+            currentEditId = null;
+            document.getElementById('modalTitle').textContent = 'Add New Drill';
+            document.getElementById('drillForm').reset();
+            document.getElementById('drillColor').value = '#667eea';
+            updateColorPreview();
+            clearDiagramSelection();
+            document.getElementById('drillModal').style.display = 'block';
+            console.log('✅ Add modal opened');
+        }
+
+        function editDrill(id) {
+            console.log('✏️ Edit Drill called with ID:', id, 'Type:', typeof id);
+            
+            try {
+                const drillIdNum = parseInt(id);
+                const drillIdStr = String(id);
+                
+                if (isNaN(drillIdNum)) {
+                    throw new Error('Invalid drill ID: ' + id);
+                }
+                
+                let drill = allDrills.find(d => d.id === drillIdNum);
+                if (!drill) {
+                    drill = allDrills.find(d => d.id === drillIdStr);
+                }
+                if (!drill) {
+                    drill = allDrills.find(d => String(d.id) === drillIdStr);
+                }
+                if (!drill) {
+                    drill = allDrills.find(d => parseInt(d.id) === drillIdNum);
+                }
+                
+                if (!drill) {
+                    console.error('❌ Drill not found with ID:', id);
+                    console.log('Available drills:', allDrills.map(d => ({ id: d.id, idType: typeof d.id, name: d.name })));
+                    showMessage('Drill not found with ID: ' + id, 'error');
+                    return;
+                }
+                
+                console.log('✅ Found drill to edit:', drill);
+                
+                currentEditId = drillIdNum;
+                document.getElementById('modalTitle').textContent = 'Edit Drill';
+                
+                // Populate form with safety checks
+                document.getElementById('drillName').value = drill.name || '';
+                document.getElementById('drillCategory').value = drill.category_id || '';
+                document.getElementById('drillSkill').value = drill.skill_id || '';
+                document.getElementById('drillDescription').value = drill.description || '';
+                document.getElementById('drillInstructions').value = drill.instructions || '';
+                document.getElementById('drillMaxScore').value = drill.max_score || 10;
+                document.getElementById('drillDifficulty').value = drill.difficulty_rating || 1.0;
+                document.getElementById('drillTime').value = drill.estimated_time_minutes || '';
+                document.getElementById('drillColor').value = drill.color_code || '#667eea';
+                document.getElementById('drillVideoUrl').value = drill.video_url || '';
+                
+                // **CHANGED**: Handle diagram selection using diagram_id
+                if (drill.diagram_id) {
+                    // Find the diagram that matches this ID
+                    const matchingDiagram = allDiagrams.find(d => d.id == drill.diagram_id);
+                    if (matchingDiagram) {
+                        document.getElementById('drillDiagramId').value = drill.diagram_id;
+                        document.getElementById('selectedDiagramImg').src = matchingDiagram.thumbnail_url || matchingDiagram.image_url;
+                        document.getElementById('selectedDiagramName').textContent = matchingDiagram.name;
+                        document.getElementById('selectedDiagramType').textContent = matchingDiagram.diagram_type || 'drill';
+                        document.getElementById('selectedDiagramContainer').style.display = 'block';
+                        document.getElementById('noDiagramSelected').style.display = 'none';
+                        console.log('✅ Found matching diagram:', matchingDiagram.name);
+                    } else {
+                        console.warn('⚠️ Diagram ID ' + drill.diagram_id + ' not found in diagrams list');
+                        clearDiagramSelection();
+                    }
+                } else {
+                    clearDiagramSelection();
+                }
+                
+                updateColorPreview();
+                document.getElementById('drillModal').style.display = 'block';
+                
+                console.log('✅ Edit modal opened for drill:', drill.name);
+                
+            } catch (error) {
+                console.error('❌ Error in editDrill:', error);
+                showMessage('Error opening edit form: ' + error.message, 'error');
+            }
+        }
+
+        function closeModal() {
+            console.log('❌ Closing modal');
+            document.getElementById('drillModal').style.display = 'none';
+            currentEditId = null;
+        }
+
+        function updateColorPreview() {
+            const color = document.getElementById('drillColor').value;
+            document.getElementById('colorPreview').style.backgroundColor = color;
+        }
+
+        // ========================================
+        // CRUD OPERATIONS
+        // ========================================
+
+        async function handleFormSubmit(e) {
+            e.preventDefault();
+            
+            // **CHANGED**: Use diagram_id instead of image_url
+            const formData = {
+                name: document.getElementById('drillName').value,
+                category_id: parseInt(document.getElementById('drillCategory').value),
+                skill_id: parseInt(document.getElementById('drillSkill').value),
+                description: document.getElementById('drillDescription').value,
+                instructions: document.getElementById('drillInstructions').value,
+                max_score: parseInt(document.getElementById('drillMaxScore').value),
+                difficulty_rating: parseFloat(document.getElementById('drillDifficulty').value),
+                estimated_time_minutes: parseInt(document.getElementById('drillTime').value) || null,
+                color_code: document.getElementById('drillColor').value,
+                diagram_id: parseInt(document.getElementById('drillDiagramId').value) || null, // CHANGED: diagram_id instead of image_url
+                video_url: document.getElementById('drillVideoUrl').value
+            };
+            
+            console.log('📝 Form data to submit:', formData);
+            
+            try {
+                if (currentEditId) {
+                    console.log('📝 Updating drill ID:', currentEditId);
+                    await apiRequest(`drills/${currentEditId}`, 'PUT', formData);
+                    showMessage('Drill updated successfully!', 'success');
+                } else {
+                    console.log('📝 Creating new drill');
+                    await apiRequest('drills', 'POST', formData);
+                    showMessage('Drill created successfully!', 'success');
+                }
+                
+                closeModal();
+                refreshData();
+                
+            } catch (error) {
+                console.error('Error saving drill:', error);
+                showMessage('Error saving drill: ' + error.message, 'error');
+            }
+        }
+
+        async function deleteDrill(id, name) {
+            if (!confirm(`Are you sure you want to delete "${name}"?\n\nThis action cannot be undone.`)) {
+                return;
+            }
+            
+            try {
+                console.log('🗑️ Deleting drill - ID:', id, 'Name:', name, 'Type of ID:', typeof id);
+                
+                const drillId = parseInt(id);
+                if (isNaN(drillId)) {
+                    throw new Error('Invalid drill ID');
+                }
+                
+                const url = `${API_BASE_URL}/drills/${drillId}`;
+                console.log('🌐 Delete URL:', url);
+                
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ action: 'delete' })
+                });
+                
+                console.log('📡 Delete Response Status:', response.status);
+                
+                const responseText = await response.text();
+                console.log('📄 Raw Response:', responseText);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${responseText}`);
+                }
+                
+                let result;
+                try {
+                    result = JSON.parse(responseText);
+                } catch (parseError) {
+                    throw new Error('Invalid JSON response: ' + responseText);
+                }
+                
+                console.log('📄 Parsed Result:', result);
+                
+                if (!result.success) {
+                    throw new Error(result.message || 'Delete request failed');
+                }
+                
+                showMessage('Drill deleted successfully!', 'success');
+                
+                console.log('🔄 Refreshing drill list after delete...');
+                await refreshData();
+                
+                console.log('✅ Delete operation completed');
+                
+            } catch (error) {
+                console.error('❌ Error deleting drill:', error);
+                showMessage('Error deleting drill: ' + error.message, 'error');
+            }
+        }
+
+        async function refreshData() {
+            try {
+                console.log('🔄 Refreshing drill data...');
+                showMessage('Refreshing data...', 'info');
+                
+                allDrills = [];
+                filteredDrills = [];
+                
+                const timestamp = Date.now();
+                const drills = await fetch(`${API_BASE_URL}/drills?_t=${timestamp}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                        }
+                        return response.json();
+                    })
+                    .then(result => {
+                        if (!result.success) {
+                            throw new Error(result.message || 'API request failed');
+                        }
+                        return result.data;
+                    });
+                
+                console.log('✅ Fresh drill data loaded:', drills);
+                
+                allDrills = drills;
+                filteredDrills = [...allDrills];
+                
+                // Also refresh diagrams
+                try {
+                    allDiagrams = await apiRequest('diagrams');
+                    filteredDiagrams = [...allDiagrams];
+                    console.log('✅ Diagrams refreshed:', allDiagrams.length);
+                } catch (diagramError) {
+                    console.warn('⚠️ Could not refresh diagrams:', diagramError.message);
+                }
+                
+                filterDrills();
+                clearMessage();
+                console.log('✅ Data refreshed successfully');
+                
+            } catch (error) {
+                console.error('❌ Error refreshing data:', error);
+                showMessage('Error refreshing data: ' + error.message, 'error');
+            }
+        }
+
+        // ========================================
+        // MESSAGE FUNCTIONS
+        // ========================================
+
+        function showMessage(message, type) {
+            const container = document.getElementById('messageContainer');
+            const className = type === 'error' ? 'error-message' : 
+                            type === 'success' ? 'success-message' : 'info-message';
+            
+            container.innerHTML = `<div class="${className}">${message}</div>`;
+            
+            if (type === 'success') {
+                setTimeout(() => clearMessage(), 3000);
+            }
+        }
+
+        function clearMessage() {
+            document.getElementById('messageContainer').innerHTML = '';
+        }
+
+        // ========================================
+        // DEBUGGING & TESTING
+        // ========================================
+
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('btn-edit')) {
+                const drillId = e.target.getAttribute('data-drill-id');
+                console.log('🔍 Edit button clicked - Drill ID from data attribute:', drillId);
+            }
+        });
+
+        window.testEdit = function(id) {
+            console.log('🧪 Testing edit function with ID:', id);
+            editDrill(id);
+        };
+
+        window.checkData = function() {
+            console.log('📊 Current data state:');
+            console.log('All drills:', allDrills.length);
+            console.log('All categories:', allCategories.length);
+            console.log('All skills:', allSkills.length);
+            console.log('All diagrams:', allDiagrams.length);
+            if (allDrills.length > 0) {
+                console.log('Sample drill:', allDrills[0]);
+            }
+            if (allDiagrams.length > 0) {
+                console.log('Sample diagram:', allDiagrams[0]);
+            }
+        };
+
+        console.log('🎯 Enhanced Drill Admin Interface Ready - Version 4.0');
+        console.log('📡 API URL:', API_BASE_URL);
+        
+        window.debugAdmin = {
+            allDrills: () => allDrills,
+            allCategories: () => allCategories,
+            allSkills: () => allSkills,
+            allDiagrams: () => allDiagrams,
+            testAPI: () => apiRequest('categories').then(console.log).catch(console.error),
+            testEdit: (id) => editDrill(id),
+            openDiagramBrowser: () => openDiagramBrowser(),
+            launchDrillDisplay: (id) => launchDrillDisplay(id)
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coach Student Portal - Steve Sherman Billiards</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .header-top {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            width: 60px;
+            height: 60px;
+            margin-right: 15px;
+        }
+
+        .brand-text {
+            text-align: left;
+            flex: 1;
+        }
+
+        .brand-text h2 {
+            font-size: 1.1em;
+            margin: 0;
+            color: #333;
+            font-weight: 600;
+            line-height: 1.2;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .back-button {
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .back-button:hover {
+            transform: translateY(-50%) translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .user-info {
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .user-details {
+            color: #333;
+            font-weight: 600;
+        }
+
+        .logout-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: #c82333;
+            transform: translateY(-1px);
+        }
+
+        .student-selector {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            border: 2px solid #667eea;
+        }
+
+        .student-selector h3 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.4em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .student-dropdown {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .student-select {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            background-size: 20px;
+            padding-right: 50px;
+        }
+
+        .student-select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .stats-summary {
+            background: rgba(40, 167, 69, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .stats-summary h3 {
+            color: #155724;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.8em;
+            font-weight: 600;
+            color: #28a745;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .welcome-section {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .welcome-title {
+            font-size: 1.8em;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .welcome-subtitle {
+            color: #666;
+            font-size: 1em;
+        }
+
+        .dashboard-grid {
+            display: none;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .dashboard-grid.show {
+            display: grid;
+            animation: slideUp 0.5s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .dashboard-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px 20px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 2px solid transparent;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+            border-color: #667eea;
+        }
+
+        .card-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .card-title {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .card-description {
+            color: #666;
+            font-size: 0.9em;
+            line-height: 1.4;
+        }
+
+        .scores-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .scores-card .card-title,
+        .scores-card .card-description {
+            color: white;
+        }
+
+        .assignments-card {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+        }
+
+        .assignments-card .card-title,
+        .assignments-card .card-description {
+            color: white;
+        }
+
+        .journal-card {
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+            color: white;
+        }
+
+        .journal-card .card-title,
+        .journal-card .card-description {
+            color: white;
+        }
+
+        .progress-card {
+            background: linear-gradient(135deg, #1abc9c 0%, #16a085 100%);
+            color: white;
+        }
+
+        .progress-card .card-title,
+        .progress-card .card-description {
+            color: white;
+        }
+
+        .coming-soon {
+            opacity: 0.7;
+            cursor: not-allowed !important;
+            position: relative;
+        }
+
+        .coming-soon:hover {
+            transform: none !important;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1) !important;
+            border-color: transparent !important;
+        }
+
+        .coming-soon::after {
+            content: "Coming Soon";
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: linear-gradient(45deg, #ff4757, #ff3742);
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            font-size: 0.75em;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(255, 71, 87, 0.4);
+            animation: pulse 2s infinite;
+            z-index: 10;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .card-with-badge {
+            position: relative;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        @media (max-width: 1024px) {
+            .dashboard-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .dashboard-card {
+                min-height: 180px;
+                padding: 20px;
+            }
+
+            .back-button {
+                position: static;
+                transform: none;
+                margin-bottom: 20px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .dashboard-card {
+                min-height: 160px;
+                padding: 20px 12px;
+            }
+
+            .card-icon {
+                font-size: 2.5em;
+                margin-bottom: 12px;
+            }
+
+            .card-title {
+                font-size: 1.1em;
+                margin-bottom: 8px;
+            }
+
+            .card-description {
+                font-size: 0.85em;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="javascript:history.back()" class="back-button">
+                ← Back to Coach Portal
+            </a>
+            
+            <div class="header-top">
+                <img src="images/logo.png" alt="Steve Sherman Billiards Logo" class="logo">
+                <div class="brand-text">
+                    <h2>Steve Sherman Billiards Training System</h2>
+                </div>
+            </div>
+            <h1>Coach Student Portal</h1>
+            <p>Select a student to work in their context</p>
+        </div>
+
+        <div class="user-info">
+            <div class="user-details">
+                <span>Coach: <strong id="currentCoach">Loading...</strong></span><br>
+                <small>Student Management Portal | Version 1.0</small>
+            </div>
+        </div>
+
+        <div class="student-selector">
+            <h3>📚 Select Your Student</h3>
+            <div class="student-dropdown">
+                <select id="studentSelect" class="student-select">
+                    <option value="">Choose a student to work with...</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="selectedStudentInfo" class="stats-summary" style="display: none;">
+            <h3>Working with: <strong id="selectedStudentName">-</strong></h3>
+            <div class="stats-grid" id="studentStats">
+                <div class="stat-item">
+                    <div class="stat-value" id="studentLastActivity">--</div>
+                    <div class="stat-label">Days Since Last Activity</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="welcomeSection" class="welcome-section">
+            <h2 class="welcome-title">Student Management Dashboard</h2>
+            <p class="welcome-subtitle">Select a student above to access their training tools and progress</p>
+        </div>
+
+        <div id="featureCards" class="dashboard-grid">
+            <!-- View Student Scores Card -->
+            <div class="dashboard-card scores-card" onclick="openStudentScores()">
+                <span class="card-icon">📊</span>
+                <h3 class="card-title">View Student Scores</h3>
+                <p class="card-description">Review all scores and performance history for this student</p>
+            </div>
+
+            <!-- Manage Assignments Card -->
+            <div class="dashboard-card assignments-card card-with-badge" onclick="openStudentAssignments()">
+                <span class="card-icon">📝</span>
+                <h3 class="card-title">Manage Assignments</h3>
+                <p class="card-description">Create, edit, and review drill assignments for this student</p>
+                <span class="notification-badge" id="assignmentsBadge" style="display: none;">0</span>
+            </div>
+
+            <!-- Student Journal Card -->
+            <div class="dashboard-card journal-card" onclick="openStudentJournal()">
+                <span class="card-icon">📔</span>
+                <h3 class="card-title">Student Journal</h3>
+                <p class="card-description">View and comment on this student's practice journal entries</p>
+            </div>
+
+            <!-- Student Progress Card -->
+            <div class="dashboard-card progress-card" onclick="openStudentProgress()">
+                <span class="card-icon">📈</span>
+                <h3 class="card-title">Progress Analytics</h3>
+                <p class="card-description">Detailed progress analysis and improvement tracking</p>
+            </div>
+
+            <!-- Training Programs Card -->
+			<div class="dashboard-card" onclick="openStudentTrainingPrograms()" style="background: linear-gradient(135deg, #6f42c1 0%, #e83e8c 100%); color: white;">
+				<span class="card-icon">📚</span>
+				<h3 class="card-title" style="color: white;">Training Programs</h3>
+				<p class="card-description" style="color: white;">Assign and manage structured training programs for this student</p>
+			</div>
+			
+            <!-- Communication Card -->
+            <div class="dashboard-card coming-soon">
+                <span class="card-icon">💬</span>
+                <h3 class="card-title">Student Communication</h3>
+                <p class="card-description">Send messages and feedback to your student</p>
+            </div>
+
+            <!-- Goals & Targets Card -->
+            <div class="dashboard-card coming-soon">
+                <span class="card-icon">🎯</span>
+                <h3 class="card-title">Goals & Targets</h3>
+                <p class="card-description">Set and track performance goals for this student</p>
+            </div>
+
+            <!-- Session Notes Card -->
+            <div class="dashboard-card coming-soon">
+                <span class="card-icon">📋</span>
+                <h3 class="card-title">Session Notes</h3>
+                <p class="card-description">Record and review coaching session notes</p>
+            </div>
+
+            <!-- Performance Reports Card -->
+            <div class="dashboard-card coming-soon">
+                <span class="card-icon">📈</span>
+                <h3 class="card-title">Performance Reports</h3>
+                <p class="card-description">Generate detailed performance reports for this student</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const API_BASE_URL = 'https://steveshermanbilliards.com/drill-api.php';
+
+        // Session management
+        let currentCoachSession = null;
+        let selectedStudent = null;
+        let studentsData = [];
+
+        // ========================================
+        // API HELPER FUNCTION
+        // ========================================
+
+        async function apiRequest(endpoint, method = 'GET', data = null) {
+            try {
+                const options = {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                };
+                
+                if (data) {
+                    options.body = JSON.stringify(data);
+                }
+                
+                console.log('🌐 API Request:', method, `${API_BASE_URL}/${endpoint}`, data);
+                
+                const response = await fetch(`${API_BASE_URL}/${endpoint}`, options);
+                
+                console.log('📡 HTTP Response Status:', response.status);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const result = await response.json();
+                console.log('📄 API Response:', result);
+                
+                if (!result.success) {
+                    throw new Error(result.message || 'API request failed');
+                }
+                
+                return result;
+            } catch (error) {
+                console.error('❌ API Error:', error);
+                throw error;
+            }
+        }
+
+        // ========================================
+        // INITIALIZATION
+        // ========================================
+
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Coach Student Portal Initialized - Version 1.0');
+            
+            // Load coach session
+            loadCoachSession();
+            
+            // Load students
+            loadStudents();
+            
+            // Setup event listeners
+            setupEventListeners();
+        });
+
+        function loadCoachSession() {
+            try {
+                console.log('🔍 Looking for coach session...');
+                
+                // Check URL parameters for coach data FIRST (most reliable)
+                const urlParams = new URLSearchParams(window.location.search);
+                const coachParam = urlParams.get('coach');
+                
+                if (coachParam) {
+                    try {
+                        const coachData = JSON.parse(atob(coachParam));
+                        console.log('✅ Coach data found in URL:', coachData);
+                        
+                        // Create proper session structure
+                        currentCoachSession = {
+                            userId: coachData.id,
+                            id: coachData.id, // Add both for compatibility
+                            name: coachData.name,
+                            email: coachData.email,
+                            type: coachData.type,
+                            loginTime: new Date()
+                        };
+                        
+                        document.getElementById('currentCoach').textContent = coachData.name || 'Coach';
+                        console.log('✅ Coach session created from URL:', currentCoachSession);
+                        return;
+                    } catch (e) {
+                        console.error('❌ Error parsing coach data from URL:', e);
+                    }
+                }
+                
+                // Check for coach session from sessionStorage as fallback
+                const savedSession = sessionStorage.getItem('coachSession');
+                if (savedSession) {
+                    try {
+                        const sessionData = JSON.parse(savedSession);
+                        console.log('✅ Coach session found in storage:', sessionData);
+                        
+                        currentCoachSession = {
+                            userId: sessionData.userId || sessionData.id,
+                            id: sessionData.userId || sessionData.id,
+                            name: sessionData.name,
+                            email: sessionData.email,
+                            type: sessionData.type,
+                            loginTime: sessionData.loginTime
+                        };
+                        
+                        document.getElementById('currentCoach').textContent = sessionData.name || 'Coach';
+                        console.log('✅ Coach session loaded from storage:', currentCoachSession);
+                        return;
+                    } catch (e) {
+                        console.error('❌ Error parsing saved session:', e);
+                    }
+                }
+                
+                // If no coach session found
+                console.error('❌ No coach session found in URL or storage');
+                console.log('🔍 URL params:', Object.fromEntries(urlParams));
+                console.log('🔍 SessionStorage coachSession:', sessionStorage.getItem('coachSession'));
+                
+                showError('No coach session found. Please return to the coach portal and try again.');
+                
+            } catch (error) {
+                console.error('❌ Error loading coach session:', error);
+                showError('Error loading coach session: ' + error.message);
+            }
+        }
+
+        async function loadStudents() {
+            if (!currentCoachSession) {
+                console.error('❌ No coach session available for loading students');
+                showError('No coach session found. Please login again.');
+                return;
+            }
+
+            // Get coach ID - check multiple possible field names
+            const coachId = currentCoachSession.id || currentCoachSession.userId || currentCoachSession.coach_id;
+            
+            if (!coachId) {
+                console.error('❌ No coach ID found in session:', currentCoachSession);
+                showError('Invalid coach session. Please login again.');
+                return;
+            }
+
+            try {
+                console.log('📚 Loading students assigned to coach ID:', coachId);
+                console.log('📚 Full coach session:', currentCoachSession);
+                
+                // Use the coach-students endpoint which filters by coach_id
+                const response = await apiRequest(`coach-students?coach_id=${coachId}`);
+                studentsData = response.data || response || [];
+                
+                console.log('📚 Students assigned to this coach:', studentsData.length);
+                console.log('📚 Student details:', studentsData.map(s => ({ id: s.id, name: s.display_name, email: s.email })));
+                
+                populateStudentDropdown();
+                
+            } catch (error) {
+                console.error('❌ Error loading coach students:', error);
+                showError('Error loading your students: ' + error.message);
+            }
+        }
+
+        function populateStudentDropdown() {
+            const select = document.getElementById('studentSelect');
+            
+            // Clear existing options except the first one
+            while (select.children.length > 1) {
+                select.removeChild(select.lastChild);
+            }
+            
+            if (studentsData.length === 0) {
+                const option = document.createElement('option');
+                option.value = '';
+                option.textContent = 'No students currently assigned to you';
+                option.disabled = true;
+                select.appendChild(option);
+                
+                // Update the first option text as well
+                select.children[0].textContent = 'No students assigned - contact administrator';
+                
+                console.log('📚 No students assigned to this coach');
+                return;
+            }
+            
+            // Update the default option text
+            select.children[0].textContent = `Choose from your ${studentsData.length} assigned student${studentsData.length === 1 ? '' : 's'}...`;
+            
+            // Add student options (only coach's assigned students)
+            studentsData.forEach(student => {
+                const option = document.createElement('option');
+                option.value = student.id;
+                option.textContent = `${student.display_name} (${student.email})`;
+                option.dataset.student = JSON.stringify(student);
+                select.appendChild(option);
+            });
+            
+            console.log('📚 Student dropdown populated with', studentsData.length, 'students assigned to this coach');
+            console.log('📚 Assigned students:', studentsData.map(s => s.display_name).join(', '));
+        }
+
+        function setupEventListeners() {
+            const studentSelect = document.getElementById('studentSelect');
+            
+            studentSelect.addEventListener('change', function() {
+                const selectedValue = this.value;
+                
+                if (selectedValue) {
+                    const selectedOption = this.options[this.selectedIndex];
+                    const studentData = JSON.parse(selectedOption.dataset.student);
+                    selectStudent(studentData);
+                } else {
+                    deselectStudent();
+                }
+            });
+        }
+
+        async function selectStudent(student) {
+            console.log('👤 Student selected:', student);
+            selectedStudent = student;
+            
+            // Show selected student info
+            document.getElementById('selectedStudentName').textContent = student.display_name;
+            document.getElementById('selectedStudentInfo').style.display = 'block';
+            
+            // Hide welcome section
+            document.getElementById('welcomeSection').style.display = 'none';
+            
+            // Load student stats
+            await loadStudentStats(student.id);
+            
+            // Show feature cards
+            document.getElementById('featureCards').classList.add('show');
+        }
+
+        function deselectStudent() {
+            console.log('👤 Student deselected');
+            selectedStudent = null;
+            
+            // Hide selected student info
+            document.getElementById('selectedStudentInfo').style.display = 'none';
+            
+            // Show welcome section
+            document.getElementById('welcomeSection').style.display = 'block';
+            
+            // Hide feature cards
+            document.getElementById('featureCards').classList.remove('show');
+        }
+
+        async function loadStudentStats(studentId) {
+            try {
+                console.log('📊 Loading stats for assigned student:', studentId);
+                
+                // Verify this student is assigned to the current coach
+                const assignedStudent = studentsData.find(s => s.id == studentId);
+                if (!assignedStudent) {
+                    console.error('❌ Student not assigned to this coach:', studentId);
+                    showError('Student not found in your assigned students list.');
+                    return;
+                }
+                
+                console.log('✅ Confirmed student is assigned to this coach:', assignedStudent.display_name);
+                
+                // Load student scores (filtered by user_id)
+                const scoresResponse = await apiRequest(`scores?user_id=${studentId}&limit=100`);
+                const scores = scoresResponse.data || scoresResponse || [];
+                
+                // Load student assignments (filtered by user_id)
+                const assignmentsResponse = await apiRequest(`assignments?user_id=${studentId}`);
+                const assignments = assignmentsResponse.data || assignmentsResponse || [];
+                
+                // Calculate days since last activity
+                let daysSinceLastActivity = '--';
+                if (scores.length > 0) {
+                    const lastScore = scores[0]; // Assuming sorted by date DESC
+                    const lastDate = new Date(lastScore.submitted_at || lastScore.practice_date);
+                    const now = new Date();
+                    const diffTime = Math.abs(now - lastDate);
+                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                    daysSinceLastActivity = diffDays;
+                }
+                
+                // Update UI - only last activity
+                document.getElementById('studentLastActivity').textContent = daysSinceLastActivity;
+                
+                // Update assignment badge
+                const assignmentsBadge = document.getElementById('assignmentsBadge');
+                if (activeAssignments > 0) {
+                    assignmentsBadge.textContent = activeAssignments;
+                    assignmentsBadge.style.display = 'flex';
+                } else {
+                    assignmentsBadge.style.display = 'none';
+                }
+                
+                console.log('📊 Student stats loaded for', assignedStudent.display_name + ':', { 
+                    daysSinceLastActivity, activeAssignments 
+                });
+                
+            } catch (error) {
+                console.error('❌ Error loading student stats:', error);
+                // Don't show error for stats, just use defaults
+            }
+        }
+
+        // ========================================
+        // FEATURE NAVIGATION FUNCTIONS
+        // ========================================
+
+        function openStudentScores() {
+            if (!selectedStudent) {
+                alert('Please select a student first');
+                return;
+            }
+            
+            // Double-check this student is assigned to the current coach
+            const assignedStudent = studentsData.find(s => s.id == selectedStudent.id);
+            if (!assignedStudent) {
+                alert('This student is not assigned to you.');
+                return;
+            }
+            
+            console.log('📊 Opening scores for assigned student:', selectedStudent.display_name);
+            
+            // Create URL with student and coach context
+            const contextData = btoa(JSON.stringify({
+                coach: currentCoachSession,
+                student: selectedStudent,
+                mode: 'coach_student_view'
+            }));
+            
+            const scoresUrl = `report-portal.html?context=${contextData}&user_id=${selectedStudent.id}&t=${Date.now()}`;
+            window.open(scoresUrl, '_blank');
+        }
+
+        function openStudentAssignments() {
+            if (!selectedStudent) {
+                alert('Please select a student first');
+                return;
+            }
+            
+            // Double-check this student is assigned to the current coach
+            const assignedStudent = studentsData.find(s => s.id == selectedStudent.id);
+            if (!assignedStudent) {
+                alert('This student is not assigned to you.');
+                return;
+            }
+            
+            console.log('📝 Opening assignments for assigned student:', selectedStudent.display_name);
+            
+            // Create URL with student and coach context
+            const contextData = btoa(JSON.stringify({
+                coach: currentCoachSession,
+                student: selectedStudent,
+                mode: 'coach_student_assignments'
+            }));
+            
+            const assignmentsUrl = `coach-student-assignments.html?context=${contextData}&student_id=${selectedStudent.id}&t=${Date.now()}`;
+            window.open(assignmentsUrl, '_blank');
+        }
+
+        function openStudentJournal() {
+            if (!selectedStudent) {
+                alert('Please select a student first');
+                return;
+            }
+            
+            // Double-check this student is assigned to the current coach
+            const assignedStudent = studentsData.find(s => s.id == selectedStudent.id);
+            if (!assignedStudent) {
+                alert('This student is not assigned to you.');
+                return;
+            }
+            
+            console.log('📔 Opening journal for assigned student:', selectedStudent.display_name);
+            
+            // Create URL with student and coach context
+            const contextData = btoa(JSON.stringify({
+                coach: currentCoachSession,
+                student: selectedStudent,
+                mode: 'coach_student_journal'
+            }));
+            
+            const journalUrl = `student-journal.html?context=${contextData}&user_id=${selectedStudent.id}&t=${Date.now()}`;
+            window.open(journalUrl, '_blank');
+        }
+
+        function openStudentProgress() {
+            if (!selectedStudent) {
+                alert('Please select a student first');
+                return;
+            }
+            
+            // Double-check this student is assigned to the current coach
+            const assignedStudent = studentsData.find(s => s.id == selectedStudent.id);
+            if (!assignedStudent) {
+                alert('This student is not assigned to you.');
+                return;
+            }
+            
+            console.log('📈 Opening progress for assigned student:', selectedStudent.display_name);
+            
+            // Create URL with student and coach context
+            const contextData = btoa(JSON.stringify({
+                coach: currentCoachSession,
+                student: selectedStudent,
+                mode: 'coach_student_progress'
+            }));
+            
+            const progressUrl = `student-progress.html?context=${contextData}&student_id=${selectedStudent.id}&t=${Date.now()}`;
+            window.open(progressUrl, '_blank');
+        }
+
+		function openStudentTrainingPrograms() {
+			if (!selectedStudent) {
+				alert('Please select a student first');
+				return;
+			}
+			
+			// Double-check this student is assigned to the current coach
+			const assignedStudent = studentsData.find(s => s.id == selectedStudent.id);
+			if (!assignedStudent) {
+				alert('This student is not assigned to you.');
+				return;
+			}
+			
+			console.log('📚 Opening training programs for assigned student:', selectedStudent.display_name);
+			
+			// Create URL with student and coach context
+			const contextData = btoa(JSON.stringify({
+				coach: currentCoachSession,
+				student: selectedStudent,
+				mode: 'coach_student_training_programs'
+			}));
+			
+			const trainingProgramsUrl = `coach-assign-programs.html?context=${contextData}&t=${Date.now()}`;
+			window.open(trainingProgramsUrl, '_blank');
+		}
+
+        // ========================================
+        // UTILITY FUNCTIONS
+        // ========================================
+
+        function showError(message) {
+            console.error('❌ Error:', message);
+            
+            // Remove existing error messages
+            const existingError = document.querySelector('.error-message');
+            if (existingError) {
+                existingError.remove();
+            }
+            
+            // Create new error message
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.textContent = message;
+            
+            // Insert after header
+            const header = document.querySelector('.header');
+            header.insertAdjacentElement('afterend', errorDiv);
+            
+            // Auto-remove after 10 seconds
+            setTimeout(() => {
+                if (errorDiv.parentNode) {
+                    errorDiv.remove();
+                }
+            }, 10000);
+        }
+
+        console.log('🎱 Coach Student Portal v1.0 - Initialized');
+        console.log('📡 API URL:', API_BASE_URL);
+    </script>
+</body>
+</html>
+                

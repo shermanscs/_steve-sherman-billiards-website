@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drill Details - Steve Sherman Billiards</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            max-width: 900px;
+            margin: 0 auto;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .header-top {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .brand-text {
+            text-align: left;
+            flex: 1;
+        }
+
+        .brand-text h2 {
+            font-size: 1.1em;
+            margin: 0;
+            color: #333;
+            font-weight: 600;
+            line-height: 1.2;
+        }
+
+        .logo {
+            width: 60px;
+            height: 60px;
+            margin-right: 15px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .close-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .drill-content {
+            display: grid;
+            gap: 30px;
+            grid-template-columns: 1fr;
+        }
+
+        .drill-header {
+            text-align: center;
+            padding: 20px;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 15px;
+            border: 2px solid rgba(102, 126, 234, 0.2);
+        }
+
+        .drill-title {
+            font-size: 2em;
+            color: #333;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .drill-meta {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .meta-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .meta-label {
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .meta-value {
+            font-size: 16px;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .drill-image-section {
+            text-align: center;
+            padding: 30px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .drill-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            margin-bottom: 20px;
+        }
+
+        .image-placeholder {
+            width: 100%;
+            height: 300px;
+            background: linear-gradient(45deg, #f8f9fa, #e9ecef);
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            font-size: 18px;
+            margin-bottom: 20px;
+            border: 2px dashed #ddd;
+            gap: 10px;
+        }
+
+        .image-loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            padding: 20px;
+            color: #666;
+        }
+
+        .drill-description,
+        .drill-instructions {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 25px;
+            border-radius: 15px;
+            border-left: 5px solid #667eea;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .description-title,
+        .instructions-title {
+            font-size: 1.4em;
+            color: #333;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .description-text,
+        .instructions-text {
+            color: #555;
+            line-height: 1.6;
+            font-size: 16px;
+        }
+
+        .video-section {
+            text-align: center;
+            padding: 25px;
+            background: rgba(102, 126, 234, 0.05);
+            border-radius: 15px;
+            border: 1px solid rgba(102, 126, 234, 0.1);
+        }
+
+        .video-btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .video-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .no-video {
+            color: #666;
+            font-style: italic;
+            font-size: 14px;
+        }
+
+        .error-message {
+            text-align: center;
+            padding: 40px;
+            color: #721c24;
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            border-radius: 15px;
+            font-size: 18px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-size: 18px;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .version-info {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 12px;
+            color: #999;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                width: calc(100% - 20px);
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .header-top {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .brand-text {
+                text-align: center;
+            }
+
+            .close-btn {
+                position: static;
+                margin-bottom: 20px;
+            }
+
+            .drill-meta {
+                gap: 15px;
+            }
+
+            .drill-title {
+                font-size: 1.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <button class="close-btn" id="closeBtn">
+                ✕ Close
+            </button>
+            
+            <div class="header-top">
+                <img src="images/logo.png" alt="Steve Sherman Billiards Logo" class="logo">
+                <div class="brand-text">
+                    <h2>Steve Sherman Billiards Training System</h2>
+                </div>
+            </div>
+            <h1>Drill Details</h1>
+        </div>
+
+        <div id="loadingSection" class="loading">
+            <span class="spinner"></span>Loading drill information...
+        </div>
+
+        <div id="errorSection" class="error-message" style="display: none;">
+            Error loading drill information. Please try again.
+        </div>
+
+        <div id="drillContent" class="drill-content" style="display: none;">
+            <div class="drill-header">
+                <h2 class="drill-title" id="drillTitle">Loading...</h2>
+                <div class="drill-meta">
+                    <div class="meta-item">
+                        <span class="meta-label">Skill Level</span>
+                        <span class="meta-value" id="skillLevel">-</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Skill</span>
+                        <span class="meta-value" id="skillName">-</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Max Score</span>
+                        <span class="meta-value" id="maxScore">-</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="drill-image-section">
+                <div id="imageContainer">
+                    <div class="image-placeholder">
+                        No image available for this drill
+                    </div>
+                </div>
+            </div>
+
+            <div class="drill-description">
+                <h3 class="description-title">Description</h3>
+                <div class="description-text" id="drillDescription">
+                    Loading drill description...
+                </div>
+            </div>
+
+            <div class="drill-instructions">
+                <h3 class="instructions-title">Instructions</h3>
+                <div class="instructions-text" id="drillInstructions">
+                    Loading drill instructions...
+                </div>
+            </div>
+
+            <div class="video-section">
+                <div id="videoContainer">
+                    <div class="no-video">No video demonstration available for this drill</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="version-info">
+            Version 1.1 - Optimized Single Drill Fetch
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'https://steveshermanbilliards.com/drill-api.php';
+        
+        async function apiRequest(endpoint, bustCache = false) {
+            try {
+                let url = `${API_BASE_URL}/${endpoint}`;
+                if (bustCache) {
+                    const separator = url.includes('?') ? '&' : '?';
+                    url += `${separator}_t=${Date.now()}&_r=${Math.random()}`;
+                }
+                
+                const options = {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                };
+                
+                if (bustCache) {
+                    options.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate';
+                    options.headers['Pragma'] = 'no-cache';
+                    options.headers['Expires'] = '0';
+                }
+                
+                const response = await fetch(url, options);
+                const result = await response.json();
+                
+                if (!result.success) {
+                    throw new Error(result.message || 'API request failed');
+                }
+                
+                return result.data;
+                
+            } catch (error) {
+                console.error('API Error:', error);
+                throw error;
+            }
+        }
+
+        function buildImageUrl(rawUrl) {
+            if (!rawUrl || rawUrl.trim() === '' || rawUrl === '0') {
+                return null;
+            }
+
+            // If it's already a full URL, return as-is
+            if (rawUrl.startsWith('http://') || rawUrl.startsWith('https://')) {
+                return rawUrl;
+            }
+
+            // If it starts with '/', it's relative to domain root
+            if (rawUrl.startsWith('/')) {
+                return `https://steveshermanbilliards.com${rawUrl}`;
+            }
+
+            // Otherwise, assume it's relative to the site root
+            return `https://steveshermanbilliards.com/${rawUrl}`;
+        }
+        
+        async function loadImage(rawImageUrl, container) {
+            const processedUrl = buildImageUrl(rawImageUrl);
+            
+            if (!processedUrl) {
+                container.innerHTML = '<div class="image-placeholder">No image available for this drill</div>';
+                return;
+            }
+            
+            // Show loading state
+            container.innerHTML = '<div class="image-loading"><div class="spinner"></div>Loading image...</div>';
+            
+            return new Promise((resolve) => {
+                const img = new Image();
+                
+                img.onload = function() {
+                    // Create the actual img element for display
+                    const displayImg = document.createElement('img');
+                    displayImg.src = processedUrl;
+                    displayImg.alt = 'Drill diagram';
+                    displayImg.className = 'drill-image';
+                    
+                    container.innerHTML = '';
+                    container.appendChild(displayImg);
+                    resolve(true);
+                };
+                
+                img.onerror = function() {
+                    container.innerHTML = '<div class="image-placeholder">Image could not be loaded</div>';
+                    resolve(false);
+                };
+                
+                // Add cache busting to image URLs to ensure fresh loads
+                const cacheBustedUrl = processedUrl + (processedUrl.includes('?') ? '&' : '?') + '_t=' + Date.now();
+                img.src = cacheBustedUrl;
+                
+                // Set timeout for loading
+                setTimeout(() => {
+                    if (!img.complete) {
+                        img.onerror();
+                    }
+                }, 10000); // 10 second timeout
+            });
+        }
+        
+        async function loadDrillDetails(drillId) {
+            try {
+                // Use the correct API endpoint format: drills/{id}
+                const drill = await apiRequest(`drills/${drillId}`, true);
+                
+                if (!drill) {
+                    throw new Error('Drill not found');
+                }
+                
+                displayDrillDetails(drill);
+                
+            } catch (error) {
+                console.error('Error loading drill details:', error);
+                console.error('Full error object:', error);
+                showError();
+            }
+        }
+        
+        async function displayDrillDetails(drill) {
+            document.getElementById('drillTitle').textContent = drill.name;
+            document.getElementById('skillLevel').textContent = drill.category_display || 'Unknown';
+            document.getElementById('skillName').textContent = drill.skill_display || 'Unknown';
+            document.getElementById('maxScore').textContent = drill.max_score || '10';
+            
+            // Description
+            const description = drill.description || 'No description available for this drill.';
+            document.getElementById('drillDescription').textContent = description;
+            
+            // Instructions
+            const instructions = drill.instructions || 'No instructions available for this drill.';
+            document.getElementById('drillInstructions').textContent = instructions;
+            
+            // Video
+            const videoContainer = document.getElementById('videoContainer');
+            if (drill.video_url && drill.video_url.trim() !== '' && drill.video_url !== '0') {
+                videoContainer.innerHTML = `
+                    <a href="${drill.video_url}" target="_blank" class="video-btn">
+                        ▶ Watch Video Demonstration
+                    </a>
+                `;
+            } else {
+                videoContainer.innerHTML = '<div class="no-video">No video demonstration available for this drill</div>';
+            }
+            
+            // Show content first
+            document.getElementById('loadingSection').style.display = 'none';
+            document.getElementById('drillContent').style.display = 'block';
+            
+            // Load image from database - prioritize diagram_image_url over image_url
+            const imageContainer = document.getElementById('imageContainer');
+            const imageUrl = drill.diagram_image_url || drill.image_url;
+            await loadImage(imageUrl, imageContainer);
+        }
+        
+        function showError() {
+            document.getElementById('loadingSection').style.display = 'none';
+            document.getElementById('errorSection').style.display = 'block';
+        }
+        
+        function setupCloseButton() {
+            document.getElementById('closeBtn').addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Close the current window/tab
+                window.close();
+                
+                // Fallback for browsers that don't allow window.close()
+                // This might happen if the window wasn't opened by JavaScript
+                setTimeout(() => {
+                    // If window.close() didn't work, try going back
+                    if (!window.closed) {
+                        if (window.history.length > 1) {
+                            window.history.back();
+                        } else {
+                            // Last resort - redirect to drill app
+                            window.location.href = 'drill-app.html?portal=student';
+                        }
+                    }
+                }, 100);
+            });
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            setupCloseButton();
+            
+            // Get drill ID from URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const drillId = urlParams.get('drill_id');
+            
+            if (!drillId) {
+                console.error('No drill ID provided');
+                showError();
+                return;
+            }
+            
+            loadDrillDetails(drillId);
+        });
+    </script>
+</body>
+</html>

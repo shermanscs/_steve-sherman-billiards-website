@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Training Content - Steve Sherman Billiards</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+            animation: slideIn 0.5s ease-out;
+            max-height: 95vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e0e0e0;
+            flex-shrink: 0;
+        }
+
+        .page-title {
+            font-size: 2em;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 0;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .selected-count {
+            background: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-1px);
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover:not(:disabled) {
+            background: #218838;
+            transform: translateY(-1px);
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .filters {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .filter-input, .filter-select {
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .filter-input {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .filter-input:focus, .filter-select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .filter-select {
+            cursor: pointer;
+            background: white;
+            min-width: 150px;
+        }
+
+        .content-container {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+            gap: 20px;
+            padding-bottom: 20px;
+        }
+
+        .content-card {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .content-card:hover {
+            border-color: #28a745;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .content-card.selected {
+            border-color: #28a745;
+            background: linear-gradient(135deg, rgba(40, 167, 69, 0.1) 0%, rgba(32, 201, 151, 0.05) 100%);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.2);
+        }
+
+        .content-name {
+            font-weight: 600;
+            font-size: 1.1em;
+            color: #333;
+            margin-bottom: 8px;
+            line-height: 1.3;
+            padding-right: 90px;
+        }
+
+        .content-description {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.4;
+            margin-bottom: 15px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .content-badges {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        .content-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-pdf {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .badge-document {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .badge-image {
+            background: #f3e5f5;
+            color: #7b1fa2;
+        }
+
+        .badge-video {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .badge-link {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+
+        .badge-other {
+            background: #f5f5f5;
+            color: #616161;
+        }
+
+        .badge-beginner {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .badge-intermediate {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .badge-advanced {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .badge-skill {
+            background: #cce5ff;
+            color: #0066cc;
+        }
+
+        .content-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: #888;
+        }
+
+        .content-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .file-icon {
+            background: #28a745;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 12px;
+            margin-right: 5px;
+        }
+
+        .selection-checkbox {
+            position: absolute;
+            top: 15px;
+            right: 70px;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ccc;
+            border-radius: 4px;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .content-card.selected .selection-checkbox {
+            background: #28a745;
+            border-color: #28a745;
+            color: white;
+        }
+
+        .content-view-btn {
+            position: absolute;
+            top: 12px;
+            right: 15px;
+            background: linear-gradient(45deg, #28a745, #20c997);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            padding: 6px 10px;
+            font-size: 11px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .content-view-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 3px 8px rgba(40, 167, 69, 0.4);
+        }
+
+        .content-thumbnail {
+            position: absolute;
+            bottom: 15px;
+            right: 15px;
+            width: 60px;
+            height: 40px;
+            border-radius: 4px;
+            overflow: hidden;
+            border: 2px solid #e0e0e0;
+            background: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: #999;
+        }
+
+        .content-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .loading {
+            text-align: center;
+            color: #28a745;
+            font-weight: 600;
+            padding: 40px;
+            font-size: 18px;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+            padding: 40px 20px;
+            font-size: 16px;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+            flex-shrink: 0;
+        }
+
+        .pagination button {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .pagination button:hover:not(:disabled) {
+            background: #f8f9fa;
+        }
+
+        .pagination button.active {
+            background: #28a745;
+            color: white;
+            border-color: #28a745;
+        }
+
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .pagination-info {
+            margin: 0 15px;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .actions-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 2px solid #e0e0e0;
+            flex-shrink: 0;
+        }
+
+        .bulk-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .confirm-actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                padding: 20px;
+            }
+
+            .filters {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .actions-bar {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1 class="page-title">📚 Select Training Content to Assign</h1>
+            <div class="header-actions">
+                <div class="selected-count" id="selectedCount">0 selected</div>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="filters">
+            <input type="text" id="searchInput" class="filter-input" 
+                   placeholder="Search content by name or description..." onInput="filterContent()">
+            <select id="categoryFilter" class="filter-select" onchange="filterContent()">
+                <option value="">All Categories</option>
+            </select>
+            <select id="skillFilter" class="filter-select" onchange="filterContent()">
+                <option value="">All Skills</option>
+            </select>
+            <select id="typeFilter" class="filter-select" onchange="filterContent()">
+                <option value="">All Types</option>
+                <option value="pdf">PDF Documents</option>
+                <option value="document">Word Documents</option>
+                <option value="image">Images</option>
+                <option value="video">Videos</option>
+                <option value="link">External Links</option>
+                <option value="other">Other</option>
+            </select>
+            <select id="difficultyFilter" class="filter-select" onchange="filterContent()">
+                <option value="">All Levels</option>
+                <option value="beginner">Beginner</option>
+                <option value="intermediate">Intermediate</option>
+                <option value="advanced">Advanced</option>
+            </select>
+        </div>
+
+        <!-- Content Container -->
+        <div class="content-container">
+            <div id="contentGrid">
+                <div class="loading">🔄 Loading training content...</div>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination" id="pagination" style="display: none;">
+            <button id="prevPage" onclick="changePage(-1)">← Previous</button>
+            <div class="pagination-info" id="paginationInfo"></div>
+            <button id="nextPage" onclick="changePage(1)">Next →</button>
+        </div>
+
+        <!-- Actions Bar -->
+        <div class="actions-bar">
+            <div class="bulk-actions">
+                <button class="btn btn-secondary" onclick="selectAll()">Select All</button>
+                <button class="btn btn-secondary" onclick="clearSelection()">Clear Selection</button>
+            </div>
+            <div class="confirm-actions">
+                <button class="btn btn-secondary" onclick="window.close()">Cancel</button>
+                <button class="btn btn-success" id="confirmBtn" onclick="confirmSelection()" disabled>
+                    Add Selected Content
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const API_BASE_URL = 'https://steveshermanbilliards.com/drill-api.php';
+        const CONTENT_PER_PAGE = 20;
+
+        // State
+        let allContent = [];
+        let filteredContent = [];
+        let selectedContentIds = new Set();
+        let categories = [];
+        let skills = [];
+        let currentPage = 1;
+        let unitId = null;
+        let programId = null;
+
+        // API Helper
+        async function apiRequest(endpoint, method = 'GET', data = null) {
+            try {
+                const options = {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Cache-Control': 'no-cache'
+                    }
+                };
+                
+                if (data) {
+                    options.body = JSON.stringify(data);
+                }
+                
+                let fullUrl = `${API_BASE_URL}/${endpoint}`;
+                if (method === 'GET') {
+                    const separator = endpoint.includes('?') ? '&' : '?';
+                    fullUrl += `${separator}_t=${Date.now()}`;
+                }
+                
+                const response = await fetch(fullUrl, options);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const result = await response.json();
+                
+                if (!result.success) {
+                    throw new Error(result.message || 'API request failed');
+                }
+                
+                return result;
+            } catch (error) {
+                console.error('❌ API Error:', error);
+                throw error;
+            }
+        }
+
+        // Initialize
+        function initializePage() {
+            const urlParams = new URLSearchParams(window.location.search);
+            unitId = urlParams.get('unit_id');
+            programId = urlParams.get('program_id');
+            
+            console.log('🚀 Content Browser initialized - Unit:', unitId, 'Program:', programId);
+            
+            loadAllData();
+        }
+
+        // Data Loading
+        async function loadAllData() {
+            try {
+                console.log('📚 Loading content browser data...');
+                
+                await Promise.all([
+                    loadContent(),
+                    loadCategories(),
+                    loadSkills()
+                ]);
+                
+                filterContent();
+                console.log('✅ Content browser ready');
+                
+            } catch (error) {
+                console.error('❌ Error loading data:', error);
+                document.getElementById('contentGrid').innerHTML = `
+                    <div class="empty-state">
+                        Failed to load training content: ${error.message}<br>
+                        <button class="btn btn-primary" onclick="loadAllData()">Retry</button>
+                    </div>
+                `;
+            }
+        }
+
+        async function loadContent() {
+            const response = await apiRequest('training-content');
+            allContent = response.data || [];
+            console.log('📚 Loaded', allContent.length, 'content items');
+        }
+
+        async function loadCategories() {
+            try {
+                const response = await apiRequest('categories');
+                categories = response.data || [];
+                populateFilterDropdown('categoryFilter', categories, 'display_name');
+            } catch (error) {
+                console.error('❌ Error loading categories:', error);
+            }
+        }
+
+        async function loadSkills() {
+            try {
+                const response = await apiRequest('skills');
+                skills = response.data || [];
+                populateFilterDropdown('skillFilter', skills, 'display_name');
+            } catch (error) {
+                console.error('❌ Error loading skills:', error);
+            }
+        }
+
+        function populateFilterDropdown(selectId, items, displayField) {
+            const select = document.getElementById(selectId);
+            if (!select) return;
+            
+            const firstOption = select.querySelector('option');
+            select.innerHTML = '';
+            if (firstOption) {
+                select.appendChild(firstOption);
+            }
+            
+            items.forEach(item => {
+                const option = document.createElement('option');
+                option.value = item.id;
+                option.textContent = item[displayField] || item.name;
+                select.appendChild(option);
+            });
+        }
+
+        // Filtering and Search
+        function filterContent() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const categoryId = document.getElementById('categoryFilter').value;
+            const skillId = document.getElementById('skillFilter').value;
+            const contentType = document.getElementById('typeFilter').value;
+            const difficultyLevel = document.getElementById('difficultyFilter').value;
+            
+            filteredContent = allContent.filter(content => {
+                const matchesSearch = !searchTerm || 
+                    content.name.toLowerCase().includes(searchTerm) ||
+                    (content.description && content.description.toLowerCase().includes(searchTerm));
+                
+                const matchesCategory = !categoryId || content.category_id == categoryId;
+                const matchesSkill = !skillId || content.skill_id == skillId;
+                const matchesType = !contentType || content.content_type === contentType;
+                const matchesDifficulty = !difficultyLevel || content.difficulty_level === difficultyLevel;
+                
+                return matchesSearch && matchesCategory && matchesSkill && matchesType && matchesDifficulty;
+            });
+            
+            currentPage = 1;
+            renderContent();
+            updatePagination();
+        }
+
+        // Rendering
+        function renderContent() {
+            const container = document.getElementById('contentGrid');
+            
+            if (filteredContent.length === 0) {
+                container.innerHTML = '<div class="empty-state">No training content found matching your criteria.</div>';
+                return;
+            }
+            
+            const startIndex = (currentPage - 1) * CONTENT_PER_PAGE;
+            const endIndex = Math.min(startIndex + CONTENT_PER_PAGE, filteredContent.length);
+            const pageContent = filteredContent.slice(startIndex, endIndex);
+            
+            const grid = document.createElement('div');
+            grid.className = 'content-grid';
+            
+            pageContent.forEach(content => {
+                const card = createContentCard(content);
+                grid.appendChild(card);
+            });
+            
+            container.innerHTML = '';
+            container.appendChild(grid);
+        }
+
+        function createContentCard(content) {
+            const card = document.createElement('div');
+            card.className = 'content-card';
+            card.onclick = () => toggleContentSelection(content.id);
+            
+            if (selectedContentIds.has(content.id)) {
+                card.classList.add('selected');
+            }
+            
+            // Build image URL helper
+            function buildImageUrl(rawUrl) {
+                if (!rawUrl || rawUrl.trim() === '' || rawUrl === '0') return null;
+                if (rawUrl.startsWith('http')) return rawUrl;
+                if (rawUrl.startsWith('/')) return `https://steveshermanbilliards.com${rawUrl}`;
+                return `https://steveshermanbilliards.com/${rawUrl}`;
+            }
+            
+            // Get content type icon
+            function getContentTypeIcon(contentType) {
+                const icons = {
+                    'pdf': '📕',
+                    'document': '📄',
+                    'image': '🖼️',
+                    'video': '🎥',
+                    'link': '🔗',
+                    'other': '📎'
+                };
+                return icons[contentType] || '📄';
+            }
+            
+            const hasImage = content.thumbnail_url || (content.content_type === 'image' && content.file_url);
+            const imageUrl = hasImage ? buildImageUrl(content.thumbnail_url || content.file_url) : null;
+            const fileIcon = getContentTypeIcon(content.content_type);
+            
+            card.innerHTML = `
+                <div class="selection-checkbox">
+                    ${selectedContentIds.has(content.id) ? '✓' : ''}
+                </div>
+                <button class="content-view-btn" onclick="viewContent(${content.id}, event)" title="View Content Details">
+                    View
+                </button>
+                <div class="content-name">${content.name}</div>
+                <div class="content-description">
+                    ${content.description || 'No description available'}
+                </div>
+                <div class="content-badges">
+                    <span class="content-badge badge-${content.content_type}">${content.content_type.toUpperCase()}</span>
+                    <span class="content-badge badge-skill">${content.skill_display || 'Unknown'}</span>
+                    <span class="content-badge badge-${content.difficulty_level || 'beginner'}">
+                        ${(content.difficulty_level || 'beginner').toUpperCase()}
+                    </span>
+                </div>
+                <div class="content-meta">
+                    <div class="content-actions">
+                        <div class="file-icon">${fileIcon}</div>
+                        ${content.file_size_formatted ? `<span style="font-size: 10px; color: #999;">${content.file_size_formatted}</span>` : ''}
+                    </div>
+                    <div>ID: ${content.id}</div>
+                </div>
+                ${imageUrl ? `<div class="content-thumbnail"><img src="${imageUrl}" alt="Content preview" onerror="this.parentElement.innerHTML='No Preview'"></div>` : ''}
+            `;
+            
+            return card;
+        }
+
+        // Selection Management
+        function toggleContentSelection(contentId) {
+            if (selectedContentIds.has(contentId)) {
+                selectedContentIds.delete(contentId);
+            } else {
+                selectedContentIds.add(contentId);
+            }
+            
+            updateSelectedCount();
+            renderContent(); // Re-render to update selection state
+        }
+
+        function updateSelectedCount() {
+            const count = selectedContentIds.size;
+            document.getElementById('selectedCount').textContent = `${count} selected`;
+            document.getElementById('confirmBtn').disabled = count === 0;
+        }
+
+        function selectAll() {
+            const startIndex = (currentPage - 1) * CONTENT_PER_PAGE;
+            const endIndex = Math.min(startIndex + CONTENT_PER_PAGE, filteredContent.length);
+            const pageContent = filteredContent.slice(startIndex, endIndex);
+            
+            pageContent.forEach(content => {
+                selectedContentIds.add(content.id);
+            });
+            
+            updateSelectedCount();
+            renderContent();
+        }
+
+        function clearSelection() {
+            selectedContentIds.clear();
+            updateSelectedCount();
+            renderContent();
+        }
+
+        // Pagination
+        function updatePagination() {
+            const totalPages = Math.ceil(filteredContent.length / CONTENT_PER_PAGE);
+            const pagination = document.getElementById('pagination');
+            const prevBtn = document.getElementById('prevPage');
+            const nextBtn = document.getElementById('nextPage');
+            const info = document.getElementById('paginationInfo');
+            
+            if (totalPages <= 1) {
+                pagination.style.display = 'none';
+                return;
+            }
+            
+            pagination.style.display = 'flex';
+            prevBtn.disabled = currentPage === 1;
+            nextBtn.disabled = currentPage === totalPages;
+            
+            const startItem = (currentPage - 1) * CONTENT_PER_PAGE + 1;
+            const endItem = Math.min(currentPage * CONTENT_PER_PAGE, filteredContent.length);
+            info.textContent = `${startItem}-${endItem} of ${filteredContent.length} items`;
+        }
+
+        function changePage(direction) {
+            const totalPages = Math.ceil(filteredContent.length / CONTENT_PER_PAGE);
+            currentPage = Math.max(1, Math.min(totalPages, currentPage + direction));
+            renderContent();
+            updatePagination();
+        }
+
+        // Actions
+        function viewContent(contentId, event) {
+            event.stopPropagation();
+            const contentDisplayUrl = `training-content-display.html?content_id=${contentId}`;
+            window.open(contentDisplayUrl, '_blank', 'width=1000,height=800,scrollbars=yes,resizable=yes');
+        }
+
+        function confirmSelection() {
+            if (selectedContentIds.size === 0) {
+                alert('Please select at least one content item to add.');
+                return;
+            }
+            
+            const selectedIds = Array.from(selectedContentIds);
+            console.log('✅ Sending selected content back to parent:', selectedIds);
+            
+            // Send message to parent window
+            if (window.opener) {
+                window.opener.postMessage({
+                    type: 'content_selected',
+                    contentIds: selectedIds,
+                    unitId: unitId
+                }, '*');
+                window.close();
+            } else {
+                alert('Parent window not found. Please close this window and try again.');
+            }
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', initializePage);
+
+        console.log('📚 Content Browser Script Loaded');
+    </script>
+</body>
+</html>

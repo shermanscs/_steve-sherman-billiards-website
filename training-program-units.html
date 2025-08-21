@@ -1,0 +1,1881 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Training Program Units - Steve Sherman Billiards</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .logo {
+            width: 60px;
+            height: 60px;
+            margin-right: 15px;
+        }
+
+        .brand-text {
+            text-align: left;
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .brand-text h2 {
+            font-size: 1.1em;
+            margin: 0;
+            color: #333;
+            font-weight: 600;
+            line-height: 1.2;
+        }
+
+        .page-title {
+            font-size: 2.5em;
+            margin: 20px 0 10px 0;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-align: center;
+        }
+
+        .program-info {
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .program-details {
+            color: #333;
+            font-weight: 600;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-1px);
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+            transform: translateY(-1px);
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+            transform: translateY(-1px);
+        }
+
+        .btn-sm {
+            padding: 4px 8px;
+            font-size: 12px;
+        }
+
+        .read-only-banner {
+            background: linear-gradient(45deg, #17a2b8, #138496);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .snapshot-mode-banner {
+            background: linear-gradient(45deg, #28a745, #20c997);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .read-only .btn-primary,
+        .read-only .btn-success,
+        .read-only .btn-danger {
+            display: none !important;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+            min-height: 500px;
+        }
+
+        .units-list {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            overflow-y: auto;
+            max-height: 700px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .units-list h3 {
+            margin-bottom: 20px;
+            color: #333;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .unit-item {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .unit-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+            border-color: #667eea;
+        }
+
+        .unit-item.selected {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .unit-item.locked {
+            background: rgba(220, 53, 69, 0.05);
+            border-color: rgba(220, 53, 69, 0.3);
+        }
+
+        .unit-item.locked .unit-title {
+            color: #721c24;
+        }
+
+        .unit-order {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #667eea;
+            color: white;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .unit-title {
+            font-weight: 600;
+            font-size: 1.1em;
+            color: #333;
+            margin-bottom: 5px;
+            padding-right: 35px;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            hyphens: auto;
+            line-height: 1.3;
+        }
+
+        .unit-duration {
+            font-size: 0.8em;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .unit-preview {
+            font-size: 0.9em;
+            color: #777;
+            line-height: 1.4;
+            margin-bottom: 15px;
+        }
+
+        .unit-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .unit-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 80px;
+        }
+
+        .unit-btn.overview-btn {
+            background: #667eea;
+            color: white;
+        }
+
+        .unit-btn.overview-btn:hover {
+            background: #5a6fd8;
+            transform: translateY(-1px);
+        }
+
+        .unit-btn.overview-btn.active {
+            background: #4c63d2;
+            box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.3);
+        }
+
+        .unit-btn.assignments-btn {
+            background: #28a745;
+            color: white;
+        }
+
+        .unit-btn.assignments-btn:hover {
+            background: #218838;
+            transform: translateY(-1px);
+        }
+
+        .unit-btn.assignments-btn.active {
+            background: #1e7e34;
+            box-shadow: 0 0 0 2px rgba(40, 167, 69, 0.3);
+        }
+
+        .unit-editor {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .editor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .editor-title {
+            color: #333;
+            font-size: 1.3em;
+            flex: 1;
+        }
+
+        .editor-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 600;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        .read-only .form-input {
+            background: #f8f9fa;
+            border-color: #dee2e6;
+            cursor: default;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-textarea {
+            min-height: 200px;
+            resize: vertical;
+            font-family: inherit;
+            line-height: 1.5;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 15px;
+        }
+
+        .form-col {
+            flex: 1;
+        }
+
+        .assignments-view {
+            display: none;
+        }
+
+        .assignments-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .assignments-list {
+            max-height: 400px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+
+        .assignment-item {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #e0e0e0;
+            transition: all 0.3s ease;
+        }
+
+        .assignment-item:hover {
+            background: #e9ecef;
+            transform: translateY(-1px);
+        }
+
+        .assignment-info {
+            flex: 1;
+        }
+
+        .assignment-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .assignment-details {
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .assignment-actions {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .assignment-actions .btn {
+            flex-shrink: 0;
+        }
+
+        .assignment-actions .btn-primary {
+            background: #667eea !important;
+            color: white !important;
+            border: 1px solid #667eea !important;
+            padding: 6px 12px !important;
+            font-size: 12px !important;
+            font-weight: 600 !important;
+            border-radius: 4px !important;
+            cursor: pointer !important;
+            display: inline-block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+
+        .assignment-actions .btn-primary:hover {
+            background: #5a6fd8 !important;
+            transform: translateY(-1px);
+        }
+
+        .assignment-order {
+            background: #667eea;
+            color: white;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: bold;
+            margin-right: 15px;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+            padding: 40px 20px;
+        }
+
+        .loading {
+            text-align: center;
+            color: #667eea;
+            font-weight: 600;
+            padding: 20px;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+            display: none;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+            display: none;
+        }
+
+        .sort-controls {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 15px;
+        }
+
+        .sort-btn {
+            padding: 5px 10px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .sort-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .sort-btn:hover:not(.active) {
+            background: #f8f9fa;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                padding: 20px;
+            }
+
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .units-list {
+                max-height: 300px;
+            }
+
+            .header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .brand-text {
+                text-align: center;
+                min-width: auto;
+            }
+
+            .program-info {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .editor-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .editor-actions {
+                justify-content: center;
+            }
+
+            .form-row {
+                flex-direction: column;
+            }
+
+            .unit-actions {
+                flex-direction: column;
+            }
+
+            .unit-btn {
+                min-width: auto;
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="mainContainer">
+        <!-- Header -->
+        <div class="header">
+            <img src="images/logo.png" alt="Steve Sherman Billiards Logo" class="logo">
+            <div class="brand-text">
+                <h2>Steve Sherman Billiards Training System</h2>
+            </div>
+        </div>
+        <h1 class="page-title">Program Units</h1>
+
+        <!-- Read-only banner (shown only in read-only mode) -->
+        <div id="readOnlyBanner" class="read-only-banner" style="display: none;">
+            📖 Viewing Program Units (Read-Only Mode) - You can view content but cannot make changes
+        </div>
+
+        <!-- Program Info -->
+        <div class="program-info">
+            <div class="program-details">
+                <span>Program: <strong id="currentProgram">Loading...</strong></span><br>
+                <small>Program ID: <span id="programIdDisplay">Loading...</span> | <span id="modeIndicator">Manager Mode</span> | Build: <span id="buildTimestamp"></span></small>
+            </div>
+            <div class="action-buttons">
+                <button class="btn btn-primary" id="newUnitBtn" onclick="createNewUnit()">+ New Unit</button>
+                <button class="btn btn-secondary" onclick="forceRefresh()">🔄 Refresh</button>
+                <button class="btn btn-secondary" onclick="window.close()">Close</button>
+            </div>
+        </div>
+
+        <!-- Messages -->
+        <div id="errorMessage" class="error-message"></div>
+        <div id="successMessage" class="success-message"></div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Units List -->
+            <div class="units-list">
+                <div class="units-list-header">
+                    <h3>Program Units</h3>
+                    
+                    <!-- Sort Controls -->
+                    <div class="sort-controls">
+                        <button class="sort-btn active" id="sortByOrder" onclick="setSortOrder('order')">📊 By Order</button>
+                        <button class="sort-btn" id="sortByTitle" onclick="setSortOrder('title')">🔤 By Title</button>
+                    </div>
+                </div>
+                
+                <div id="unitsContainer">
+                    <div class="loading">Loading program units...</div>
+                </div>
+            </div>
+
+            <!-- Unit Editor -->
+            <div class="unit-editor">
+                <div class="editor-header">
+                    <h3 class="editor-title" id="editorTitle">Select a unit to view</h3>
+                    <div class="editor-actions" id="editorActions" style="display: none;">
+                        <button class="btn btn-success" onclick="saveUnit()">Save</button>
+                        <button class="btn btn-danger" onclick="deleteUnit()">Delete</button>
+                        <button class="btn btn-secondary" onclick="cancelEdit()">Cancel</button>
+                    </div>
+                </div>
+                
+                <div id="editorContent">
+                    <div class="empty-state">
+                        Select a unit from the list to view its details.
+                    </div>
+                </div>
+
+                <!-- Unit Overview Form -->
+                <div id="editorForm" style="display: none;">
+                    <form id="unitForm">
+                        <div class="form-group">
+                            <label for="unitName" class="form-label">Unit Name:</label>
+                            <input type="text" id="unitName" name="name" class="form-input" 
+                                   placeholder="Enter a name for this training unit" required maxlength="255">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="unitDescription" class="form-label">Description:</label>
+                            <textarea id="unitDescription" name="description" class="form-input form-textarea" 
+                                      placeholder="Describe what this unit covers, learning objectives, and key concepts..."></textarea>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-col">
+                                <label for="unitOrder" class="form-label">Unit Order:</label>
+                                <input type="number" id="unitOrder" name="unit_order" class="form-input" 
+                                       min="1" max="100" value="1" placeholder="1">
+                            </div>
+                            <div class="form-col">
+                                <label for="unitDuration" class="form-label">Estimated Duration (days):</label>
+                                <input type="number" id="unitDuration" name="estimated_duration_days" class="form-input" 
+                                       min="1" max="365" placeholder="7">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Unit Assignments View -->
+                <div id="assignmentsView" class="assignments-view">
+                    <div class="assignments-header">
+                        <h4>Unit Assignments</h4>
+                        <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
+                            <div style="display: flex; gap: 10px; align-items: center;">
+                                <span style="font-size: 14px; color: #666;">
+                                    <span id="assignmentCount">0</span> drills • 
+                                    <span id="contentAssignmentCount">0</span> content items
+                                </span>
+                            </div>
+                            <div style="display: flex; gap: 10px;" id="assignmentButtons">
+                                <button class="btn btn-primary" onclick="openDrillBrowser()" style="font-size: 13px;">
+                                    🎯 Add Drills
+                                </button>
+                                <button class="btn btn-success" onclick="openContentBrowser()" style="font-size: 13px;">
+                                    📚 Add Content
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Drill Assignments List -->
+                    <div style="margin-bottom: 30px;">
+                        <h5 style="color: #333; margin-bottom: 15px; padding-bottom: 8px; border-bottom: 1px solid #e0e0e0;">
+                            🎯 Drill Assignments
+                        </h5>
+                        <div class="assignments-list" id="assignmentsList">
+                            <div class="empty-state">
+                                No drill assignments for this unit.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Training Content Assignments List -->
+                    <div>
+                        <h5 style="color: #333; margin-bottom: 15px; padding-bottom: 8px; border-bottom: 1px solid #e0e0e0;">
+                            📚 Training Content Assignments
+                        </h5>
+                        <div class="assignments-list" id="contentAssignmentsList">
+                            <div class="empty-state">
+                                No training content assigned for this unit.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Version and Configuration
+        const VERSION = '4.3-SNAPSHOT-SUPPORT';
+        const BUILD_TIMESTAMP = new Date().toISOString();
+        const CACHE_BUSTER = Date.now() + Math.random() * 1000000;
+        const API_BASE_URL = 'https://steveshermanbilliards.com/drill-api.php';
+
+        // State management
+        let currentProgramId = null;
+        let currentAssignmentId = null;
+        let currentProgramName = '';
+        let isSnapshotMode = false;
+        let units = [];
+        let filteredUnits = [];
+        let currentUnit = null;
+        let currentView = 'overview';
+        let isEditing = false;
+        let sortOrder = 'order';
+        let isReadOnlyMode = false;
+        
+        // Assignment data
+        let currentAssignments = [];
+        let currentContentAssignments = [];
+
+        // API Helper Function
+        async function apiRequest(endpoint, method = 'GET', data = null) {
+            try {
+                const options = {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Cache-Control': 'no-cache, no-store, must-revalidate',
+                        'Pragma': 'no-cache',
+                        'Expires': '0'
+                    }
+                };
+                
+                if (data) {
+                    options.body = JSON.stringify(data);
+                }
+                
+                let fullUrl = `${API_BASE_URL}/${endpoint}`;
+                if (method === 'GET') {
+                    const separator = endpoint.includes('?') ? '&' : '?';
+                    fullUrl += `${separator}_t=${CACHE_BUSTER}&_v=${VERSION}&_r=${Math.random()}`;
+                }
+                
+                console.log('🌐 API Request:', method, fullUrl);
+                
+                const response = await fetch(fullUrl, options);
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('❌ HTTP Error:', response.status, errorText);
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const result = await response.json();
+                console.log('📄 API Response:', result);
+                
+                if (!result.success) {
+                    throw new Error(result.message || 'API request failed');
+                }
+                
+                return result;
+            } catch (error) {
+                console.error('❌ API Error:', error);
+                throw error;
+            }
+        }
+
+        // Session Management
+        function initializeSession() {
+            console.log('🚀 Initializing session...');
+            console.log(`🎯 VERSION: ${VERSION}`);
+            console.log(`🕐 BUILD TIMESTAMP: ${BUILD_TIMESTAMP}`);
+            console.log(`💾 CACHE BUSTER: ${CACHE_BUSTER}`);
+            
+            // Display version info
+            document.getElementById('buildTimestamp').textContent = new Date().toLocaleString();
+            
+            const urlParams = new URLSearchParams(window.location.search);
+            const programId = urlParams.get('program_id');
+            const assignmentId = urlParams.get('assignment_id');
+            const programName = urlParams.get('program_name');
+            const readOnly = urlParams.get('readonly') === 'true';
+            const mode = urlParams.get('mode');
+            const snapshot = urlParams.get('snapshot') === 'true';
+            const unitId = urlParams.get('unit_id');
+            
+            console.log('🔍 URL params:', { 
+                programId, 
+                assignmentId, 
+                programName, 
+                readOnly, 
+                mode, 
+                snapshot, 
+                unitId 
+            });
+            
+            // Handle different initialization modes
+            if (assignmentId) {
+                // Snapshot mode - viewing assigned program units
+                currentAssignmentId = parseInt(assignmentId);
+                isSnapshotMode = true;
+                isReadOnlyMode = true; // Snapshot views are always read-only for now
+                
+                console.log('📊 Initializing in SNAPSHOT mode for assignment:', currentAssignmentId);
+                
+                currentProgramName = programName ? decodeURIComponent(programName) : 'Assigned Program';
+                
+                document.getElementById('currentProgram').textContent = currentProgramName;
+                document.getElementById('programIdDisplay').textContent = `Assignment ${currentAssignmentId}`;
+                document.getElementById('modeIndicator').textContent = 'Snapshot View (Assigned Program)';
+                
+                // Show snapshot mode banner
+                const container = document.getElementById('mainContainer');
+                const snapshotBanner = document.createElement('div');
+                snapshotBanner.className = 'snapshot-mode-banner';
+                snapshotBanner.innerHTML = '📊 Viewing Assigned Program Units (Snapshot Data) - This shows the program as it was when assigned to the student';
+                container.insertBefore(snapshotBanner, container.firstChild.nextSibling);
+                
+            } else if (programId) {
+                // Template mode - viewing master program units
+                currentProgramId = parseInt(programId);
+                isSnapshotMode = false;
+                isReadOnlyMode = readOnly;
+                
+                console.log('📋 Initializing in TEMPLATE mode for program:', currentProgramId);
+                
+                currentProgramName = programName ? decodeURIComponent(programName) : `Program ${programId}`;
+                
+                document.getElementById('currentProgram').textContent = currentProgramName;
+                document.getElementById('programIdDisplay').textContent = currentProgramId;
+                
+            } else {
+                showError('No program ID or assignment ID specified. Please return to the training program admin and try again.');
+                return false;
+            }
+            
+            // Store unit ID for later selection
+            if (unitId) {
+                window.targetUnitId = parseInt(unitId);
+            }
+            
+            if (isReadOnlyMode) {
+                enableReadOnlyMode();
+            }
+            
+            return true;
+        }
+
+        function enableReadOnlyMode() {
+            console.log('🔒 Enabling read-only mode');
+            
+            // Show read-only banner
+            document.getElementById('readOnlyBanner').style.display = 'block';
+            document.getElementById('modeIndicator').textContent = 'Read-Only Mode';
+            
+            // Add read-only class to container
+            document.getElementById('mainContainer').classList.add('read-only');
+            
+            // Hide edit buttons and assignment management buttons
+            document.getElementById('newUnitBtn').style.display = 'none';
+            
+            // Make form inputs readonly
+            const inputs = document.querySelectorAll('.form-input');
+            inputs.forEach(input => {
+                input.setAttribute('readonly', 'readonly');
+                input.style.pointerEvents = 'none';
+            });
+        }
+
+        // Data Loading Functions
+        async function loadAllData() {
+            try {
+                console.log('📚 Loading all data...');
+                console.log('🔗 API Base URL:', API_BASE_URL);
+                
+                // Test API connection first
+                console.log('🔌 Testing API connection...');
+                const versionResponse = await apiRequest('version');
+                console.log('✅ API connected:', versionResponse.data);
+                
+                // Load units
+                console.log('📚 Loading units...');
+                await loadUnits();
+                console.log('✅ Units loaded successfully');
+                
+            } catch (error) {
+                console.error('❌ Error loading data:', error);
+                console.error('❌ Error stack:', error.stack);
+                showError('Failed to load data: ' + error.message);
+            }
+        }
+
+        async function loadUnits() {
+            try {
+                if (isSnapshotMode) {
+                    // Load snapshot units for assigned program
+                    console.log('📊 Loading SNAPSHOT units for assignment:', currentAssignmentId);
+                    await loadSnapshotUnits();
+                } else {
+                    // Load template units for master program
+                    if (!currentProgramId) {
+                        showError('No valid program ID.');
+                        return;
+                    }
+                    console.log('📋 Loading TEMPLATE units for program:', currentProgramId);
+                    await loadTemplateUnits();
+                }
+                
+                filteredUnits = sortUnits(units);
+                displayUnits();
+                
+                // In read-only mode, auto-select the first unit to show its content
+                if (isReadOnlyMode && units.length > 0) {
+                    console.log('📄 Auto-selecting first unit for content display:', units[0].name);
+                    setTimeout(() => selectUnit(units[0].id, 'overview'), 300);
+                }
+                
+            } catch (error) {
+                console.error('❌ Error loading units:', error);
+                throw error;
+            }
+        }
+
+        async function loadSnapshotUnits() {
+            console.log('📊 Loading assigned units for assignment:', currentAssignmentId);
+            
+            const response = await apiRequest(`training-program-units-assigned?assignment_id=${currentAssignmentId}`);
+            
+            let unitsData = [];
+            if (response.data && Array.isArray(response.data)) {
+                unitsData = response.data;
+            } else if (Array.isArray(response)) {
+                unitsData = response;
+            } else if (response.data) {
+                unitsData = [response.data];
+            }
+            
+            units = unitsData.map(unit => ({
+                ...unit,
+                id: parseInt(unit.id),
+                assignment_id: parseInt(unit.assignment_id),
+                unit_order: parseInt(unit.unit_order) || 999,
+                is_locked: unit.is_locked == 1,
+                isSnapshot: true // Flag to identify snapshot units
+            }));
+            
+            units.sort((a, b) => {
+                const orderA = parseInt(a.unit_order) || 999;
+                const orderB = parseInt(b.unit_order) || 999;
+                return orderA - orderB;
+            });
+            
+            console.log('📊 Loaded snapshot units:', units.length);
+            console.log('📋 Snapshot units data:', units.map(u => ({ 
+                id: u.id, 
+                name: u.name, 
+                order: u.unit_order,
+                locked: u.is_locked 
+            })));
+        }
+
+        async function loadTemplateUnits() {
+            console.log('📋 Loading template units for program:', currentProgramId);
+            
+            const response = await apiRequest(`training-program-units?program_id=${currentProgramId}`);
+            
+            let unitsData = [];
+            if (response.data && Array.isArray(response.data)) {
+                unitsData = response.data;
+            } else if (Array.isArray(response)) {
+                unitsData = response;
+            } else if (response.data) {
+                unitsData = [response.data];
+            }
+            
+            units = unitsData.filter(unit => parseInt(unit.program_id) === currentProgramId);
+            
+            units = units.map(unit => ({
+                ...unit,
+                id: parseInt(unit.id),
+                program_id: parseInt(unit.program_id),
+                unit_order: parseInt(unit.unit_order) || 999,
+                isSnapshot: false // Flag to identify template units
+            }));
+            
+            units.sort((a, b) => {
+                const orderA = parseInt(a.unit_order) || 999;
+                const orderB = parseInt(b.unit_order) || 999;
+                return orderA - orderB;
+            });
+            
+            console.log('📋 Loaded template units:', units.length);
+            console.log('📋 Template units data:', units.map(u => ({ 
+                id: u.id, 
+                name: u.name, 
+                order: u.unit_order 
+            })));
+        }
+
+        async function loadAssignments() {
+            if (!currentUnit || !currentUnit.id) {
+                return;
+            }
+            
+            try {
+                if (isSnapshotMode) {
+                    // Load snapshot content assignments
+                    console.log('📊 Loading SNAPSHOT assignments for unit:', currentUnit.id);
+                    await loadSnapshotAssignments();
+                } else {
+                    // Load template content assignments
+                    console.log('📋 Loading TEMPLATE assignments for unit:', currentUnit.id);
+                    await loadTemplateAssignments();
+                }
+                
+                displayAssignments();
+                displayContentAssignments();
+                
+            } catch (error) {
+                console.error('❌ Error loading assignments:', error);
+                currentAssignments = [];
+                currentContentAssignments = [];
+                displayAssignments();
+                displayContentAssignments();
+            }
+        }
+
+        async function loadSnapshotAssignments() {
+            console.log('📊 Loading assigned content for unit:', currentUnit.id);
+            
+            const response = await apiRequest(`training-program-content-assigned?assigned_unit_id=${currentUnit.id}`);
+            const allAssignments = response.data || [];
+            
+            // Separate drill assignments and content assignments
+            currentAssignments = allAssignments.filter(item => item.content_type === 'drill') || [];
+            currentContentAssignments = allAssignments.filter(item => item.content_type === 'training_content') || [];
+            
+            console.log('📊 Loaded snapshot drill assignments:', currentAssignments.length);
+            console.log('📊 Loaded snapshot content assignments:', currentContentAssignments.length);
+        }
+
+        async function loadTemplateAssignments() {
+            console.log('📋 Loading template content for unit:', currentUnit.id);
+            
+            const response = await apiRequest(`unit-content?unit_id=${currentUnit.id}`);
+            const allAssignments = response.data || [];
+            
+            // Separate drill assignments and content assignments
+            currentAssignments = allAssignments.filter(item => item.content_type === 'drill') || [];
+            currentContentAssignments = allAssignments.filter(item => item.content_type === 'training_content') || [];
+            
+            console.log('📋 Loaded template drill assignments:', currentAssignments.length);
+            console.log('📋 Loaded template content assignments:', currentContentAssignments.length);
+        }
+
+        // Display Functions
+        function sortUnits(unitsToSort) {
+            const sorted = [...unitsToSort];
+            
+            if (sortOrder === 'title') {
+                sorted.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+            } else {
+                sorted.sort((a, b) => {
+                    const orderA = parseInt(a.unit_order) || 999;
+                    const orderB = parseInt(b.unit_order) || 999;
+                    return orderA - orderB;
+                });
+            }
+            
+            return sorted;
+        }
+
+        function displayUnits() {
+            const container = document.getElementById('unitsContainer');
+            
+            console.log('🖥️ displayUnits called');
+            console.log('🔒 Read-only mode:', isReadOnlyMode);
+            console.log('📊 Snapshot mode:', isSnapshotMode);
+            console.log('📋 Current unit:', currentUnit ? `${currentUnit.name} (ID: ${currentUnit.id})` : 'none');
+            console.log('📚 Filtered units:', filteredUnits.length);
+            
+            if (filteredUnits.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        No units found for this training program.
+                    </div>
+                `;
+                return;
+            }
+            
+            // Show all units for the program
+            const unitsToShow = filteredUnits;
+            
+            console.log('📋 Showing all units:', unitsToShow.length);
+            console.log('📋 Units shown:', unitsToShow.map(u => `${u.name} (ID: ${u.id})`));
+            
+            container.innerHTML = unitsToShow.map(unit => {
+                const isSelected = currentUnit && currentUnit.id === unit.id;
+                const isLocked = unit.is_locked === true || unit.is_locked === 1;
+                const lockClass = isLocked ? ' locked' : '';
+                const lockIcon = isLocked ? '🔒 ' : '';
+                
+                return `
+                    <div class="unit-item ${isSelected ? 'selected' : ''}${lockClass}" 
+                         onclick="selectUnit(${unit.id})">
+                        <div class="unit-order">${unit.unit_order || '?'}</div>
+                        <div class="unit-title">${lockIcon}${unit.name}</div>
+                        <div class="unit-duration">
+                            ${unit.estimated_duration_days ? `${unit.estimated_duration_days} days` : 'Duration not set'}
+                            ${isSnapshotMode ? ' • Snapshot Data' : ' • Template Data'}
+                            ${isLocked ? ' • LOCKED' : ''}
+                        </div>
+                        <div class="unit-preview">
+                            ${unit.description ? 
+                                (unit.description.length > 100 ? 
+                                    unit.description.substring(0, 100) + '...' : 
+                                    unit.description) : 
+                                'No description available'}
+                        </div>
+                        <div class="unit-actions">
+                            <button class="unit-btn overview-btn ${currentView === 'overview' ? 'active' : ''}" 
+                                    onclick="event.stopPropagation(); selectUnit(${unit.id}, 'overview')">
+                                Overview
+                            </button>
+                            <button class="unit-btn assignments-btn ${currentView === 'assignments' ? 'active' : ''}" 
+                                    onclick="event.stopPropagation(); selectUnit(${unit.id}, 'assignments')">
+                                Assignments
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function displayContentAssignments() {
+            const contentAssignmentsList = document.getElementById('contentAssignmentsList');
+            const contentAssignmentCount = document.getElementById('contentAssignmentCount');
+            
+            console.log('📚 displayContentAssignments called');
+            console.log('🔒 Read-only mode:', isReadOnlyMode);
+            console.log('📊 Snapshot mode:', isSnapshotMode);
+            console.log('📚 Current content assignments:', currentContentAssignments.length);
+            
+            contentAssignmentCount.textContent = currentContentAssignments.length;
+            
+            if (currentContentAssignments.length === 0) {
+                contentAssignmentsList.innerHTML = `
+                    <div class="empty-state">
+                        No training content assigned for this unit.
+                    </div>
+                `;
+                return;
+            }
+            
+            const contentHtml = currentContentAssignments.map((assignment, index) => {
+                const contentName = assignment.content_name || 
+                                   assignment.name || 
+                                   assignment.content_title || 
+                                   assignment.title || 
+                                   'Unknown Content';
+                
+                const contentType = assignment.content_type_display || 
+                                   assignment.content_type || 
+                                   assignment.type || 
+                                   'training_content';
+                
+                const category = assignment.content_category || 
+                                assignment.category_display || 
+                                assignment.category_name ||
+                                '';
+                
+                const skill = assignment.content_skill || 
+                             assignment.skill_display || 
+                             assignment.skill_name ||
+                             '';
+                
+                const difficulty = assignment.content_difficulty || 
+                                  assignment.difficulty_level || 
+                                  '';
+                
+                const fileSize = assignment.file_size_formatted || 
+                                assignment.file_size || 
+                                '';
+                
+                const contentId = assignment.content_id || assignment.id;
+                
+                console.log(`📚 Content ${index + 1}: ID=${contentId}, Name=${contentName}, Mode=${isSnapshotMode ? 'Snapshot' : 'Template'}`);
+                
+                return `
+                    <div class="assignment-item">
+                        <div class="assignment-order">${assignment.content_order || (index + 1)}</div>
+                        <div class="assignment-info">
+                            <div class="assignment-name">${contentName}</div>
+                            <div class="assignment-details">
+                                ${contentType ? `${contentType.toUpperCase()} • ` : ''}
+                                ${category ? `${category} • ` : ''}
+                                ${skill ? `${skill} • ` : ''}
+                                ${difficulty ? `${difficulty.toUpperCase()}` : ''}
+                                ${fileSize ? ` • ${fileSize}` : ''}
+                                ${isSnapshotMode ? ' • Snapshot Data' : ' • Template Data'}
+                            </div>
+                        </div>
+                        <div class="assignment-actions">
+                            <button class="btn btn-primary btn-sm" onclick="viewTrainingContent(${contentId})" title="View Content" style="margin-right: 5px;">👁️ View</button>
+                            ${!isReadOnlyMode ? `<button class="btn btn-danger btn-sm" onclick="removeContentAssignment(${assignment.id})">Remove</button>` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            console.log('📚 Generated content HTML length:', contentHtml.join('').length);
+            contentAssignmentsList.innerHTML = contentHtml.join('');
+            console.log('📚 Content assignments displayed in DOM');
+        }
+
+        function displayAssignments() {
+            const assignmentsList = document.getElementById('assignmentsList');
+            const assignmentCount = document.getElementById('assignmentCount');
+            
+            console.log('🎯 displayAssignments called');
+            console.log('🔒 Read-only mode:', isReadOnlyMode);
+            console.log('📊 Snapshot mode:', isSnapshotMode);
+            console.log('🔍 Current assignments:', currentAssignments.length);
+            
+            assignmentCount.textContent = currentAssignments.length;
+            
+            if (currentAssignments.length === 0) {
+                assignmentsList.innerHTML = `
+                    <div class="empty-state">
+                        No drill assignments for this unit.
+                    </div>
+                `;
+                return;
+            }
+            
+            const assignmentsHtml = currentAssignments.map((assignment, index) => {
+                const drillId = assignment.drill_id;
+                const drillName = assignment.drill_name || 
+                                 assignment.content_title || 
+                                 'Unknown Drill';
+                
+                const drillCategory = assignment.drill_category || 
+                                     assignment.category_display || 
+                                     assignment.content_category || '';
+                
+                const drillSkill = assignment.drill_skill || 
+                                  assignment.skill_display || 
+                                  assignment.content_skill || '';
+                
+                const pointsPossible = assignment.points_possible || 
+                                      assignment.drill_max_score || '';
+                
+                const estimatedTime = assignment.estimated_duration_minutes || '';
+                
+                console.log(`🎯 Drill ${index + 1}: ID=${drillId}, Name=${drillName}, Mode=${isSnapshotMode ? 'Snapshot' : 'Template'}`);
+                
+                return `
+                    <div class="assignment-item">
+                        <div class="assignment-order">${assignment.content_order || (index + 1)}</div>
+                        <div class="assignment-info">
+                            <div class="assignment-name">${drillName}</div>
+                            <div class="assignment-details">
+                                ${drillCategory ? `${drillCategory} • ` : ''}
+                                ${drillSkill ? `${drillSkill} • ` : ''}
+                                ${pointsPossible ? `${pointsPossible} points` : ''}
+                                ${estimatedTime ? ` • ${estimatedTime} min` : ''}
+                                ${isSnapshotMode ? ' • Snapshot Data' : ' • Template Data'}
+                            </div>
+                        </div>
+                        <div class="assignment-actions">
+                            <button class="btn btn-primary btn-sm" onclick="viewDrill(${drillId})" title="View Drill" style="margin-right: 5px;">👁️ View</button>
+                            ${!isReadOnlyMode ? `<button class="btn btn-danger btn-sm" onclick="removeAssignment(${assignment.id})">Remove</button>` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            console.log('🎯 Generated assignments HTML length:', assignmentsHtml.join('').length);
+            assignmentsList.innerHTML = assignmentsHtml.join('');
+            console.log('🎯 Assignments displayed in DOM');
+        }
+
+        // Unit Management Functions
+        async function selectUnit(unitId, view = null) {
+            try {
+                console.log('🎯 selectUnit called with:', unitId, view);
+                
+                const unit = units.find(u => u.id === parseInt(unitId));
+                if (!unit) {
+                    showError('Unit not found');
+                    return;
+                }
+                
+                console.log('✅ Found unit:', unit.name);
+                
+                currentUnit = unit;
+                
+                if (view) {
+                    currentView = view;
+                }
+                
+                console.log('📋 Selected unit:', unit.name, '- View:', currentView);
+                console.log('📄 About to call displayUnits() to update the list');
+                
+                // Re-display units to filter the list in read-only mode
+                displayUnits();
+                
+                if (currentView === 'assignments') {
+                    await showAssignmentsView();
+                } else {
+                    showOverviewView();
+                }
+                
+            } catch (error) {
+                console.error('❌ Error selecting unit:', error);
+                showError('Failed to select unit: ' + error.message);
+            }
+        }
+
+        function showOverviewView() {
+            currentView = 'overview';
+            
+            document.getElementById('editorTitle').textContent = `Unit: ${currentUnit.name}`;
+            
+            if (!isReadOnlyMode) {
+                document.getElementById('editorActions').style.display = 'flex';
+                isEditing = true;
+            } else {
+                document.getElementById('editorActions').style.display = 'none';
+                isEditing = false;
+            }
+            
+            document.getElementById('editorContent').style.display = 'none';
+            document.getElementById('assignmentsView').style.display = 'none';
+            
+            const form = document.getElementById('editorForm');
+            form.style.display = 'block';
+            
+            document.getElementById('unitName').value = currentUnit.name || '';
+            document.getElementById('unitDescription').value = currentUnit.description || '';
+            document.getElementById('unitOrder').value = currentUnit.unit_order || 1;
+            document.getElementById('unitDuration').value = currentUnit.estimated_duration_days || '';
+            
+            updateViewButtons();
+        }
+
+        async function showAssignmentsView() {
+            currentView = 'assignments';
+            
+            document.getElementById('editorTitle').textContent = `Assignments: ${currentUnit.name}`;
+            document.getElementById('editorActions').style.display = 'none';
+            document.getElementById('editorContent').style.display = 'none';
+            document.getElementById('editorForm').style.display = 'none';
+            document.getElementById('assignmentsView').style.display = 'block';
+            
+            // Hide assignment buttons in read-only mode
+            if (isReadOnlyMode) {
+                document.getElementById('assignmentButtons').style.display = 'none';
+            }
+            
+            isEditing = false;
+            
+            await loadAssignments();
+            updateViewButtons();
+        }
+
+        function updateViewButtons() {
+            document.querySelectorAll('.unit-item').forEach(item => {
+                const overviewBtn = item.querySelector('.overview-btn');
+                const assignmentsBtn = item.querySelector('.assignments-btn');
+                
+                if (overviewBtn && assignmentsBtn) {
+                    overviewBtn.classList.toggle('active', currentView === 'overview');
+                    assignmentsBtn.classList.toggle('active', currentView === 'assignments');
+                }
+            });
+        }
+
+        // Unit Creation and Management (only for template mode)
+        async function createNewUnit() {
+            if (isReadOnlyMode || isSnapshotMode) {
+                showError('Cannot create units in read-only or snapshot mode');
+                return;
+            }
+            
+            try {
+                const maxOrder = units.length > 0 ? Math.max(...units.map(u => parseInt(u.unit_order) || 0)) : 0;
+                const nextOrder = maxOrder + 1;
+                
+                const unitData = {
+                    program_id: currentProgramId,
+                    name: `Unit ${nextOrder}`,
+                    description: '',
+                    unit_order: nextOrder,
+                    estimated_duration_days: 7
+                };
+                
+                console.log('🔨 Creating new unit:', unitData);
+                
+                const response = await apiRequest('training-program-units', 'POST', unitData);
+                
+                console.log('✅ Unit created:', response);
+                showSuccess('New unit created successfully!');
+                
+                await loadUnits();
+                
+                const newUnit = units.find(u => u.id === response.data.id);
+                if (newUnit) {
+                    await selectUnit(newUnit.id, 'overview');
+                }
+                
+            } catch (error) {
+                console.error('❌ Error creating unit:', error);
+                showError('Failed to create unit: ' + error.message);
+            }
+        }
+
+        async function saveUnit() {
+            if (!currentUnit || !isEditing || isReadOnlyMode || isSnapshotMode) {
+                showError('Cannot save in read-only or snapshot mode');
+                return;
+            }
+            
+            try {
+                const formData = {
+                    name: document.getElementById('unitName').value.trim(),
+                    description: document.getElementById('unitDescription').value.trim(),
+                    unit_order: parseInt(document.getElementById('unitOrder').value) || 1,
+                    estimated_duration_days: parseInt(document.getElementById('unitDuration').value) || null
+                };
+                
+                if (!formData.name) {
+                    showError('Unit name is required');
+                    return;
+                }
+                
+                console.log('💾 Saving unit:', currentUnit.id, formData);
+                
+                const response = await apiRequest(`training-program-units/${currentUnit.id}`, 'PUT', formData);
+                
+                console.log('✅ Unit saved:', response);
+                showSuccess('Unit saved successfully!');
+                
+                Object.assign(currentUnit, formData);
+                await loadUnits();
+                
+            } catch (error) {
+                console.error('❌ Error saving unit:', error);
+                showError('Failed to save unit: ' + error.message);
+            }
+        }
+
+        function deleteUnit() {
+            if (isReadOnlyMode || isSnapshotMode) {
+                showError('Cannot delete units in read-only or snapshot mode');
+                return;
+            }
+            
+            if (!currentUnit) {
+                showError('No unit selected for deletion');
+                return;
+            }
+            
+            if (confirm(`Are you sure you want to delete the unit "${currentUnit.name}"? This will also remove all drill assignments for this unit. This action cannot be undone.`)) {
+                performDeleteUnit();
+            }
+        }
+
+        async function performDeleteUnit() {
+            try {
+                console.log('🗑️ Deleting unit:', currentUnit.id);
+                
+                const response = await apiRequest(`training-program-units/${currentUnit.id}`, 'DELETE');
+                
+                console.log('✅ Unit deleted:', response);
+                showSuccess(`Unit "${currentUnit.name}" deleted successfully!`);
+                
+                currentUnit = null;
+                isEditing = false;
+                await loadUnits();
+                cancelEdit();
+                
+            } catch (error) {
+                console.error('❌ Error deleting unit:', error);
+                showError('Failed to delete unit: ' + error.message);
+            }
+        }
+
+        function cancelEdit() {
+            if (currentUnit) {
+                selectUnit(currentUnit.id, currentView);
+            } else {
+                document.getElementById('editorTitle').textContent = 'Select a unit to view';
+                document.getElementById('editorActions').style.display = 'none';
+                document.getElementById('editorForm').style.display = 'none';
+                document.getElementById('assignmentsView').style.display = 'none';
+                document.getElementById('editorContent').style.display = 'block';
+                isEditing = false;
+            }
+        }
+
+        // Assignment Management Functions (only available in edit mode)
+        async function removeAssignment(assignmentId) {
+            if (isReadOnlyMode || isSnapshotMode) {
+                showError('Cannot remove assignments in read-only or snapshot mode');
+                return;
+            }
+            
+            if (!assignmentId) {
+                showError('Invalid assignment ID');
+                return;
+            }
+            
+            try {
+                console.log('🗑️ Removing drill assignment:', assignmentId);
+                
+                const response = await apiRequest(`training-program-content/${assignmentId}`, 'DELETE');
+                
+                console.log('✅ Drill assignment removed:', response);
+                showSuccess('Drill assignment removed successfully!');
+                
+                await loadAssignments();
+                
+            } catch (error) {
+                console.error('❌ Error removing drill assignment:', error);
+                showError('Failed to remove drill assignment: ' + error.message);
+            }
+        }
+
+        async function removeContentAssignment(assignmentId) {
+            if (isReadOnlyMode || isSnapshotMode) {
+                showError('Cannot remove assignments in read-only or snapshot mode');
+                return;
+            }
+            
+            if (!assignmentId) {
+                showError('Invalid content assignment ID');
+                return;
+            }
+            
+            try {
+                console.log('🗑️ Removing content assignment:', assignmentId);
+                
+                const response = await apiRequest(`training-program-content/${assignmentId}`, 'DELETE');
+                
+                console.log('✅ Content assignment removed:', response);
+                showSuccess('Training content assignment removed successfully!');
+                
+                await loadAssignments();
+                
+            } catch (error) {
+                console.error('❌ Error removing content assignment:', error);
+                showError('Failed to remove content assignment: ' + error.message);
+            }
+        }
+
+        // Browser Window Functions (only available in edit mode)
+        function openDrillBrowser() {
+            if (isReadOnlyMode || isSnapshotMode) {
+                showError('Cannot add drills in read-only or snapshot mode');
+                return;
+            }
+            
+            if (!currentUnit || !currentUnit.id) {
+                showError('Please select a unit first');
+                return;
+            }
+            
+            console.log('🎯 Opening drill browser for unit:', currentUnit.id);
+            
+            const url = `drill-browser.html?unit_id=${currentUnit.id}&program_id=${currentProgramId}&v=${VERSION}&cb=${CACHE_BUSTER}`;
+            const popup = window.open(url, 'drillBrowser', 'width=1400,height=900,scrollbars=yes,resizable=yes');
+            
+            if (!popup) {
+                showError('Popup blocked! Please allow popups for this site and try again.');
+                return;
+            }
+            
+            popup.focus();
+        }
+
+        function openContentBrowser() {
+            if (isReadOnlyMode || isSnapshotMode) {
+                showError('Cannot add content in read-only or snapshot mode');
+                return;
+            }
+            
+            if (!currentUnit || !currentUnit.id) {
+                showError('Please select a unit first');
+                return;
+            }
+            
+            console.log('📚 Opening content browser for unit:', currentUnit.id);
+            
+            const url = `training-content-browser.html?unit_id=${currentUnit.id}&program_id=${currentProgramId}&v=${VERSION}&cb=${CACHE_BUSTER}`;
+            const popup = window.open(url, 'contentBrowser', 'width=1400,height=900,scrollbars=yes,resizable=yes');
+            
+            if (!popup) {
+                showError('Popup blocked! Please allow popups for this site and try again.');
+                return;
+            }
+            
+            popup.focus();
+        }
+
+        // View Functions
+        function viewDrill(drillId) {
+            console.log('👁️ Opening drill view for drill ID:', drillId);
+            const drillDisplayUrl = `drill-display.html?drill_id=${drillId}`;
+            const popup = window.open(drillDisplayUrl, `drillView_${drillId}`, 'width=1000,height=800,scrollbars=yes,resizable=yes');
+            
+            if (!popup) {
+                showError('Popup blocked! Please allow popups for this site and try again.');
+                return;
+            }
+            
+            popup.focus();
+        }
+
+        function viewTrainingContent(contentId) {
+            console.log('👁️ Opening training content view for content ID:', contentId);
+            const contentDisplayUrl = `training-content-display.html?content_id=${contentId}`;
+            const popup = window.open(contentDisplayUrl, `contentView_${contentId}`, 'width=1000,height=800,scrollbars=yes,resizable=yes');
+            
+            if (!popup) {
+                showError('Popup blocked! Please allow popups for this site and try again.');
+                return;
+            }
+            
+            popup.focus();
+        }
+
+        // Utility Functions
+        function setSortOrder(order) {
+            sortOrder = order;
+            
+            document.getElementById('sortByOrder').classList.toggle('active', order === 'order');
+            document.getElementById('sortByTitle').classList.toggle('active', order === 'title');
+            
+            filteredUnits = sortUnits(units);
+            displayUnits();
+        }
+
+        async function forceRefresh() {
+            try {
+                showSuccess('Refreshing data...');
+                
+                currentUnit = null;
+                currentView = 'overview';
+                isEditing = false;
+                
+                await loadAllData();
+                cancelEdit();
+                
+                showSuccess('Data refreshed successfully!');
+                
+            } catch (error) {
+                console.error('❌ Error refreshing data:', error);
+                showError('Failed to refresh data: ' + error.message);
+            }
+        }
+
+        // Message Functions
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            const successDiv = document.getElementById('successMessage');
+            
+            successDiv.style.display = 'none';
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            
+            console.error('❌ Error:', message);
+            
+            setTimeout(() => {
+                errorDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        function showSuccess(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            const successDiv = document.getElementById('successMessage');
+            
+            errorDiv.style.display = 'none';
+            successDiv.textContent = message;
+            successDiv.style.display = 'block';
+            
+            console.log('✅ Success:', message);
+            
+            setTimeout(() => {
+                successDiv.style.display = 'none';
+            }, 3000);
+        }
+
+        // Message Handler for Browser Windows
+        window.addEventListener('message', async (event) => {
+            if (isReadOnlyMode || isSnapshotMode) return; // Ignore messages in read-only/snapshot mode
+            
+            console.log('📨 Received message from browser:', event.data);
+            
+            if (event.data.type === 'drills_selected') {
+                await handleDrillsSelected(event.data.drillIds, event.data.unitId);
+            } else if (event.data.type === 'content_selected') {
+                await handleContentSelected(event.data.contentIds, event.data.unitId);
+            }
+        });
+
+        async function handleDrillsSelected(drillIds, unitId) {
+            if (isReadOnlyMode || isSnapshotMode) return;
+            
+            if (!drillIds || drillIds.length === 0) {
+                showError('No drills selected');
+                return;
+            }
+            
+            if (!currentUnit || currentUnit.id != unitId) {
+                showError('Unit mismatch - please refresh and try again');
+                return;
+            }
+            
+            try {
+                console.log('➕ Adding selected drills:', drillIds);
+                
+                const response = await apiRequest('training-program-content-batch', 'POST', {
+                    unit_id: currentUnit.id,
+                    drill_ids: drillIds,
+                    created_by: 1
+                });
+                
+                console.log('✅ Drills added successfully:', response);
+                showSuccess(`${response.data.created_items.length} drill assignments added successfully!`);
+                
+                await loadAssignments();
+                
+            } catch (error) {
+                console.error('❌ Error adding drills:', error);
+                showError('Failed to add drill assignments: ' + error.message);
+            }
+        }
+
+        async function handleContentSelected(contentIds, unitId) {
+            if (isReadOnlyMode || isSnapshotMode) return;
+            
+            if (!contentIds || contentIds.length === 0) {
+                showError('No content selected');
+                return;
+            }
+            
+            if (!currentUnit || currentUnit.id != unitId) {
+                showError('Unit mismatch - please refresh and try again');
+                return;
+            }
+            
+            try {
+                console.log('➕ Adding selected content:', contentIds);
+                
+                const response = await apiRequest('training-program-content-batch', 'POST', {
+                    unit_id: currentUnit.id,
+                    content_ids: contentIds,
+                    content_type: 'training_content',
+                    created_by: 1
+                });
+                
+                console.log('✅ Content added successfully:', response);
+                showSuccess(`${response.data.created_items.length} training content items added successfully!`);
+                
+                await loadAssignments();
+                
+            } catch (error) {
+                console.error('❌ Error adding content:', error);
+                showError('Failed to add training content assignments: ' + error.message);
+            }
+        }
+
+        // Initialization
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('🚀 Training Units Page v4.3-SNAPSHOT loaded, initializing...');
+            console.log(`🎯 VERSION: ${VERSION}`);
+            console.log(`🕐 BUILD: ${BUILD_TIMESTAMP}`);
+            console.log(`💾 CACHE BUSTER: ${CACHE_BUSTER}`);
+            
+            try {
+                if (!initializeSession()) {
+                    return;
+                }
+                
+                await loadAllData();
+                console.log('✅ Initialization complete');
+                console.log(`🎉 SUCCESSFULLY RUNNING VERSION: ${VERSION}`);
+                console.log(`🔒 READ-ONLY MODE: ${isReadOnlyMode}`);
+                console.log(`📊 SNAPSHOT MODE: ${isSnapshotMode}`);
+                
+            } catch (error) {
+                console.error('❌ Initialization failed:', error);
+                showError('Failed to initialize: ' + error.message);
+            }
+        });
+
+        console.log('🎯 Training Units Interface v4.3-SNAPSHOT-SUPPORT Ready');
+        console.log(`📡 API URL: ${API_BASE_URL}`);
+        console.log(`🎯 VERSION: ${VERSION}`);
+        console.log(`🕐 BUILD: ${BUILD_TIMESTAMP}`);
+        console.log(`💾 CACHE BUSTER: ${CACHE_BUSTER}`);
+        console.log('📊 SNAPSHOT MODE SUPPORT: ENABLED');
+        console.log('📋 TEMPLATE MODE SUPPORT: ENABLED');
+    </script>
+</body>
+</html>

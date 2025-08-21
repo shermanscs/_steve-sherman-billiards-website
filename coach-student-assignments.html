@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coach-Student Assignments - Steve Sherman Billiards</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .logo {
+            width: 60px;
+            height: 60px;
+            margin-right: 15px;
+        }
+
+        .brand-text {
+            text-align: left;
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .brand-text h2 {
+            font-size: 1.1em;
+            margin: 0;
+            color: #333;
+            font-weight: 600;
+            line-height: 1.2;
+        }
+
+        .page-title {
+            font-size: 2.5em;
+            margin: 20px 0 10px 0;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-align: center;
+        }
+
+        .action-bar {
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .stats-info {
+            color: #333;
+            font-weight: 600;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-1px);
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+            transform: translateY(-1px);
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+
+        .btn-warning:hover {
+            background: #e0a800;
+            transform: translateY(-1px);
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+            transform: translateY(-1px);
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+            min-height: 500px;
+        }
+
+        .coaches-list {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            overflow-y: auto;
+            max-height: 700px;
+        }
+
+        .coaches-list h3 {
+            margin-bottom: 20px;
+            color: #333;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .coach-item {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+        }
+
+        .coach-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+            border-color: #667eea;
+        }
+
+        .coach-item.selected {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .coach-name {
+            font-weight: 600;
+            font-size: 1.1em;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .coach-email {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .coach-stats {
+            font-size: 0.8em;
+            color: #28a745;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .coach-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 12px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .assignment-panel {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .panel-title {
+            color: #333;
+            font-size: 1.3em;
+            flex: 1;
+        }
+
+        .students-section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .students-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .student-card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            border: 1px solid #e0e0e0;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .student-card:hover {
+            background: #f8f9fa;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+
+        .student-info {
+            margin-bottom: 10px;
+        }
+
+        .student-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+            font-size: 1em;
+        }
+
+        .student-email {
+            font-size: 0.85em;
+            color: #666;
+        }
+
+        .student-actions {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+            padding: 40px 20px;
+        }
+
+        .loading {
+            text-align: center;
+            color: #667eea;
+            font-weight: 600;
+            padding: 20px;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+            display: none;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+            display: none;
+        }
+
+        /* Modal Styles */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #eee;
+        }
+
+        .modal-title {
+            color: #333;
+            margin: 0;
+            font-size: 1.5em;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-btn:hover {
+            color: #333;
+        }
+
+        .available-students {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            background: #f9f9f9;
+        }
+
+        .available-student {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            margin-bottom: 8px;
+            background: white;
+            border-radius: 6px;
+            border: 1px solid #eee;
+            transition: all 0.3s ease;
+        }
+
+        .available-student:hover {
+            background: #f0f8ff;
+            border-color: #667eea;
+        }
+
+        .available-student input {
+            margin-right: 12px;
+            transform: scale(1.3);
+        }
+
+        .available-student label {
+            flex: 1;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+
+        .selection-actions {
+            margin-bottom: 15px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .selection-count {
+            margin-left: 15px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                padding: 20px;
+            }
+
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .coaches-list {
+                max-height: 300px;
+            }
+
+            .header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .brand-text {
+                text-align: center;
+                min-width: auto;
+            }
+
+            .action-bar {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .panel-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .students-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <img src="images/logo.png" alt="Steve Sherman Billiards Logo" class="logo">
+            <div class="brand-text">
+                <h2>Steve Sherman Billiards Training System</h2>
+            </div>
+        </div>
+        <h1 class="page-title">Coach-Student Assignment Management</h1>
+
+        <!-- Action Bar -->
+        <div class="action-bar">
+            <div class="stats-info">
+                <span>Total Coaches: <strong id="totalCoaches">--</strong></span> | 
+                <span>Total Students: <strong id="totalStudents">--</strong></span> | 
+                <span>Unassigned Students: <strong id="unassignedStudents">--</strong></span>
+            </div>
+            <div class="action-buttons">
+                <button class="btn btn-secondary" onclick="refreshData()">🔄 Refresh</button>
+                <button class="btn btn-warning" onclick="viewUnassignedStudents()">👤 View Unassigned</button>
+                <button class="btn btn-secondary" onclick="window.close()">← Back to Admin</button>
+            </div>
+        </div>
+
+        <!-- Messages -->
+        <div id="errorMessage" class="error-message"></div>
+        <div id="successMessage" class="success-message"></div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Coaches List -->
+            <div class="coaches-list">
+                <h3>Coaches</h3>
+                <div id="coachesContainer">
+                    <div class="loading">Loading coaches...</div>
+                </div>
+            </div>
+
+            <!-- Assignment Panel -->
+            <div class="assignment-panel">
+                <div class="panel-header">
+                    <h3 class="panel-title" id="panelTitle">Select a coach to view their students</h3>
+                </div>
+                
+                <div id="assignmentContent">
+                    <div class="empty-state">
+                        Click on a coach from the list to view and manage their student assignments.
+                    </div>
+                </div>
+
+                <!-- Students Display -->
+                <div id="studentsDisplay" style="display: none;">
+                    <div class="students-section">
+                        <div class="section-title">
+                            Assigned Students (<span id="assignedStudentCount">0</span>)
+                        </div>
+                        <div class="students-grid" id="assignedStudentsGrid">
+                            <div class="empty-state">No students currently assigned to this coach.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const API_BASE_URL = 'https://steveshermanbilliards.com/drill-api.php';
+
+        // State management
+        let coaches = [];
+        let students = [];
+        let currentCoach = null;
+
+        // API Helper Function
+        async function apiRequest(endpoint, method = 'GET', data = null) {
+            try {
+                const options = {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Cache-Control': 'no-cache'
+                    }
+                };
+                
+                if (data) {
+                    options.body = JSON.stringify(data);
+                }
+                
+                console.log('API Request:', method, `${API_BASE_URL}/${endpoint}`, data);
+                
+                const response = await fetch(`${API_BASE_URL}/${endpoint}`, options);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const result = await response.json();
+                console.log('API Response:', result);
+                
+                if (!result.success) {
+                    throw new Error(result.message || 'API request failed');
+                }
+                
+                return result;
+            } catch (error) {
+                console.error('API Error:', error);
+                throw error;
+            }
+        }
+
+        // Data Loading Functions
+        async function loadAllData() {
+            try {
+                await loadCoaches();
+                await loadStudents();
+                updateStats();
+            } catch (error) {
+                console.error('Error loading data:', error);
+                showError('Failed to load data: ' + error.message);
+            }
+        }
+
+        async function loadCoaches() {
+            try {
+                const response = await apiRequest('users');
+                const allUsers = response.data || [];
+                
+                coaches = allUsers.filter(user => user.user_type === 'coach' && user.is_active == 1);
+                
+                displayCoaches();
+                console.log('Loaded coaches:', coaches.length);
+            } catch (error) {
+                console.error('Error loading coaches:', error);
+                throw error;
+            }
+        }
+
+        async function loadStudents() {
+            try {
+                const response = await apiRequest('users');
+                const allUsers = response.data || [];
+                
+                students = allUsers.filter(user => user.user_type === 'player' && user.is_active == 1);
+                
+                // Update coach student counts
+                coaches.forEach(coach => {
+                    coach.student_count = students.filter(s => s.coach_id == coach.id).length;
+                });
+                
+                displayCoaches(); // Refresh coach display with updated counts
+                
+                // If a coach is currently selected, update their student display
+                if (currentCoach) {
+                    displayCoachStudents();
+                }
+                
+                console.log('Loaded students:', students.length);
+            } catch (error) {
+                console.error('Error loading students:', error);
+                throw error;
+            }
+        }
+
+        // Display Functions
+        function displayCoaches() {
+            const container = document.getElementById('coachesContainer');
+            
+            if (coaches.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        No coaches found. Please add coaches to the system first.
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = coaches.map(coach => `
+                <div class="coach-item ${currentCoach && currentCoach.id === coach.id ? 'selected' : ''}" 
+                     onclick="selectCoach(${coach.id})">
+                    <div class="coach-name">${coach.display_name}</div>
+                    <div class="coach-email">${coach.email}</div>
+                    <div class="coach-stats">${coach.student_count || 0} students assigned</div>
+                    <div class="coach-actions">
+                        <button class="btn-small btn-success" onclick="openAssignStudentsModal(${coach.id}, event)" title="Assign students to this coach">
+                            + Assign Students
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function selectCoach(coachId) {
+            // Handle string/number ID comparison
+            currentCoach = coaches.find(c => c.id == coachId || c.id === String(coachId) || c.id === Number(coachId));
+            if (!currentCoach) {
+                console.error('Coach not found in selectCoach:', coachId);
+                return;
+            }
+            
+            console.log('Selected coach:', currentCoach.display_name);
+            
+            // Update UI
+            displayCoaches(); // Refresh to show selected state
+            
+            document.getElementById('panelTitle').textContent = `Students assigned to: ${currentCoach.display_name}`;
+            document.getElementById('assignmentContent').style.display = 'none';
+            document.getElementById('studentsDisplay').style.display = 'block';
+            
+            displayCoachStudents();
+        }
+
+        function displayCoachStudents() {
+            if (!currentCoach) return;
+            
+            const assignedStudents = students.filter(s => s.coach_id == currentCoach.id);
+            
+            // Update count
+            document.getElementById('assignedStudentCount').textContent = assignedStudents.length;
+            
+            // Display students
+            const studentsGrid = document.getElementById('assignedStudentsGrid');
+            if (assignedStudents.length === 0) {
+                studentsGrid.innerHTML = '<div class="empty-state">No students currently assigned to this coach.</div>';
+            } else {
+                studentsGrid.innerHTML = assignedStudents.map(student => `
+                    <div class="student-card">
+                        <div class="student-info">
+                            <div class="student-name">${student.display_name}</div>
+                            <div class="student-email">${student.email}</div>
+                        </div>
+                        <div class="student-actions">
+                            <button class="btn-small btn-danger" onclick="unassignStudent(${student.id})" title="Remove from this coach">
+                                Unassign
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // Assignment Functions
+        function openAssignStudentsModal(coachId, event) {
+            // Stop the event from bubbling up to the coach card click
+            if (event) {
+                event.stopPropagation();
+            }
+            
+            console.log('Opening assignment modal for coach ID:', coachId);
+            console.log('Available coaches:', coaches.map(c => ({id: c.id, name: c.display_name, type: typeof c.id})));
+            
+            // Convert coachId to both string and number for comparison
+            const coach = coaches.find(c => c.id == coachId || c.id === String(coachId) || c.id === Number(coachId));
+            if (!coach) {
+                console.error('Coach not found:', coachId);
+                console.error('Available coach IDs:', coaches.map(c => c.id));
+                showError('Coach not found');
+                return;
+            }
+            
+            console.log('Found coach:', coach.display_name);
+            
+            const availableStudents = students.filter(s => {
+                return !s.coach_id || 
+                       s.coach_id === null || 
+                       s.coach_id === 'null' || 
+                       s.coach_id === '' || 
+                       s.coach_id === '0' || 
+                       s.coach_id === 0;
+            });
+            
+            console.log('Available students:', availableStudents.length);
+            
+            if (availableStudents.length === 0) {
+                showError('No unassigned students available. All students are currently assigned to coaches.');
+                return;
+            }
+            
+            // Remove any existing modal first
+            const existingModal = document.getElementById('assignModal');
+            if (existingModal) {
+                existingModal.remove();
+            }
+            
+            const modalHTML = `
+                <div id="assignModal" class="modal">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3 class="modal-title">Assign Students to ${coach.display_name}</h3>
+                            <button class="close-btn" onclick="closeAssignModal()">&times;</button>
+                        </div>
+                        
+                        <div class="selection-actions">
+                            <button class="btn-small btn-success" onclick="selectAllAvailable()">Select All</button>
+                            <button class="btn-small btn-secondary" onclick="clearAllSelections()">Clear All</button>
+                            <span class="selection-count">
+                                Selected: <strong id="selectedCount">0</strong> of ${availableStudents.length} students
+                            </span>
+                        </div>
+                        
+                        <div class="available-students">
+                            ${availableStudents.map(student => `
+                                <div class="available-student">
+                                    <input type="checkbox" 
+                                           value="${student.id}" 
+                                           id="student_${student.id}"
+                                           onchange="updateSelectedCount()">
+                                    <label for="student_${student.id}">
+                                        <strong>${student.display_name}</strong><br>
+                                        <small style="color: #666;">${student.email}</small>
+                                    </label>
+                                </div>
+                            `).join('')}
+                        </div>
+                        
+                        <div class="modal-actions">
+                            <button class="btn btn-secondary" onclick="closeAssignModal()">Cancel</button>
+                            <button class="btn btn-primary" onclick="assignSelectedStudents(${coachId})">
+                                Assign Students
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            console.log('Adding modal to page');
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+            console.log('Modal should now be visible');
+        }
+
+        function selectAllAvailable() {
+            const checkboxes = document.querySelectorAll('#assignModal input[type="checkbox"]');
+            checkboxes.forEach(cb => cb.checked = true);
+            updateSelectedCount();
+        }
+
+        function clearAllSelections() {
+            const checkboxes = document.querySelectorAll('#assignModal input[type="checkbox"]');
+            checkboxes.forEach(cb => cb.checked = false);
+            updateSelectedCount();
+        }
+
+        function updateSelectedCount() {
+            const checkedBoxes = document.querySelectorAll('#assignModal input[type="checkbox"]:checked');
+            document.getElementById('selectedCount').textContent = checkedBoxes.length;
+        }
+
+        function closeAssignModal() {
+            const modal = document.getElementById('assignModal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+
+        async function assignSelectedStudents(coachId) {
+            console.log('Assigning students to coach ID:', coachId);
+            
+            const checkboxes = document.querySelectorAll('#assignModal input[type="checkbox"]:checked');
+            const selectedStudentIds = Array.from(checkboxes).map(cb => parseInt(cb.value));
+            
+            console.log('Selected student IDs:', selectedStudentIds);
+            
+            if (selectedStudentIds.length === 0) {
+                showError('Please select at least one student to assign.');
+                return;
+            }
+            
+            // Handle string/number ID comparison for coach
+            const coach = coaches.find(c => c.id == coachId || c.id === String(coachId) || c.id === Number(coachId));
+            if (!coach) {
+                console.error('Coach not found in assignSelectedStudents:', coachId);
+                console.error('Available coach IDs:', coaches.map(c => c.id));
+                showError('Coach not found');
+                return;
+            }
+            
+            console.log('Found coach:', coach.display_name);
+            
+            const confirmMessage = `Assign ${selectedStudentIds.length} student(s) to ${coach.display_name}?`;
+            
+            if (!confirm(confirmMessage)) {
+                return;
+            }
+            
+            try {
+                console.log('Calling API to assign students to coach:', coachId, selectedStudentIds);
+                
+                const response = await apiRequest('coach-student-assignments', 'POST', {
+                    coach_id: parseInt(coachId),
+                    student_ids: selectedStudentIds
+                });
+                
+                console.log('Assign API response:', response);
+                
+                showSuccess(`Successfully assigned ${selectedStudentIds.length} students to ${coach.display_name}`);
+                
+                // Close modal and refresh data
+                closeAssignModal();
+                await loadStudents();
+                updateStats();
+                
+            } catch (error) {
+                console.error('Error assigning students:', error);
+                showError('Failed to assign students: ' + error.message);
+            }
+        }
+
+        async function unassignStudent(studentId) {
+            console.log('Unassigning student ID:', studentId, 'from coach:', currentCoach?.display_name);
+            
+            // Handle string/number ID comparison
+            const student = students.find(s => s.id == studentId || s.id === String(studentId) || s.id === Number(studentId));
+            if (!student) {
+                console.error('Student not found:', studentId);
+                console.error('Available student IDs:', students.map(s => s.id));
+                showError('Student not found');
+                return;
+            }
+            
+            if (!currentCoach) {
+                console.error('No current coach selected');
+                showError('No coach selected');
+                return;
+            }
+            
+            console.log('Found student:', student.display_name);
+            
+            if (!confirm(`Remove ${student.display_name} from coach ${currentCoach.display_name}?`)) {
+                return;
+            }
+            
+            try {
+                console.log('Calling API to unassign student:', studentId);
+                
+                const response = await apiRequest('coach-student-assignments', 'POST', {
+                    coach_id: null,
+                    student_ids: [parseInt(studentId)]
+                });
+                
+                console.log('Unassign API response:', response);
+                
+                showSuccess(`${student.display_name} has been unassigned from ${currentCoach.display_name}`);
+                
+                // Refresh data
+                await loadStudents();
+                updateStats();
+                
+            } catch (error) {
+                console.error('Error unassigning student:', error);
+                showError('Failed to unassign student: ' + error.message);
+            }
+        }
+
+        // Utility Functions
+        function updateStats() {
+            const unassigned = students.filter(s => {
+                return !s.coach_id || 
+                       s.coach_id === null || 
+                       s.coach_id === 'null' || 
+                       s.coach_id === '' || 
+                       s.coach_id === '0' || 
+                       s.coach_id === 0;
+            });
+            
+            document.getElementById('totalCoaches').textContent = coaches.length;
+            document.getElementById('totalStudents').textContent = students.length;
+            document.getElementById('unassignedStudents').textContent = unassigned.length;
+        }
+
+        function viewUnassignedStudents() {
+            const unassigned = students.filter(s => {
+                return !s.coach_id || 
+                       s.coach_id === null || 
+                       s.coach_id === 'null' || 
+                       s.coach_id === '' || 
+                       s.coach_id === '0' || 
+                       s.coach_id === 0;
+            });
+            
+            if (unassigned.length === 0) {
+                showSuccess('All students are currently assigned to coaches!');
+                return;
+            }
+            
+            const names = unassigned.map(s => s.display_name).join('\n• ');
+            alert(`Unassigned Students (${unassigned.length}):\n\n• ${names}\n\nTo assign these students, click the "+ Assign Students" button on any coach card.`);
+        }
+
+        async function refreshData() {
+            try {
+                showSuccess('Refreshing data...');
+                
+                currentCoach = null;
+                
+                await loadAllData();
+                
+                // Reset UI
+                document.getElementById('panelTitle').textContent = 'Select a coach to view their students';
+                document.getElementById('assignmentContent').style.display = 'block';
+                document.getElementById('studentsDisplay').style.display = 'none';
+                
+                showSuccess('Data refreshed successfully!');
+                
+            } catch (error) {
+                console.error('Error refreshing data:', error);
+                showError('Failed to refresh data: ' + error.message);
+            }
+        }
+
+        // Message Functions
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            const successDiv = document.getElementById('successMessage');
+            
+            successDiv.style.display = 'none';
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                errorDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        function showSuccess(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            const successDiv = document.getElementById('successMessage');
+            
+            errorDiv.style.display = 'none';
+            successDiv.textContent = message;
+            successDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                successDiv.style.display = 'none';
+            }, 3000);
+        }
+
+        // Initialization
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('Coach-Student Assignment Management loaded');
+            
+            try {
+                await loadAllData();
+                console.log('Initialization complete');
+                
+            } catch (error) {
+                console.error('Initialization failed:', error);
+                showError('Failed to initialize: ' + error.message);
+            }
+        });
+
+        console.log('Coach-Student Assignment Management v3.0 Ready');
+    </script>
+</body>
+</html>

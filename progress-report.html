@@ -1,0 +1,1220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Progress Report - Steve Sherman Billiards</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header-top {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            width: 60px;
+            height: 60px;
+            margin-right: 15px;
+        }
+
+        .brand-text {
+            text-align: left;
+        }
+
+        .brand-text h2 {
+            font-size: 1.1em;
+            margin: 0;
+            color: #333;
+            font-weight: 600;
+            line-height: 1.2;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .user-info {
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .user-details {
+            color: #333;
+            font-weight: 600;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .back-btn {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: #5a6268;
+            transform: translateY(-1px);
+        }
+
+        .logout-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: #c82333;
+            transform: translateY(-1px);
+        }
+
+        .error-message {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            display: none;
+        }
+
+        .loading-message {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            text-align: center;
+            display: none;
+        }
+
+        .filters-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .filters-title {
+            font-size: 1.5em;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .filter-label {
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 8px;
+            font-size: 1em;
+        }
+
+        .filter-select,
+        .filter-input {
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .filter-select:focus,
+        .filter-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .view-toggle {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .toggle-btn {
+            padding: 10px 20px;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            background: white;
+            color: #667eea;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-btn.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .toggle-btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .apply-filters-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .apply-filters-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .results-section {
+            display: none;
+        }
+
+        .results-header {
+            background: rgba(40, 167, 69, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .results-title {
+            color: #155724;
+            font-size: 1.3em;
+            margin-bottom: 10px;
+        }
+
+        .results-summary {
+            color: #666;
+            font-size: 1em;
+        }
+
+        /* LIST VIEW STYLES */
+        .list-view {
+            display: none;
+        }
+
+        .scores-table {
+            width: 100%;
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .scores-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .scores-table th {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px;
+            font-weight: 600;
+            text-align: left;
+        }
+
+        .scores-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .scores-table tr:hover {
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .score-value {
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+
+        .score-excellent {
+            color: #28a745;
+        }
+
+        .score-good {
+            color: #ffc107;
+        }
+
+        .score-needs-work {
+            color: #dc3545;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .pagination-btn {
+            padding: 8px 12px;
+            border: 1px solid #667eea;
+            border-radius: 6px;
+            background: white;
+            color: #667eea;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .pagination-btn:hover:not(:disabled) {
+            background: #667eea;
+            color: white;
+        }
+
+        .pagination-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .pagination-info {
+            color: #666;
+            font-weight: 600;
+        }
+
+        /* CHART VIEW STYLES */
+        .chart-view {
+            display: none;
+        }
+
+        .chart-container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            position: relative;
+            height: 500px;
+        }
+
+        .chart-options {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .chart-option-btn {
+            padding: 8px 16px;
+            border: 1px solid #667eea;
+            border-radius: 6px;
+            background: white;
+            color: #667eea;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .chart-option-btn.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .no-data-message {
+            text-align: center;
+            color: #666;
+            font-size: 1.2em;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                width: calc(100% - 20px);
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .filters-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .user-info {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
+
+            .scores-table {
+                font-size: 14px;
+            }
+
+            .scores-table th,
+            .scores-table td {
+                padding: 8px;
+            }
+
+            .chart-container {
+                height: 400px;
+                padding: 20px;
+            }
+
+            .view-toggle {
+                flex-direction: column;
+            }
+
+            .toggle-btn {
+                width: 100%;
+            }
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-top">
+                <img src="images/logo.png" alt="Steve Sherman Billiards Logo" class="logo">
+                <div class="brand-text">
+                    <h2>Steve Sherman Billiards Training System</h2>
+                </div>
+            </div>
+            <h1>Progress Report</h1>
+            <p>Track your improvement over time</p>
+        </div>
+
+        <div id="errorMessage" class="error-message"></div>
+        <div id="loadingMessage" class="loading-message">Loading data...</div>
+
+        <div class="user-info">
+            <div class="user-details">
+                <span>Progress for: <strong id="currentStudent"></strong></span><br>
+                <small>Report generated: <span id="reportTime"></span> | Version 1.0</small>
+            </div>
+            <div class="action-buttons">
+                <button class="back-btn" onclick="goBackToReportPortal()">Back to Reports</button>
+                <button class="logout-btn" onclick="handleLogout()">Logout</button>
+            </div>
+        </div>
+
+        <!-- FILTERS SECTION -->
+        <div class="filters-section">
+            <h3 class="filters-title">Filter Your Progress Data</h3>
+            
+            <div class="filters-grid">
+                <div class="filter-group">
+                    <label for="drillSelect" class="filter-label">Select Drill:</label>
+                    <select id="drillSelect" class="filter-select">
+                        <option value="">Loading drills...</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="startDate" class="filter-label">Start Date:</label>
+                    <input type="date" id="startDate" class="filter-input">
+                </div>
+
+                <div class="filter-group">
+                    <label for="endDate" class="filter-label">End Date:</label>
+                    <input type="date" id="endDate" class="filter-input">
+                </div>
+            </div>
+
+            <div class="view-toggle">
+                <button class="toggle-btn active" id="listViewBtn" onclick="setViewMode('list')">
+                    📋 List View
+                </button>
+                <button class="toggle-btn" id="chartViewBtn" onclick="setViewMode('chart')">
+                    📊 Chart View
+                </button>
+            </div>
+
+            <button class="apply-filters-btn" onclick="applyFilters()">
+                Generate Progress Report
+            </button>
+        </div>
+
+        <!-- RESULTS SECTION -->
+        <div id="resultsSection" class="results-section">
+            <div class="results-header">
+                <h3 class="results-title" id="resultsTitle">Progress Results</h3>
+                <p class="results-summary" id="resultsSummary">Your progress data for the selected criteria</p>
+            </div>
+
+            <!-- LIST VIEW -->
+            <div id="listView" class="list-view">
+                <div class="scores-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Drill</th>
+                                <th>Score</th>
+                                <th>Percentage</th>
+                                <th>Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody id="scoresTableBody">
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="pagination">
+                    <button class="pagination-btn" id="prevPageBtn" onclick="changePage(-1)" disabled>
+                        ← Previous
+                    </button>
+                    <span class="pagination-info" id="paginationInfo">Page 1 of 1</span>
+                    <button class="pagination-btn" id="nextPageBtn" onclick="changePage(1)" disabled>
+                        Next →
+                    </button>
+                </div>
+            </div>
+
+            <!-- CHART VIEW -->
+            <div id="chartView" class="chart-view">
+                <div class="chart-options">
+                    <button class="chart-option-btn active" id="scoreChartBtn" onclick="setChartType('score')">
+                        Score Trend
+                    </button>
+                    <button class="chart-option-btn" id="percentageChartBtn" onclick="setChartType('percentage')">
+                        Percentage Trend
+                    </button>
+                </div>
+                <div class="chart-container">
+                    <canvas id="progressChart"></canvas>
+                </div>
+            </div>
+
+            <!-- NO DATA MESSAGE -->
+            <div id="noDataMessage" class="no-data-message" style="display: none;">
+                <h3>No Data Found</h3>
+                <p>No scores found for the selected drill and date range. Try adjusting your filters or practice more drills!</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const API_BASE_URL = 'https://steveshermanbilliards.com/drill-api.php';
+
+        // Global variables
+        let currentSession = null;
+        let allScores = [];
+        let filteredScores = [];
+        let currentPage = 1;
+        let itemsPerPage = 20;
+        let currentViewMode = 'list';
+        let currentChartType = 'score';
+        let progressChart = null;
+
+        // ========================================
+        // API HELPER FUNCTIONS
+        // ========================================
+
+        async function apiRequest(endpoint, method = 'GET', data = null) {
+            try {
+                const options = {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                };
+                
+                if (data) {
+                    options.body = JSON.stringify(data);
+                }
+                
+                console.log('🌐 API Request:', method, `${API_BASE_URL}/${endpoint}`, data);
+                
+                const response = await fetch(`${API_BASE_URL}/${endpoint}`, options);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const result = await response.json();
+                
+                if (!result.success) {
+                    throw new Error(result.message || 'API request failed');
+                }
+                
+                return result;
+            } catch (error) {
+                console.error('❌ API Error:', error);
+                throw error;
+            }
+        }
+
+        // ========================================
+        // SESSION MANAGEMENT
+        // ========================================
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            setTimeout(() => {
+                errorDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        function showLoading(show = true) {
+            document.getElementById('loadingMessage').style.display = show ? 'block' : 'none';
+        }
+
+        function initializeSession() {
+            console.log('🚀 Progress Report Initializing - Version 1.0');
+            
+            // Try to get session from URL parameters first
+            const urlParams = new URLSearchParams(window.location.search);
+            const userParam = urlParams.get('user');
+            
+            if (userParam) {
+                try {
+                    const userData = JSON.parse(atob(userParam));
+                    console.log('👤 User data from URL:', userData);
+                    
+                    currentSession = {
+                        userId: userData.id,
+                        email: userData.email,
+                        name: userData.name,
+                        type: userData.type,
+                        loginTime: new Date(),
+                        fromReportPortal: true
+                    };
+                    
+                    initializeProgressReport();
+                    return;
+                } catch (e) {
+                    console.error('❌ Error parsing URL user data:', e);
+                }
+            }
+            
+            // Fallback to session storage
+            try {
+                const savedSession = sessionStorage.getItem('reportSession') || 
+                                   sessionStorage.getItem('studentSession');
+                
+                if (savedSession) {
+                    const session = JSON.parse(savedSession);
+                    console.log('📄 Retrieved session:', session);
+                    
+                    if (session.userId && session.email) {
+                        currentSession = session;
+                        initializeProgressReport();
+                        return;
+                    }
+                }
+            } catch (e) {
+                console.log('Session storage not available');
+            }
+            
+            // No valid session found
+            showError('No valid session found. Please login through the Student Portal.');
+            setTimeout(() => {
+                window.location.href = 'student-portal.html';
+            }, 3000);
+        }
+
+        function initializeProgressReport() {
+            console.log('📈 Initializing Progress Report');
+            
+            // Update UI with user info
+            const studentNameElement = document.getElementById('currentStudent');
+            const reportTimeElement = document.getElementById('reportTime');
+            
+            if (studentNameElement) {
+                const displayName = currentSession && currentSession.name ? currentSession.name : 'Student';
+                studentNameElement.textContent = displayName;
+            }
+            
+            if (reportTimeElement) {
+                const reportTime = new Date().toLocaleString();
+                reportTimeElement.textContent = reportTime;
+            }
+            
+            // Set default date range (last month)
+            setDefaultDateRange();
+            
+            // Load user data
+            loadUserData();
+            
+            console.log('✅ Progress Report initialized successfully');
+        }
+
+        function setDefaultDateRange() {
+            const today = new Date();
+            const oneMonthAgo = new Date();
+            oneMonthAgo.setMonth(today.getMonth() - 1);
+            
+            document.getElementById('endDate').value = today.toISOString().split('T')[0];
+            document.getElementById('startDate').value = oneMonthAgo.toISOString().split('T')[0];
+        }
+
+        // ========================================
+        // DATA LOADING
+        // ========================================
+
+        async function loadUserData() {
+            if (!currentSession || !currentSession.userId) {
+                showError('No valid user session');
+                return;
+            }
+
+            showLoading(true);
+
+            try {
+                console.log('📊 Loading user data for progress report');
+                
+                // Load user's scores
+                const scoresResponse = await apiRequest(`scores?user_id=${currentSession.userId}&limit=1000`);
+                allScores = scoresResponse.data || scoresResponse || [];
+                
+                // Filter scores for this user
+                allScores = allScores.filter(score => 
+                    score.user_id == currentSession.userId || 
+                    score.userId == currentSession.userId ||
+                    score.student_id == currentSession.userId
+                );
+                
+                console.log('📊 User scores loaded:', allScores.length);
+                
+                // Populate drill dropdown
+                populateDrillDropdown();
+                
+            } catch (error) {
+                console.error('❌ Error loading user data:', error);
+                showError('Error loading progress data: ' + error.message);
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        function populateDrillDropdown() {
+            const drillSelect = document.getElementById('drillSelect');
+            
+            // Get unique drills
+            const drills = [...new Set(allScores.map(score => score.drill_name || score.drillName || 'Unknown Drill'))];
+            drills.sort();
+            
+            // Clear existing options
+            drillSelect.innerHTML = '<option value="">Select a drill...</option>';
+            
+            // Add drill options
+            drills.forEach(drill => {
+                const option = document.createElement('option');
+                option.value = drill;
+                option.textContent = drill;
+                drillSelect.appendChild(option);
+            });
+            
+            console.log('🎯 Populated drill dropdown with', drills.length, 'drills');
+        }
+
+        // ========================================
+        // FILTER FUNCTIONS
+        // ========================================
+
+        function setViewMode(mode) {
+            currentViewMode = mode;
+            
+            // Update button styles
+            document.getElementById('listViewBtn').classList.toggle('active', mode === 'list');
+            document.getElementById('chartViewBtn').classList.toggle('active', mode === 'chart');
+            
+            console.log('👁️ View mode set to:', mode);
+        }
+
+        function setChartType(type) {
+            currentChartType = type;
+            
+            // Update button styles
+            document.getElementById('scoreChartBtn').classList.toggle('active', type === 'score');
+            document.getElementById('percentageChartBtn').classList.toggle('active', type === 'percentage');
+            
+            // Regenerate chart if data is available
+            if (filteredScores.length > 0) {
+                generateChart();
+            }
+            
+            console.log('📊 Chart type set to:', type);
+        }
+
+        function applyFilters() {
+            const selectedDrill = document.getElementById('drillSelect').value;
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            
+            console.log('🔍 Applying filters:', { selectedDrill, startDate, endDate, viewMode: currentViewMode });
+            
+            if (!selectedDrill) {
+                showError('Please select a drill to view progress');
+                return;
+            }
+            
+            if (!startDate || !endDate) {
+                showError('Please select both start and end dates');
+                return;
+            }
+            
+            // Filter scores
+            filteredScores = allScores.filter(score => {
+                const drillName = score.drill_name || score.drillName || 'Unknown Drill';
+                const scoreDate = new Date(score.submitted_at || score.practice_date || score.created_at);
+                const filterStartDate = new Date(startDate);
+                const filterEndDate = new Date(endDate);
+                filterEndDate.setHours(23, 59, 59, 999); // Include end of day
+                
+                return drillName === selectedDrill && 
+                       scoreDate >= filterStartDate && 
+                       scoreDate <= filterEndDate;
+            });
+            
+            // Sort by date (newest first)
+            filteredScores.sort((a, b) => {
+                const dateA = new Date(a.submitted_at || a.practice_date || a.created_at);
+                const dateB = new Date(b.submitted_at || b.practice_date || b.created_at);
+                return dateB - dateA;
+            });
+            
+            console.log('📊 Filtered scores:', filteredScores.length);
+            
+            // Update results header
+            updateResultsHeader(selectedDrill, startDate, endDate);
+            
+            // Show results
+            if (filteredScores.length === 0) {
+                showNoData();
+            } else {
+                showResults();
+            }
+        }
+
+        function updateResultsHeader(drill, startDate, endDate) {
+            document.getElementById('resultsTitle').textContent = `Progress for ${drill}`;
+            
+            const start = new Date(startDate).toLocaleDateString();
+            const end = new Date(endDate).toLocaleDateString();
+            const count = filteredScores.length;
+            const avgScore = count > 0 ? Math.round(filteredScores.reduce((sum, score) => 
+                sum + parseFloat(score.percentage || score.score || 0), 0) / count) : 0;
+            
+            document.getElementById('resultsSummary').textContent = 
+                `${count} scores from ${start} to ${end} | Average: ${avgScore}%`;
+        }
+
+        function showNoData() {
+            document.getElementById('resultsSection').style.display = 'block';
+            document.getElementById('listView').style.display = 'none';
+            document.getElementById('chartView').style.display = 'none';
+            document.getElementById('noDataMessage').style.display = 'block';
+        }
+
+        function showResults() {
+            document.getElementById('resultsSection').style.display = 'block';
+            document.getElementById('noDataMessage').style.display = 'none';
+            
+            if (currentViewMode === 'list') {
+                showListView();
+            } else {
+                showChartView();
+            }
+        }
+
+        // ========================================
+        // LIST VIEW FUNCTIONS
+        // ========================================
+
+        function showListView() {
+            document.getElementById('listView').style.display = 'block';
+            document.getElementById('chartView').style.display = 'none';
+            
+            currentPage = 1;
+            renderScoresList();
+        }
+
+        function renderScoresList() {
+            const tableBody = document.getElementById('scoresTableBody');
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const pageScores = filteredScores.slice(startIndex, endIndex);
+            
+            tableBody.innerHTML = '';
+            
+            pageScores.forEach(score => {
+                const row = document.createElement('tr');
+                
+                const scoreDate = new Date(score.submitted_at || score.practice_date || score.created_at);
+                const formattedDate = scoreDate.toLocaleDateString();
+                const drillName = score.drill_name || score.drillName || 'Unknown Drill';
+                const scoreValue = score.successful_shots || score.score || 0;
+                const totalShots = score.total_shots || score.total || 1;
+                const percentage = score.percentage || Math.round((scoreValue / totalShots) * 100);
+                const notes = score.notes || score.comments || '-';
+                
+                // Color code the score
+                let scoreClass = 'score-needs-work';
+                if (percentage >= 80) scoreClass = 'score-excellent';
+                else if (percentage >= 60) scoreClass = 'score-good';
+                
+                row.innerHTML = `
+                    <td>${formattedDate}</td>
+                    <td>${drillName}</td>
+                    <td>${scoreValue}/${totalShots}</td>
+                    <td><span class="score-value ${scoreClass}">${percentage}%</span></td>
+                    <td>${notes}</td>
+                `;
+                
+                tableBody.appendChild(row);
+            });
+            
+            updatePagination();
+        }
+
+        function updatePagination() {
+            const totalPages = Math.ceil(filteredScores.length / itemsPerPage);
+            
+            document.getElementById('prevPageBtn').disabled = currentPage <= 1;
+            document.getElementById('nextPageBtn').disabled = currentPage >= totalPages;
+            document.getElementById('paginationInfo').textContent = 
+                `Page ${currentPage} of ${totalPages} (${filteredScores.length} total scores)`;
+        }
+
+        function changePage(direction) {
+            const totalPages = Math.ceil(filteredScores.length / itemsPerPage);
+            const newPage = currentPage + direction;
+            
+            if (newPage >= 1 && newPage <= totalPages) {
+                currentPage = newPage;
+                renderScoresList();
+            }
+        }
+
+        // ========================================
+        // CHART VIEW FUNCTIONS
+        // ========================================
+
+        function showChartView() {
+            document.getElementById('listView').style.display = 'none';
+            document.getElementById('chartView').style.display = 'block';
+            
+            generateChart();
+        }
+
+        function generateChart() {
+            const canvas = document.getElementById('progressChart');
+            const ctx = canvas.getContext('2d');
+            
+            // Destroy existing chart
+            if (progressChart) {
+                progressChart.destroy();
+            }
+            
+            // Prepare chart data
+            const chartData = prepareChartData();
+            
+            if (chartData.labels.length === 0) {
+                showNoData();
+                return;
+            }
+            
+            // Create chart
+            progressChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: chartData.labels,
+                    datasets: [{
+                        label: currentChartType === 'score' ? 'Score Trend' : 'Percentage Trend',
+                        data: chartData.data,
+                        borderColor: '#667eea',
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: '#667eea',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 6,
+                        pointHoverRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: `${currentChartType === 'score' ? 'Score' : 'Percentage'} Progress Over Time`,
+                            font: {
+                                size: 16,
+                                weight: 'bold'
+                            },
+                            color: '#333'
+                        },
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Date',
+                                font: {
+                                    weight: 'bold'
+                                }
+                            },
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: currentChartType === 'score' ? 'Score' : 'Percentage (%)',
+                                font: {
+                                    weight: 'bold'
+                                }
+                            },
+                            beginAtZero: true,
+                            max: currentChartType === 'percentage' ? 100 : undefined,
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            }
+                        }
+                    },
+                    elements: {
+                        point: {
+                            hoverBackgroundColor: '#764ba2'
+                        }
+                    },
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    }
+                }
+            });
+        }
+
+        function prepareChartData() {
+            // Sort scores by date (oldest first for chart)
+            const sortedScores = [...filteredScores].sort((a, b) => {
+                const dateA = new Date(a.submitted_at || a.practice_date || a.created_at);
+                const dateB = new Date(b.submitted_at || b.practice_date || b.created_at);
+                return dateA - dateB;
+            });
+            
+            // If there are too many data points, sample them to keep chart readable
+            let chartScores = sortedScores;
+            if (sortedScores.length > 50) {
+                chartScores = sampleScores(sortedScores, 50);
+            }
+            
+            const labels = [];
+            const data = [];
+            
+            chartScores.forEach(score => {
+                const scoreDate = new Date(score.submitted_at || score.practice_date || score.created_at);
+                const formattedDate = scoreDate.toLocaleDateString('en-US', { 
+                    month: 'short', 
+                    day: 'numeric' 
+                });
+                
+                let value;
+                if (currentChartType === 'score') {
+                    const scoreValue = score.successful_shots || score.score || 0;
+                    const totalShots = score.total_shots || score.total || 1;
+                    value = parseFloat(`${scoreValue}.${Math.round((scoreValue / totalShots) * 100)}`);
+                } else {
+                    value = score.percentage || Math.round(((score.successful_shots || score.score || 0) / (score.total_shots || score.total || 1)) * 100);
+                }
+                
+                labels.push(formattedDate);
+                data.push(value);
+            });
+            
+            return { labels, data };
+        }
+
+        function sampleScores(scores, maxPoints) {
+            if (scores.length <= maxPoints) {
+                return scores;
+            }
+            
+            const step = scores.length / maxPoints;
+            const sampled = [];
+            
+            for (let i = 0; i < maxPoints; i++) {
+                const index = Math.floor(i * step);
+                sampled.push(scores[index]);
+            }
+            
+            // Always include the last score
+            if (sampled[sampled.length - 1] !== scores[scores.length - 1]) {
+                sampled[sampled.length - 1] = scores[scores.length - 1];
+            }
+            
+            return sampled;
+        }
+
+        // ========================================
+        // NAVIGATION FUNCTIONS
+        // ========================================
+
+        function goBackToReportPortal() {
+            console.log('🔙 Going back to Report Portal');
+            
+            // Ensure report session is available
+            if (currentSession) {
+                try {
+                    sessionStorage.setItem('reportSession', JSON.stringify(currentSession));
+                    sessionStorage.setItem('studentSession', JSON.stringify(currentSession));
+                } catch (e) {
+                    console.log('Session storage not available');
+                }
+            }
+            
+            // Create URL with user data
+            const userData = btoa(JSON.stringify({
+                id: currentSession.userId,
+                name: currentSession.name,
+                email: currentSession.email,
+                type: currentSession.type
+            }));
+            
+            window.location.href = `report-portal.html?user=${userData}&t=${Date.now()}`;
+        }
+
+        function handleLogout() {
+            if (confirm('Are you sure you want to logout?')) {
+                // Clear all sessions
+                try {
+                    sessionStorage.removeItem('reportSession');
+                    sessionStorage.removeItem('studentSession');
+                    sessionStorage.removeItem('drillAppSession');
+                } catch (e) {
+                    console.log('Session storage not available');
+                }
+                
+                // Redirect to student portal
+                window.location.href = 'student-portal.html';
+            }
+        }
+
+        // ========================================
+        // INITIALIZATION
+        // ========================================
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeSession();
+        });
+
+        // Handle window resize for chart
+        window.addEventListener('resize', function() {
+            if (progressChart) {
+                progressChart.resize();
+            }
+        });
+
+        // Prevent back button after logout
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted && !currentSession) {
+                window.location.reload();
+            }
+        });
+
+        console.log('📈 Progress Report v1.0 Loaded');
+        console.log('📡 API URL:', API_BASE_URL);
+    </script>
+</body>
+</html>

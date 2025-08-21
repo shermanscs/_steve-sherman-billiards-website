@@ -1,0 +1,1373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Billiard Drawing Tool - Steve Sherman Billiards</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .back-button {
+            position: absolute;
+            left: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-50%) translateY(-2px);
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .form-section {
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .form-input, .form-textarea, .form-select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+            font-family: inherit;
+        }
+
+        .form-input:focus, .form-textarea:focus, .form-select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .drawing-section {
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            background: #f8f9fa;
+            margin-bottom: 20px;
+        }
+
+        .drawing-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .drawing-tools {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .tool-btn {
+            padding: 8px 16px;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .tool-btn:hover, .tool-btn.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .tool-btn:disabled {
+            background: #f0f0f0;
+            color: #999;
+            border-color: #ddd;
+            cursor: not-allowed;
+        }
+
+        /* Ball Selector Styles */
+        .ball-selector-section {
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 15px;
+            background: #f8f9fa;
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        .ball-selector-section.show {
+            display: block;
+        }
+
+        .ball-selector-header {
+            margin-bottom: 15px;
+        }
+
+        .ball-selector-header h4 {
+            color: #555;
+            font-size: 1em;
+            margin-bottom: 5px;
+        }
+
+        .ball-grid {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 8px;
+            max-width: 400px;
+        }
+
+        .ball-option {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 3px solid #333;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 11px;
+            transition: all 0.3s ease;
+            position: relative;
+            box-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .ball-option:hover {
+            transform: scale(1.1);
+            box-shadow: 3px 3px 6px rgba(0,0,0,0.3);
+        }
+
+        .ball-option.selected {
+            border-color: #667eea;
+            border-width: 4px;
+            transform: scale(1.1);
+            box-shadow: 0 0 10px rgba(102, 126, 234, 0.5);
+        }
+
+        .ball-option.used {
+            opacity: 0.3;
+            cursor: not-allowed;
+            position: relative;
+        }
+
+        .ball-option.used::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #28a745;
+            font-size: 14px;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+
+        .reset-balls-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .reset-balls-btn:hover {
+            background: #c82333;
+            transform: translateY(-1px);
+        }
+
+        /* Line Color Selector Styles */
+        .line-color-section {
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 15px;
+            background: #f8f9fa;
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        .line-color-section.show {
+            display: block;
+        }
+
+        .color-options {
+            display: flex;
+            gap: 15px;
+        }
+
+        .color-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            padding: 8px 12px;
+            border: 2px solid transparent;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .color-option:hover {
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .color-option.selected {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .color-preview {
+            width: 24px;
+            height: 24px;
+            border: 2px solid #333;
+            border-radius: 3px;
+            position: relative;
+        }
+
+        .color-preview::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 10%;
+            right: 10%;
+            height: 2px;
+            background: currentColor;
+            border-top: 1px dashed currentColor;
+            border-bottom: 1px dashed currentColor;
+            transform: translateY(-50%);
+        }
+
+        .color-label {
+            font-weight: 600;
+            color: #555;
+        }
+
+        .pool-table-container {
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            margin: 10px 0;
+            position: relative;
+            overflow: visible;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            min-height: 440px;
+        }
+
+        .pool-table {
+            width: 712px;
+            height: 400px;
+            position: relative;
+            cursor: crosshair;
+            flex-shrink: 0;
+            background-image: url('/images/drawing-tool/pool-table.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            border-radius: 8px;
+        }
+
+        .table-felt {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            box-sizing: border-box;
+        }
+
+        .pocket {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background: radial-gradient(circle, #000 0%, #333 100%);
+            border-radius: 50%;
+            border: 2px solid #444;
+            z-index: 15;
+            opacity: 0; /* Hide the CSS pockets since they're in the image */
+        }
+
+        .pocket.corner-tl { top: 1px; left: 1px; }
+        .pocket.corner-tr { top: 1px; right: 1px; }
+        .pocket.corner-bl { bottom: 1px; left: 1px; }
+        .pocket.corner-br { bottom: 1px; right: 1px; }
+        .pocket.side-t { top: 1px; left: 50%; transform: translateX(-50%); }
+        .pocket.side-b { bottom: 1px; left: 50%; transform: translateX(-50%); }
+
+        .ball {
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 2px solid #333;
+            cursor: pointer;
+            box-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            z-index: 10;
+        }
+
+        .cue-stick {
+            position: absolute;
+            width: 300px;
+            height: 8px;
+            background: linear-gradient(90deg, #8B4513 0%, #D2691E 50%, #8B4513 100%);
+            border-radius: 4px;
+            transform-origin: left center;
+            display: none;
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        .save-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #e0e0e0;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            font-size: 1em;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(45deg, #28a745, #20c997);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        /* Image loading indicator */
+        .image-loading {
+            background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            font-style: italic;
+        }
+
+        .image-loading::after {
+            content: 'Loading pool table image...';
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .drawing-tools {
+                flex-direction: column;
+            }
+            
+            .ball-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            
+            .pool-table-container {
+                overflow-x: auto;
+                padding: 10px;
+                min-height: 420px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <button class="back-button" onclick="goBack()">← Back to Diagram Admin</button>
+            <h1>Billiard Drawing Tool</h1>
+            <p>Create interactive billiard diagrams with balls, lines, and annotations</p>
+        </div>
+
+        <div class="content">
+            <div id="alertContainer"></div>
+
+            <!-- Diagram Information Form -->
+            <div class="form-section">
+                <div class="form-group">
+                    <label for="diagramName" class="form-label">Diagram Name *</label>
+                    <input type="text" id="diagramName" class="form-input" placeholder="e.g., 8-Ball Break Pattern" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="diagramType" class="form-label">Diagram Type *</label>
+                        <select id="diagramType" class="form-select" required>
+                            <option value="">Select type...</option>
+                            <option value="drill">Drill Diagram</option>
+                            <option value="strategy">Strategy Board</option>
+                            <option value="technique">Technique Guide</option>
+                            <option value="table_layout">Table Layout</option>
+                            <option value="reference">Reference Material</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="diagramVisibility" class="form-label">Visibility *</label>
+                        <select id="diagramVisibility" class="form-select" required>
+                            <option value="private">Private (Only You)</option>
+                            <option value="public">Public (All Users)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="diagramDescription" class="form-label">Description</label>
+                    <textarea id="diagramDescription" class="form-textarea" rows="3" placeholder="Describe the diagram, its purpose, and how it should be used..."></textarea>
+                </div>
+            </div>
+
+            <!-- Drawing Section -->
+            <div class="drawing-section">
+                <div class="drawing-header">
+                    <label class="form-label">Pool Table Diagram:</label>
+                    <div class="drawing-tools">
+                        <button class="tool-btn active" id="selectTool" onclick="setTool('select')">Select</button>
+                        <button class="tool-btn" id="ballTool" onclick="setTool('ball')">Add Ball</button>
+                        <button class="tool-btn" id="cueTool" onclick="setTool('cue')">Cue Stick</button>
+                        <button class="tool-btn" id="lineTool" onclick="setTool('line')">Draw Line</button>
+                        <button class="tool-btn" id="clearTool" onclick="clearTable()">Clear Table</button>
+                    </div>
+                </div>
+
+                <!-- Line Color Selector Section -->
+                <div class="line-color-section" id="lineColorSection">
+                    <h4>Select Line Color</h4>
+                    <div class="color-options">
+                        <label class="color-option selected" onclick="selectLineColor('white')">
+                            <input type="radio" name="lineColor" value="white" checked style="display: none;">
+                            <div class="color-preview" style="background: white; color: white;"></div>
+                            <span class="color-label">White</span>
+                        </label>
+                        <label class="color-option" onclick="selectLineColor('yellow')">
+                            <input type="radio" name="lineColor" value="yellow" style="display: none;">
+                            <div class="color-preview" style="background: #FFD700; color: #FFD700;"></div>
+                            <span class="color-label">Yellow</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Ball Selector Section -->
+                <div class="ball-selector-section" id="ballSelectorSection">
+                    <div class="ball-selector-header">
+                        <h4>Select Ball to Place</h4>
+                    </div>
+                    <div class="ball-grid" id="ballGrid">
+                        <!-- Ball options will be populated by JavaScript -->
+                    </div>
+                    <button class="reset-balls-btn" onclick="resetAvailableBalls()">Reset Available Balls</button>
+                </div>
+
+                <div class="pool-table-container">
+                    <div class="pool-table image-loading" id="poolTable">
+                        <div class="table-felt">
+                            <!-- Pockets (hidden but kept for compatibility) -->
+                            <div class="pocket corner-tl"></div>
+                            <div class="pocket corner-tr"></div>
+                            <div class="pocket corner-bl"></div>
+                            <div class="pocket corner-br"></div>
+                            <div class="pocket side-t"></div>
+                            <div class="pocket side-b"></div>
+                            
+                            <!-- SVG for lines and paths -->
+                            <svg class="drawing-overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;">
+                                <defs id="arrowDefs">
+                                    <!-- Arrow markers will be added dynamically -->
+                                </defs>
+                                <g id="drawingLayer"></g>
+                            </svg>
+                            
+                            <!-- Cue stick -->
+                            <div class="cue-stick" id="cueStick"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Save Buttons -->
+            <div class="save-buttons">
+                <button class="btn btn-secondary" onclick="goBack()">Cancel</button>
+                <button class="btn btn-primary" onclick="saveDiagram(false)" id="saveBtn">💾 Save Diagram</button>
+                <button class="btn btn-success" onclick="saveDiagram(true)" id="saveAndCloseBtn">✅ Save & Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== CONFIGURATION =====
+        const API_BASE_URL = 'https://steveshermanbilliards.com/drill-api.php';
+        
+        // ===== GLOBAL VARIABLES =====
+        let currentUser = null;
+        let hasUnsavedChanges = false;
+        
+        // Drawing variables
+        let currentTool = 'select';
+        let balls = [];
+        let lines = [];
+        let isDragging = false;
+        let selectedBall = null;
+        let lineStartPoint = null;
+        let selectedBallType = 'cue';
+        let usedBallTypes = new Set();
+        let selectedLineColor = 'white';
+        let imageLoaded = false;
+        
+        // Ball colors and info (same as original)
+        const ballColors = {
+            'cue': '#FFFFFF',
+            '1': '#FFD700',    
+            '2': '#0000FF',    
+            '3': '#FF0000',    
+            '4': '#800080',    
+            '5': '#FFA500',    
+            '6': '#008000',    
+            '7': '#800000',    
+            '8': '#000000',    
+            '9': '#FFFF00',    
+            '10': '#0080FF',   
+            '11': '#FF4444',   
+            '12': '#AA44AA',   
+            '13': '#FF8844',   
+            '14': '#44AA44',   
+            '15': '#AA4444'    
+        };
+
+        const ballInfo = {
+            'cue': { name: 'Cue Ball', textColor: 'black' },
+            '1': { name: 'Yellow', textColor: 'black' },
+            '2': { name: 'Blue', textColor: 'white' },
+            '3': { name: 'Red', textColor: 'white' },
+            '4': { name: 'Purple', textColor: 'white' },
+            '5': { name: 'Orange', textColor: 'black' },
+            '6': { name: 'Green', textColor: 'white' },
+            '7': { name: 'Maroon', textColor: 'white' },
+            '8': { name: 'Black', textColor: 'white' },
+            '9': { name: 'Yellow Stripe', textColor: 'black' },
+            '10': { name: 'Blue Stripe', textColor: 'white' },
+            '11': { name: 'Red Stripe', textColor: 'white' },
+            '12': { name: 'Purple Stripe', textColor: 'white' },
+            '13': { name: 'Orange Stripe', textColor: 'black' },
+            '14': { name: 'Green Stripe', textColor: 'white' },
+            '15': { name: 'Maroon Stripe', textColor: 'white' }
+        };
+
+        const colorMappings = {
+            'white': '#FFFFFF',
+            'yellow': '#FFD700'
+        };
+
+        // ===== IMAGE LOADING =====
+        
+        function initializePoolTableImage() {
+            const poolTable = document.getElementById('poolTable');
+            const img = new Image();
+            
+            img.onload = function() {
+                console.log('✅ Pool table image loaded successfully');
+                poolTable.classList.remove('image-loading');
+                imageLoaded = true;
+            };
+            
+            img.onerror = function() {
+                console.warn('⚠️ Pool table image failed to load, using fallback');
+                poolTable.classList.remove('image-loading');
+                // Fallback to CSS styling
+                poolTable.style.backgroundImage = 'none';
+                poolTable.style.background = '#0f5132';
+                showAlert('Pool table image could not be loaded. Using default table design.', 'error');
+                imageLoaded = true;
+            };
+            
+            // Start loading the image
+            img.src = '/images/drawing-tool/pool-table.jpg';
+        }
+
+        // ===== UTILITY FUNCTIONS =====
+        
+        async function apiRequest(endpoint, method = 'GET', data = null) {
+            try {
+                const options = { method };
+                
+                if (data) {
+                    if (data instanceof FormData) {
+                        options.body = data;
+                    } else {
+                        options.headers = {'Content-Type': 'application/json'};
+                        options.body = JSON.stringify(data);
+                    }
+                }
+                
+                console.log('🌐 API Request:', method, `${API_BASE_URL}/${endpoint}`);
+                
+                const response = await fetch(`${API_BASE_URL}/${endpoint}`, options);
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`HTTP ${response.status}: ${errorText}`);
+                }
+                
+                const result = await response.json();
+                
+                if (!result.success) {
+                    throw new Error(result.message || 'Request failed');
+                }
+                
+                return result;
+            } catch (error) {
+                console.error('❌ API Error:', error);
+                throw error;
+            }
+        }
+
+        function checkAuthAndLoadUser() {
+            try {
+                const savedSession = sessionStorage.getItem('adminSession');
+                if (!savedSession) {
+                    alert('Please login through the admin portal first.');
+                    window.location.href = 'diagram-admin.html';
+                    return;
+                }
+                
+                const session = JSON.parse(savedSession);
+                
+                const sessionAge = Date.now() - new Date(session.loginTime).getTime();
+                const maxAge = 24 * 60 * 60 * 1000;
+                
+                if (sessionAge >= maxAge) {
+                    sessionStorage.removeItem('adminSession');
+                    alert('Session expired. Please login again.');
+                    window.location.href = 'diagram-admin.html';
+                    return;
+                }
+                
+                currentUser = {
+                    id: session.adminId,
+                    username: session.username,
+                    email: session.email
+                };
+                
+                console.log('Current user loaded:', currentUser);
+                
+            } catch (error) {
+                console.error('Failed to load user session:', error);
+                alert('Authentication error. Please login again.');
+                window.location.href = 'diagram-admin.html';
+            }
+        }
+
+        function showAlert(message, type = 'success') {
+            const container = document.getElementById('alertContainer');
+            const alertClass = type === 'success' ? 'alert-success' : 'alert-error';
+            
+            container.innerHTML = `<div class="alert ${alertClass}" style="display: block;">${message}</div>`;
+            
+            setTimeout(() => {
+                container.innerHTML = '';
+            }, 5000);
+            
+            container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function goBack() {
+            if (hasUnsavedChanges) {
+                if (confirm('You have unsaved changes. Are you sure you want to leave?')) {
+                    window.location.href = 'diagram-admin.html';
+                }
+            } else {
+                window.location.href = 'diagram-admin.html';
+            }
+        }
+
+        function markAsChanged() {
+            hasUnsavedChanges = true;
+        }
+
+        // ===== DRAWING FUNCTIONS (same as original) =====
+        
+        function createArrowMarker(color) {
+            const defs = document.getElementById('arrowDefs');
+            const markerId = `arrowhead-${color}`;
+            
+            if (document.getElementById(markerId)) {
+                return markerId;
+            }
+            
+            const marker = document.createElementNS('http://www.w3.org/2000/svg', 'marker');
+            marker.setAttribute('id', markerId);
+            marker.setAttribute('markerWidth', '4');
+            marker.setAttribute('markerHeight', '3');
+            marker.setAttribute('refX', '3.5');
+            marker.setAttribute('refY', '1.5');
+            marker.setAttribute('orient', 'auto');
+            
+            const polygon = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+            polygon.setAttribute('points', '0 0, 4 1.5, 0 3');
+            polygon.setAttribute('fill', colorMappings[color] || color);
+            
+            marker.appendChild(polygon);
+            defs.appendChild(marker);
+            
+            return markerId;
+        }
+
+        function selectLineColor(color) {
+            selectedLineColor = color;
+            
+            document.querySelectorAll('.color-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            
+            const selectedOption = document.querySelector(`input[value="${color}"]`).closest('.color-option');
+            selectedOption.classList.add('selected');
+        }
+
+        function initializeBallSelector() {
+            const ballGrid = document.getElementById('ballGrid');
+            const ballTypes = ['cue', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15'];
+            
+            ballGrid.innerHTML = ballTypes.map(ballType => {
+                const info = ballInfo[ballType];
+                const color = ballColors[ballType];
+                
+                return `
+                    <div class="ball-option" 
+                         data-ball-type="${ballType}"
+                         style="background: ${color}; color: ${info.textColor};"
+                         onclick="selectBallType('${ballType}')"
+                         title="${info.name}">
+                        ${ballType === 'cue' ? '' : ballType}
+                    </div>
+                `;
+            }).join('');
+            
+            updateBallSelector();
+        }
+
+        function selectBallType(ballType) {
+            if (usedBallTypes.has(ballType)) {
+                return;
+            }
+            
+            selectedBallType = ballType;
+            updateBallSelector();
+        }
+
+        function updateBallSelector() {
+            document.querySelectorAll('.ball-option').forEach(option => {
+                const ballType = option.dataset.ballType;
+                option.classList.remove('selected');
+                
+                if (usedBallTypes.has(ballType)) {
+                    option.classList.add('used');
+                } else {
+                    option.classList.remove('used');
+                    if (ballType === selectedBallType) {
+                        option.classList.add('selected');
+                    }
+                }
+            });
+        }
+
+        function resetAvailableBalls() {
+            usedBallTypes.clear();
+            updateBallSelector();
+            markAsChanged();
+        }
+
+        function markBallAsUsed(ballType) {
+            usedBallTypes.add(ballType);
+            updateBallSelector();
+        }
+
+        function markBallAsUnused(ballType) {
+            usedBallTypes.delete(ballType);
+            updateBallSelector();
+        }
+
+        function setTool(tool) {
+            currentTool = tool;
+            
+            document.querySelectorAll('.tool-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.getElementById(tool + 'Tool').classList.add('active');
+            
+            const ballSelectorSection = document.getElementById('ballSelectorSection');
+            const lineColorSection = document.getElementById('lineColorSection');
+            
+            if (tool === 'ball') {
+                ballSelectorSection.classList.add('show');
+                lineColorSection.classList.remove('show');
+            } else if (tool === 'line') {
+                ballSelectorSection.classList.remove('show');
+                lineColorSection.classList.add('show');
+            } else {
+                ballSelectorSection.classList.remove('show');
+                lineColorSection.classList.remove('show');
+            }
+            
+            lineStartPoint = null;
+            const startIndicator = document.getElementById('line-start-indicator');
+            if (startIndicator) {
+                startIndicator.remove();
+            }
+            
+            const table = document.getElementById('poolTable');
+            switch(tool) {
+                case 'select':
+                    table.style.cursor = 'default';
+                    break;
+                case 'ball':
+                    table.style.cursor = 'crosshair';
+                    break;
+                case 'cue':
+                    table.style.cursor = 'crosshair';
+                    break;
+                case 'line':
+                    table.style.cursor = 'crosshair';
+                    break;
+                default:
+                    table.style.cursor = 'default';
+            }
+        }
+
+        function clearTable() {
+            document.querySelectorAll('.ball').forEach(ball => ball.remove());
+            balls = [];
+            
+            document.getElementById('drawingLayer').innerHTML = '';
+            lines = [];
+            
+            document.getElementById('cueStick').style.display = 'none';
+            
+            resetAvailableBalls();
+            markAsChanged();
+        }
+
+        function createBall(x, y, ballType = null) {
+            if (!ballType) {
+                ballType = selectedBallType;
+            }
+            
+            const ball = document.createElement('div');
+            ball.className = 'ball';
+            ball.dataset.type = ballType;
+            ball.dataset.id = Date.now().toString();
+            
+            const color = ballColors[ballType] || '#CCCCCC';
+            const info = ballInfo[ballType];
+            ball.style.background = color;
+            
+            if (ballType !== 'cue') {
+                ball.textContent = ballType;
+                ball.style.fontSize = '10px';
+                ball.style.textAlign = 'center';
+                ball.style.lineHeight = '20px';
+                ball.style.fontWeight = 'bold';
+                ball.style.color = info ? info.textColor : 'black';
+            }
+            
+            ball.style.left = (x - 12) + 'px';
+            ball.style.top = (y - 12) + 'px';
+            
+            ball.addEventListener('mousedown', startDragBall);
+            ball.addEventListener('dblclick', deleteBall);
+            
+            document.querySelector('.table-felt').appendChild(ball);
+            
+            balls.push({
+                id: ball.dataset.id,
+                type: ballType,
+                x: x,
+                y: y,
+                element: ball
+            });
+            
+            markBallAsUsed(ballType);
+            markAsChanged();
+            
+            return ball;
+        }
+
+        function deleteBall(e) {
+            if (currentTool !== 'select') return;
+            
+            const ball = e.target;
+            const ballType = ball.dataset.type;
+            const ballId = ball.dataset.id;
+            
+            balls = balls.filter(b => b.id !== ballId);
+            ball.remove();
+            markBallAsUnused(ballType);
+            markAsChanged();
+        }
+
+        function startDragBall(e) {
+            if (currentTool !== 'select') return;
+            
+            e.preventDefault();
+            selectedBall = e.target;
+            isDragging = true;
+            
+            const feltRect = document.querySelector('.table-felt').getBoundingClientRect();
+            const offsetX = e.clientX - feltRect.left - parseInt(selectedBall.style.left);
+            const offsetY = e.clientY - feltRect.top - parseInt(selectedBall.style.top);
+            
+            function onMouseMove(e) {
+                if (!isDragging) return;
+                
+                const feltRect = document.querySelector('.table-felt').getBoundingClientRect();
+                let x = e.clientX - feltRect.left - offsetX;
+                let y = e.clientY - feltRect.top - offsetY;
+                
+                x = Math.max(10, Math.min(feltRect.width - 30, x));
+                y = Math.max(10, Math.min(feltRect.height - 30, y));
+                
+                selectedBall.style.left = x + 'px';
+                selectedBall.style.top = y + 'px';
+                
+                const ballData = balls.find(b => b.id === selectedBall.dataset.id);
+                if (ballData) {
+                    ballData.x = x + 12;
+                    ballData.y = y + 12;
+                }
+                
+                markAsChanged();
+            }
+            
+            function onMouseUp() {
+                isDragging = false;
+                selectedBall = null;
+                document.removeEventListener('mousemove', onMouseMove);
+                document.removeEventListener('mouseup', onMouseUp);
+            }
+            
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mouseup', onMouseUp);
+        }
+
+        function drawLine(x1, y1, x2, y2, color = null, strokeWidth = 2) {
+            if (!color) {
+                color = selectedLineColor;
+            }
+            
+            const svg = document.getElementById('drawingLayer');
+            const actualColor = colorMappings[color] || color;
+            
+            const markerId = createArrowMarker(color);
+            
+            const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            const lineId = 'line-' + Date.now();
+            line.setAttribute('id', lineId);
+            line.setAttribute('x1', x1);
+            line.setAttribute('y1', y1);
+            line.setAttribute('x2', x2);
+            line.setAttribute('y2', y2);
+            line.setAttribute('stroke', actualColor);
+            line.setAttribute('stroke-width', strokeWidth);
+            line.setAttribute('stroke-dasharray', '3,3');
+            line.setAttribute('marker-end', `url(#${markerId})`);
+            line.style.cursor = 'move';
+            line.style.pointerEvents = 'all';
+            
+            // Add line interaction (simplified version for drawing tool)
+            line.addEventListener('dblclick', () => {
+                if (currentTool === 'select') {
+                    line.remove();
+                    lines = lines.filter(l => l.id !== lineId.replace('line-', ''));
+                    markAsChanged();
+                }
+            });
+            
+            svg.appendChild(line);
+            
+            lines.push({
+                id: lineId.replace('line-', ''),
+                x1: x1,
+                y1: y1,
+                x2: x2,
+                y2: y2,
+                color: color,
+                strokeWidth: strokeWidth,
+                element: line
+            });
+            
+            markAsChanged();
+        }
+
+        function serializeDrawing() {
+            return {
+                balls: balls.map(ball => ({
+                    type: ball.type,
+                    x: ball.x,
+                    y: ball.y
+                })),
+                lines: lines.map(line => ({
+                    x1: line.x1,
+                    y1: line.y1,
+                    x2: line.x2,
+                    y2: line.y2,
+                    color: line.color,
+                    strokeWidth: line.strokeWidth
+                })),
+                usedBalls: Array.from(usedBallTypes)
+            };
+        }
+
+        // ===== SAVE DIAGRAM FUNCTION =====
+        
+        async function saveDiagram(andClose = false) {
+            const name = document.getElementById('diagramName').value.trim();
+            const description = document.getElementById('diagramDescription').value.trim();
+            const diagramType = document.getElementById('diagramType').value;
+            const visibility = document.getElementById('diagramVisibility').value;
+            
+            if (!name) {
+                showAlert('Please enter a diagram name', 'error');
+                return;
+            }
+            
+            if (!diagramType) {
+                showAlert('Please select a diagram type', 'error');
+                return;
+            }
+            
+            if (!currentUser || !currentUser.id) {
+                showAlert('Authentication error. Please login again.', 'error');
+                window.location.href = 'diagram-admin.html';
+                return;
+            }
+            
+            // Check if there's actually a drawing
+            if (balls.length === 0 && lines.length === 0) {
+                showAlert('Please create a diagram before saving', 'error');
+                return;
+            }
+            
+            // Wait for image to load before capturing
+            if (!imageLoaded) {
+                showAlert('Please wait for the pool table image to load before saving', 'error');
+                return;
+            }
+            
+            try {
+                document.getElementById('saveBtn').disabled = true;
+                document.getElementById('saveAndCloseBtn').disabled = true;
+                document.getElementById('saveBtn').textContent = '💾 Saving...';
+                
+                // Capture the table as an image
+                const tableElement = document.getElementById('poolTable');
+                const canvas = await html2canvas(tableElement, {
+                    backgroundColor: null,
+                    scale: 2,
+                    useCORS: true,
+                    allowTaint: true,
+                    imageTimeout: 15000
+                });
+                
+                // Convert canvas to blob
+                const blob = await new Promise(resolve => {
+                    canvas.toBlob(resolve, 'image/png', 0.9);
+                });
+                
+                // Create FormData with all diagram data
+                const formData = new FormData();
+                formData.append('name', name);
+                formData.append('description', description);
+                formData.append('diagram_type', diagramType);
+                formData.append('visibility', visibility);
+                formData.append('created_by', currentUser.id);
+                formData.append('image', blob, `${name.replace(/[^a-z0-9]/gi, '_')}.png`);
+                
+                // Also save the drawing data in the description for re-editing
+                const drawingData = serializeDrawing();
+                const fullDescription = description + 
+                    (description ? '\n\n' : '') + 
+                    '[DRAWING_DATA]' + JSON.stringify(drawingData) + '[/DRAWING_DATA]';
+                formData.set('description', fullDescription);
+                
+                console.log('📤 Saving diagram with drawing data:', drawingData);
+                
+                const response = await apiRequest('diagrams', 'POST', formData);
+                
+                showAlert('Diagram saved successfully!', 'success');
+                hasUnsavedChanges = false;
+                
+                if (andClose) {
+                    setTimeout(() => {
+                        window.location.href = 'diagram-admin.html';
+                    }, 1500);
+                }
+                
+            } catch (error) {
+                console.error('❌ Failed to save diagram:', error);
+                showAlert('Failed to save diagram: ' + error.message, 'error');
+            } finally {
+                document.getElementById('saveBtn').disabled = false;
+                document.getElementById('saveAndCloseBtn').disabled = false;
+                document.getElementById('saveBtn').textContent = '💾 Save Diagram';
+            }
+        }
+
+        // ===== EVENT HANDLERS =====
+        
+        // Pool table mouse handlers
+        document.getElementById('poolTable').addEventListener('mousedown', function(e) {
+            if (currentTool === 'line') {
+                e.preventDefault();
+                const feltRect = document.querySelector('.table-felt').getBoundingClientRect();
+                const x = e.clientX - feltRect.left;
+                const y = e.clientY - feltRect.top;
+                
+                lineStartPoint = { x, y };
+                isDragging = true;
+            }
+        });
+
+        document.getElementById('poolTable').addEventListener('mousemove', function(e) {
+            if (currentTool === 'line' && isDragging && lineStartPoint) {
+                e.preventDefault();
+                const feltRect = document.querySelector('.table-felt').getBoundingClientRect();
+                const x = e.clientX - feltRect.left;
+                const y = e.clientY - feltRect.top;
+                
+                const existingPreview = document.getElementById('line-preview');
+                if (existingPreview) {
+                    existingPreview.remove();
+                }
+                
+                const previewLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                previewLine.setAttribute('id', 'line-preview');
+                previewLine.setAttribute('x1', lineStartPoint.x);
+                previewLine.setAttribute('y1', lineStartPoint.y);
+                previewLine.setAttribute('x2', x);
+                previewLine.setAttribute('y2', y);
+                
+                const actualColor = colorMappings[selectedLineColor] || selectedLineColor;
+                const previewColor = actualColor === '#FFFFFF' ? 'rgba(255, 255, 255, 0.8)' : 'rgba(255, 215, 0, 0.8)';
+                previewLine.setAttribute('stroke', previewColor);
+                previewLine.setAttribute('stroke-width', '2');
+                previewLine.setAttribute('stroke-dasharray', '3,3');
+                
+                const markerId = createArrowMarker(selectedLineColor);
+                previewLine.setAttribute('marker-end', `url(#${markerId})`);
+                
+                document.getElementById('drawingLayer').appendChild(previewLine);
+            }
+        });
+
+        document.getElementById('poolTable').addEventListener('mouseup', function(e) {
+            if (currentTool === 'line' && isDragging && lineStartPoint) {
+                e.preventDefault();
+                const feltRect = document.querySelector('.table-felt').getBoundingClientRect();
+                const x = e.clientX - feltRect.left;
+                const y = e.clientY - feltRect.top;
+                
+                const existingPreview = document.getElementById('line-preview');
+                if (existingPreview) {
+                    existingPreview.remove();
+                }
+                
+                const distance = Math.sqrt(Math.pow(x - lineStartPoint.x, 2) + Math.pow(y - lineStartPoint.y, 2));
+                if (distance > 10) {
+                    drawLine(lineStartPoint.x, lineStartPoint.y, x, y);
+                }
+                
+                lineStartPoint = null;
+                isDragging = false;
+            }
+        });
+
+        document.getElementById('poolTable').addEventListener('click', function(e) {
+            if (isDragging || currentTool === 'line') return;
+            
+            const feltRect = document.querySelector('.table-felt').getBoundingClientRect();
+            const x = e.clientX - feltRect.left;
+            const y = e.clientY - feltRect.top;
+            
+            switch(currentTool) {
+                case 'ball':
+                    if (usedBallTypes.has(selectedBallType)) {
+                        showAlert(`The ${ballInfo[selectedBallType].name} ball is already on the table. Select a different ball or double-click an existing ball to remove it.`, 'error');
+                        return;
+                    }
+                    createBall(x, y, selectedBallType);
+                    break;
+                    
+                case 'cue':
+                    const cueStick = document.getElementById('cueStick');
+                    cueStick.style.left = x + 'px';
+                    cueStick.style.top = (y - 4) + 'px';
+                    cueStick.style.display = 'block';
+                    markAsChanged();
+                    break;
+            }
+        });
+
+        // Form change handlers
+        document.getElementById('diagramName').addEventListener('input', markAsChanged);
+        document.getElementById('diagramDescription').addEventListener('input', markAsChanged);
+        document.getElementById('diagramType').addEventListener('change', markAsChanged);
+        document.getElementById('diagramVisibility').addEventListener('change', markAsChanged);
+
+        // ===== INITIALIZATION =====
+        
+        function initializeApp() {
+            console.log('🎱 Initializing Billiard Drawing Tool...');
+            
+            checkAuthAndLoadUser();
+            initializeBallSelector();
+            initializePoolTableImage();
+            setTool('select');
+            
+            console.log('✅ Billiard Drawing Tool initialized');
+        }
+
+        // Prevent accidental page refresh
+        window.addEventListener('beforeunload', function(e) {
+            if (hasUnsavedChanges) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        });
+
+        // Load html2canvas library for screenshot functionality
+        function loadHtml2Canvas() {
+            const script = document.createElement('script');
+            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+            script.onload = () => {
+                console.log('✅ html2canvas loaded');
+                initializeApp();
+            };
+            script.onerror = () => {
+                console.error('❌ Failed to load html2canvas');
+                showAlert('Failed to load required library. Some features may not work.', 'error');
+                initializeApp();
+            };
+            document.head.appendChild(script);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🎱 Billiard Drawing Tool Loaded - Version 1.1 (Custom Image)');
+            console.log('📡 API URL:', API_BASE_URL);
+            
+            loadHtml2Canvas();
+        });
+    </script>
+</body>
+</html>

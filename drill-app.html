@@ -1,0 +1,1356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drill Score Entry - Portal Version</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            width: 100%;
+            max-width: 500px;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Updated header styles to match student portal */
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .header-top {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .brand-text {
+            text-align: left;
+            flex: 1;
+        }
+
+        .brand-text h2 {
+            font-size: 1.1em;
+            margin: 0;
+            color: #333;
+            font-weight: 600;
+            line-height: 1.2;
+        }
+
+        .logo {
+            width: 60px;
+            height: 60px;
+            margin-right: 15px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .assignment-context {
+            background: rgba(255, 193, 7, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(255, 193, 7, 0.3);
+        }
+
+        .assignment-context h3 {
+            color: #856404;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+
+        .assignment-context p {
+            color: #856404;
+            font-size: 14px;
+            margin: 0;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        select {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            transform: translateY(-2px);
+        }
+
+        select {
+            cursor: pointer;
+        }
+
+        select:disabled {
+            background-color: #f5f5f5;
+            cursor: not-allowed;
+            color: #999;
+        }
+
+        input[readonly] {
+            background-color: #f8f9fa;
+            cursor: not-allowed;
+            color: #666;
+        }
+
+        .drill-image-container {
+            margin-top: 5px;
+            margin-bottom: 0;
+            text-align: left;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .drill-view-btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            margin-top: 8px;
+        }
+
+        .drill-view-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .submit-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .success-message, .error-message, .personal-best-message, .perfect-score-message, .halfway-message {
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .personal-best-message {
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            color: #7c6f00;
+            border: 2px solid #d4af37;
+            font-weight: 600;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .perfect-score-message {
+            background: linear-gradient(135deg, #ff6b6b, #ff8e53, #ff6b6b);
+            background-size: 200% 200%;
+            color: white;
+            border: 3px solid #ff4757;
+            font-weight: 700;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            animation: perfectGradient 2s ease-in-out infinite;
+            box-shadow: 0 0 30px rgba(255, 107, 107, 0.5);
+        }
+
+        .halfway-message {
+            background: linear-gradient(135deg, #17a2b8, #20c997);
+            color: white;
+            border: 2px solid #138496;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        @keyframes perfectGradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .user-info {
+            margin-bottom: 20px;
+            padding: 10px 15px;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 8px;
+            font-size: 14px;
+            color: #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logout-btn {
+            background: none;
+            border: 1px solid #667eea;
+            color: #667eea;
+            padding: 5px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .logout-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .login-screen {
+            display: none;
+        }
+
+        .app-screen {
+            display: block;
+        }
+
+        .data-preview {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 10px;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+        }
+
+        .data-preview h3 {
+            color: #333;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .entry {
+            background: white;
+            padding: 10px 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .entry.personal-best {
+            border-left: 4px solid #ffd700;
+            background: linear-gradient(90deg, #fffef7, #ffffff);
+        }
+
+        .entry.personal-best:after {
+            content: "👑 BEST";
+            position: absolute;
+            top: 8px;
+            right: 10px;
+            background: #ffd700;
+            color: #7c6f00;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: bold;
+        }
+
+        .entry.perfect-score {
+            border-left: 4px solid #ff6b6b;
+            background: linear-gradient(90deg, #fff5f5, #ffffff);
+        }
+
+        .entry.perfect-score:before {
+            content: "⭐ PERFECT";
+            position: absolute;
+            top: 8px;
+            right: 10px;
+            background: #ff6b6b;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: bold;
+        }
+
+        .entry.perfect-score.personal-best:before {
+            content: "⭐ PERFECT";
+            right: 80px;
+        }
+
+        .entry-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .entry-details {
+            flex: 1;
+        }
+
+        .entry-score {
+            font-weight: bold;
+            color: #667eea;
+            font-size: 1.2em;
+        }
+
+        .integration-info {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255, 193, 7, 0.1);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 193, 7, 0.3);
+            font-size: 14px;
+            color: #856404;
+        }
+
+        .loading {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+        }
+
+        .spinner {
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #667eea;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .version-info {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 12px;
+            color: #999;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                width: calc(100% - 20px);
+                padding: 30px 20px;
+            }
+
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .header-top {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .brand-text {
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- LOGIN SCREEN -->
+        <div id="loginScreen" class="login-screen">
+            <div class="header">
+                <div class="header-top">
+                    <img src="images/logo.png" alt="Steve Sherman Billiards Logo" class="logo">
+                    <div class="brand-text">
+                        <h2>Steve Sherman Billiards Training System</h2>
+                    </div>
+                </div>
+                <h1>Access Required</h1>
+            </div>
+            
+            <div class="integration-info">
+                <strong>Access via Student Portal</strong>
+                <p>This drill application is accessed through the Student Portal. Please login through the Student Portal to continue.</p>
+                <a href="student-portal.html" style="color: #667eea; text-decoration: none; font-weight: 600;">← Return to Student Portal</a>
+            </div>
+            
+            <div class="version-info">
+                Version 2.12 - Training Program Integration
+            </div>
+        </div>
+
+        <!-- MAIN APP SCREEN -->
+        <div id="appScreen" class="app-screen">
+            <div class="header">
+                <div class="header-top">
+                    <img src="images/logo.png" alt="Steve Sherman Billiards Logo" class="logo">
+                    <div class="brand-text">
+                        <h2>Steve Sherman Billiards Training System</h2>
+                    </div>
+                </div>
+                <h1>Drill Score Entry</h1>
+            </div>
+            
+            <!-- Assignment Context -->
+            <div id="assignmentContext" class="assignment-context" style="display: none;">
+                <h3>📋 Training Program Mode</h3>
+                <p id="assignmentContextText">Entering score for assigned drill from training program</p>
+            </div>
+            
+            <div class="user-info">
+                <span>Logged in as: <strong id="currentUserName">Loading...</strong></span>
+                <div>
+                    <small style="margin-right: 10px;">v2.12</small>
+                    <button class="logout-btn" id="logoutBtn">Logout</button>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="playerName">Player Name:</label>
+                <input type="text" id="playerName" name="playerName" required readonly value="Loading...">
+            </div>
+
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" id="assignedDrillsOnly" name="assignedDrillsOnly" style="margin-right: 8px;">
+                    Show only assigned drills
+                </label>
+            </div>
+            
+            <div class="form-group">
+                <label for="drillCategory">Skill Level:</label>
+                <select id="drillCategory" name="drillCategory" required>
+                    <option value="">Loading...</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="drillSkill">Skill:</label>
+                <select id="drillSkill" name="drillSkill" required>
+                    <option value="">Loading...</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="drillName">Drill Name:</label>
+                <select id="drillName" name="drillName" required disabled>
+                    <option value="">Select skill level and skill first...</option>
+                </select>
+                <div class="drill-image-container" id="drillImageContainer" style="display: none;"></div>
+            </div>
+            
+            <div class="form-group">
+                <label for="score">Score:</label>
+                <select id="score" name="score" required disabled>
+                    <option value="">Select a drill first...</option>
+                </select>
+            </div>
+            
+            <button type="button" class="submit-btn" id="submitBtn">Submit Score</button>
+            
+            <div id="successMessage" class="success-message"></div>
+            <div id="perfectScoreMessage" class="perfect-score-message"></div>
+            <div id="halfwayMessage" class="halfway-message"></div>
+            <div id="personalBestMessage" class="personal-best-message"></div>
+            <div id="errorMessage" class="error-message"></div>
+            
+            <div class="data-preview">
+                <h3>Your Recent Practice</h3>
+                <div id="entriesContainer">
+                    <div class="loading">
+                        <span class="spinner"></span>Loading your recent entries...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ========================================
+        // CONFIGURATION
+        // ========================================
+        
+        const API_BASE_URL = 'https://steveshermanbilliards.com/drill-api.php';
+        
+        // Global variables
+        let currentUser = null;
+        let allCategories = [];
+        let allSkills = [];
+        let allDrills = [];
+        let userAssignments = [];
+        let userPersonalBests = new Map();
+        let assignmentContext = null;
+        let preSelectedDrill = null;
+        
+        // ========================================
+        // API HELPER FUNCTIONS
+        // ========================================
+        
+        async function apiRequest(endpoint, method = 'GET', data = null, bustCache = false) {
+            try {
+                const options = {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                };
+                
+                if (data) {
+                    options.body = JSON.stringify(data);
+                }
+                
+                let url = `${API_BASE_URL}/${endpoint}`;
+                if (bustCache || method === 'GET') {
+                    const separator = url.includes('?') ? '&' : '?';
+                    url += `${separator}_t=${Date.now()}&_r=${Math.random()}`;
+                }
+                
+                if (bustCache || method === 'GET') {
+                    options.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate';
+                    options.headers['Pragma'] = 'no-cache';
+                    options.headers['Expires'] = '0';
+                }
+                
+                const response = await fetch(url, options);
+                const result = await response.json();
+                
+                if (!result.success) {
+                    throw new Error(result.message || 'API request failed');
+                }
+                
+                return result.data;
+            } catch (error) {
+                console.error('API Error:', error);
+                throw error;
+            }
+        }
+
+        // ========================================
+        // ASSIGNMENT CONTEXT HANDLING
+        // ========================================
+        
+        function handleAssignmentContext() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const assignmentId = urlParams.get('assignment');
+            const drillId = urlParams.get('drill_id');
+            
+            let sessionContext = null;
+            try {
+                const drillAppSession = sessionStorage.getItem('drillAppSession');
+                if (drillAppSession) {
+                    const session = JSON.parse(drillAppSession);
+                    if (session.fromAssignments && session.preSelectDrill) {
+                        sessionContext = session.preSelectDrill;
+                    }
+                }
+            } catch (e) {
+                console.log('No session assignment context');
+            }
+            
+            if ((assignmentId && drillId) || sessionContext || drillId) {
+                assignmentContext = {
+                    assignmentId: assignmentId || sessionContext?.assignmentId,
+                    drillId: drillId || sessionContext?.drillId,
+                    drillName: sessionContext?.drillName || 'Selected Assignment'
+                };
+                
+                // Set pre-selected drill
+                preSelectedDrill = {
+                    id: assignmentContext.drillId,
+                    name: assignmentContext.drillName
+                };
+                
+                const contextDiv = document.getElementById('assignmentContext');
+                const contextText = document.getElementById('assignmentContextText');
+                
+                contextDiv.style.display = 'block';
+                contextText.textContent = `Entering score for: ${assignmentContext.drillName}`;
+                
+                console.log('🎯 Training program mode activated for drill:', assignmentContext.drillName);
+                
+                return true;
+            }
+            
+            return false;
+        }
+        
+        function applyAssignmentContext() {
+            if (!assignmentContext && !preSelectedDrill) return;
+            
+            console.log('🎯 Applying assignment context:', preSelectedDrill);
+            
+            // Enable assigned drills only mode
+            document.getElementById('assignedDrillsOnly').checked = true;
+            handleAssignedDrillsToggle();
+            
+            // Wait for data to load, then pre-select the drill
+            setTimeout(() => {
+                preSelectDrillFromTrainingProgram();
+            }, 1000);
+        }
+
+        function preSelectDrillFromTrainingProgram() {
+            if (!preSelectedDrill) return;
+            
+            console.log('🎯 Pre-selecting drill from training program:', preSelectedDrill);
+            
+            const drillSelect = document.getElementById('drillName');
+            const targetDrillId = preSelectedDrill.id.toString();
+            
+            // Find and select the drill
+            for (let i = 0; i < drillSelect.options.length; i++) {
+                if (drillSelect.options[i].value === targetDrillId) {
+                    drillSelect.selectedIndex = i;
+                    
+                    // Trigger change event to populate score dropdown
+                    const changeEvent = new Event('change');
+                    drillSelect.dispatchEvent(changeEvent);
+                    
+                    console.log('✅ Pre-selected drill:', drillSelect.options[i].text);
+                    break;
+                }
+            }
+        }
+
+        // ========================================
+        // PERSONAL BEST FUNCTIONS
+        // ========================================
+
+        async function loadUserPersonalBests() {
+            try {
+                const allScores = await apiRequest(`scores?user_id=${currentUser.id}&limit=1000`, 'GET', null, true);
+                const personalBests = new Map();
+                
+                allScores.forEach(score => {
+                    const drillId = score.drill_id;
+                    const currentScore = parseFloat(score.score);
+                    
+                    if (!personalBests.has(drillId) || currentScore > personalBests.get(drillId)) {
+                        personalBests.set(drillId, currentScore);
+                    }
+                });
+                
+                userPersonalBests = personalBests;
+            } catch (error) {
+                console.error('Error loading personal bests:', error);
+                userPersonalBests = new Map();
+            }
+        }
+
+        function isPersonalBest(drillId, newScore) {
+            const currentBest = userPersonalBests.get(parseInt(drillId));
+            return !currentBest || newScore > currentBest;
+        }
+
+        function isPerfectScore(score, maxScore) {
+            return parseFloat(score) === parseFloat(maxScore);
+        }
+
+        function isHalfwayScore(score, maxScore) {
+            const percentage = (parseFloat(score) / parseFloat(maxScore)) * 100;
+            return percentage >= 50 && percentage < 70;
+        }
+
+        function showPersonalBestMessage(drillName, score, previousBest) {
+            const personalBestDiv = document.getElementById('personalBestMessage');
+            const roundedScore = Math.round(score);
+            
+            let message;
+            if (previousBest) {
+                const roundedPreviousBest = Math.round(previousBest);
+                message = `🏆 NEW PERSONAL BEST! 🏆<br>You scored ${roundedScore} on ${drillName}!<br>Previous best: ${roundedPreviousBest}`;
+            } else {
+                message = `🏆 FIRST SCORE ACHIEVED! 🏆<br>You scored ${roundedScore} on ${drillName}!<br>This is your baseline - keep improving!`;
+            }
+            
+            personalBestDiv.innerHTML = message;
+            personalBestDiv.style.display = 'block';
+            setTimeout(() => personalBestDiv.style.display = 'none', 8000);
+        }
+
+        function showPerfectScoreMessage(drillName, score) {
+            const perfectScoreDiv = document.getElementById('perfectScoreMessage');
+            const roundedScore = Math.round(score);
+            
+            const message = `⭐ PERFECT SCORE! ⭐<br>${roundedScore}/${roundedScore} on ${drillName}!`;
+            
+            perfectScoreDiv.innerHTML = message;
+            perfectScoreDiv.style.display = 'block';
+            setTimeout(() => perfectScoreDiv.style.display = 'none', 10000);
+        }
+
+        function showHalfwayMessage(drillName, score, maxScore) {
+            const halfwayDiv = document.getElementById('halfwayMessage');
+            const percentage = Math.round((score / maxScore) * 100);
+            const roundedScore = Math.round(score);
+            const roundedMaxScore = Math.round(maxScore);
+            
+            const message = `💪 You're getting there, keep working! 💪<br>${roundedScore}/${roundedMaxScore} (${percentage}%) on ${drillName}!`;
+            
+            halfwayDiv.innerHTML = message;
+            halfwayDiv.style.display = 'block';
+            setTimeout(() => halfwayDiv.style.display = 'none', 6000);
+        }
+        
+        // ========================================
+        // INITIALIZATION
+        // ========================================
+        
+        async function initializeApp() {
+            try {
+                const [categories, skills, drills] = await Promise.all([
+                    apiRequest('categories', 'GET', null, true),
+                    apiRequest('skills', 'GET', null, true),
+                    apiRequest('drills', 'GET', null, true)
+                ]);
+                
+                allCategories = categories;
+                allSkills = skills;
+                allDrills = drills;
+                
+                if (currentUser) {
+                    userAssignments = await apiRequest(`assignments?user_id=${currentUser.id}`, 'GET', null, true);
+                    await loadUserPersonalBests();
+                }
+                
+                setupForm();
+                
+                if (assignmentContext || preSelectedDrill) {
+                    applyAssignmentContext();
+                }
+                
+                loadRecentEntries();
+                
+            } catch (error) {
+                console.error('Error initializing app:', error);
+                showError('Failed to load app data. Please refresh the page.');
+            }
+        }
+        
+        function setupForm() {
+            if (!assignmentContext && !preSelectedDrill) {
+                document.getElementById('assignedDrillsOnly').checked = false;
+            }
+            
+            const categorySelect = document.getElementById('drillCategory');
+            categorySelect.innerHTML = '<option value="">Select a skill level...</option>';
+            
+            const allCategoriesOption = document.createElement('option');
+            allCategoriesOption.value = 'all';
+            allCategoriesOption.textContent = 'All Skill Levels';
+            categorySelect.appendChild(allCategoriesOption);
+            
+            allCategories.forEach(category => {
+                const option = document.createElement('option');
+                option.value = category.id;
+                option.textContent = category.display_name;
+                categorySelect.appendChild(option);
+            });
+            
+            const skillSelect = document.getElementById('drillSkill');
+            skillSelect.innerHTML = '<option value="">Select a skill...</option>';
+            
+            const allSkillsOption = document.createElement('option');
+            allSkillsOption.value = 'all';
+            allSkillsOption.textContent = 'All Skills';
+            skillSelect.appendChild(allSkillsOption);
+            
+            allSkills.forEach(skill => {
+                const option = document.createElement('option');
+                option.value = skill.id;
+                option.textContent = skill.display_name;
+                skillSelect.appendChild(option);
+            });
+            
+            resetDrillsAndScore();
+            resetDropdownStyling();
+        }
+        
+        function resetDrillsAndScore() {
+            document.getElementById('drillName').innerHTML = '<option value="">Select skill level and skill first...</option>';
+            document.getElementById('drillName').disabled = true;
+            document.getElementById('score').innerHTML = '<option value="">Select a drill first...</option>';
+            document.getElementById('score').disabled = true;
+            document.getElementById('drillImageContainer').style.display = 'none';
+        }
+        
+        function resetDropdownStyling() {
+            const skillLevel = document.getElementById('drillCategory');
+            const skill = document.getElementById('drillSkill');
+            
+            skillLevel.disabled = false;
+            skillLevel.style.backgroundColor = 'rgba(255, 255, 255, 0.8)';
+            skillLevel.style.color = '#333';
+            skill.disabled = false;
+            skill.style.backgroundColor = 'rgba(255, 255, 255, 0.8)';
+            skill.style.color = '#333';
+        }
+        
+        // ========================================
+        // EVENT HANDLERS
+        // ========================================
+        
+        function setupEventHandlers() {
+            document.getElementById('submitBtn').addEventListener('click', submitScore);
+            document.getElementById('logoutBtn').addEventListener('click', logout);
+            document.getElementById('assignedDrillsOnly').addEventListener('change', handleAssignedDrillsToggle);
+            document.getElementById('drillCategory').addEventListener('change', updateDrillNames);
+            document.getElementById('drillSkill').addEventListener('change', updateDrillNames);
+            
+            document.getElementById('drillName').addEventListener('change', function() {
+                const selectedOption = this.options[this.selectedIndex];
+                if (selectedOption.value) {
+                    const maxScore = selectedOption.getAttribute('data-maxscore');
+                    const imageUrl = selectedOption.getAttribute('data-image');
+                    const videoUrl = selectedOption.getAttribute('data-video');
+                    showDrillInfo(selectedOption.value, imageUrl, videoUrl, maxScore);
+                } else {
+                    hideDrillInfo();
+                }
+            });
+        }
+        
+        function logout() {
+            currentUser = null;
+            try {
+                sessionStorage.removeItem('studentSession');
+                sessionStorage.removeItem('drillAppSession');
+            } catch (e) {
+                console.log('Session storage not available');
+            }
+            
+            window.location.href = 'student-portal.html';
+        }
+        
+        // ========================================
+        // DRILL FUNCTIONALITY
+        // ========================================
+        
+        function handleAssignedDrillsToggle() {
+            const checkbox = document.getElementById('assignedDrillsOnly');
+            const skillLevel = document.getElementById('drillCategory');
+            const skill = document.getElementById('drillSkill');
+            
+            if (checkbox.checked) {
+                skillLevel.disabled = true;
+                skillLevel.style.backgroundColor = '#f5f5f5';
+                skillLevel.style.color = '#999';
+                skill.disabled = true;
+                skill.style.backgroundColor = '#f5f5f5';
+                skill.style.color = '#999';
+                
+                populateAssignedDrills();
+            } else {
+                if (assignmentContext || preSelectedDrill) {
+                    checkbox.checked = true;
+                    return;
+                }
+                
+                resetDropdownStyling();
+                resetDrillsAndScore();
+            }
+        }
+        
+        function populateAssignedDrills() {
+            const drillName = document.getElementById('drillName');
+            
+            if (!currentUser || !userAssignments.length) {
+                drillName.innerHTML = '<option value="">No drills assigned to you</option>';
+                drillName.disabled = true;
+                return;
+            }
+            
+            drillName.innerHTML = '<option value="">Select an assigned drill...</option>';
+            
+            userAssignments.forEach(assignment => {
+                const option = document.createElement('option');
+                option.value = assignment.drill_id;
+                option.textContent = assignment.drill_name;
+                option.setAttribute('data-maxscore', assignment.max_score);
+                option.setAttribute('data-assignment-id', assignment.id);
+                
+                const drill = allDrills.find(d => d.id == assignment.drill_id);
+                if (drill) {
+                    option.setAttribute('data-image', drill.image_url || '');
+                    option.setAttribute('data-video', drill.video_url || '');
+                }
+                
+                drillName.appendChild(option);
+            });
+            
+            drillName.disabled = false;
+        }
+        
+        function updateDrillNames() {
+            const categoryId = document.getElementById('drillCategory').value;
+            const skillId = document.getElementById('drillSkill').value;
+            const drillName = document.getElementById('drillName');
+            
+            drillName.innerHTML = '<option value="">Select a drill...</option>';
+            drillName.disabled = true;
+            hideDrillInfo();
+            
+            if (!categoryId || !skillId) {
+                drillName.innerHTML = '<option value="">Select skill level and skill first...</option>';
+                return;
+            }
+            
+            let filteredDrills = allDrills;
+            
+            if (categoryId !== 'all') {
+                filteredDrills = filteredDrills.filter(drill => drill.category_id == categoryId);
+            }
+            
+            if (skillId !== 'all') {
+                filteredDrills = filteredDrills.filter(drill => drill.skill_id == skillId);
+            }
+            
+            if (filteredDrills.length > 0) {
+                drillName.disabled = false;
+                filteredDrills.forEach(drill => {
+                    const option = document.createElement('option');
+                    option.value = drill.id;
+                    option.textContent = drill.name;
+                    option.setAttribute('data-maxscore', drill.max_score);
+                    option.setAttribute('data-image', drill.image_url || '');
+                    option.setAttribute('data-video', drill.video_url || '');
+                    drillName.appendChild(option);
+                });
+            } else {
+                drillName.innerHTML = '<option value="">No drills available for this combination</option>';
+            }
+        }
+        
+        function showDrillInfo(drillId, imageUrl, videoUrl, maxScore) {
+            const container = document.getElementById('drillImageContainer');
+            container.style.display = 'block';
+            
+            let content = '';
+            content += `<a href="drill-display.html?drill_id=${drillId}" class="drill-view-btn" target="_blank">📋 View Drill Details</a>`;
+            
+            container.innerHTML = content;
+            populateScoreDropdown(maxScore);
+        }
+        
+        function hideDrillInfo() {
+            document.getElementById('drillImageContainer').style.display = 'none';
+            const scoreSelect = document.getElementById('score');
+            scoreSelect.disabled = true;
+            scoreSelect.innerHTML = '<option value="">Select a drill first...</option>';
+        }
+        
+        function populateScoreDropdown(maxScore) {
+            const scoreSelect = document.getElementById('score');
+            const max = parseInt(maxScore) || 10;
+            
+            scoreSelect.innerHTML = '';
+            scoreSelect.disabled = false;
+            
+            const defaultOption = document.createElement('option');
+            defaultOption.value = '';
+            defaultOption.textContent = `Select score (1-${max})...`;
+            scoreSelect.appendChild(defaultOption);
+            
+            for (let i = 1; i <= max; i++) {
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = i;
+                scoreSelect.appendChild(option);
+            }
+        }
+        
+        // ========================================
+        // SCORE SUBMISSION
+        // ========================================
+        
+        async function submitScore() {
+            const playerName = document.getElementById('playerName').value.trim();
+            const assignedMode = document.getElementById('assignedDrillsOnly').checked;
+            const categoryId = document.getElementById('drillCategory').value;
+            const skillId = document.getElementById('drillSkill').value;
+            const drillId = document.getElementById('drillName').value;
+            const score = parseFloat(document.getElementById('score').value);
+            const submitBtn = document.getElementById('submitBtn');
+            
+            console.log('🎯 Submit Score Debug:', {
+                playerName,
+                assignedMode,
+                drillId,
+                score,
+                allDrillsLength: allDrills.length,
+                drillIdType: typeof drillId
+            });
+            
+            if (assignedMode) {
+                if (!playerName || !drillId || isNaN(score)) {
+                    showError('Please fill in all required fields.');
+                    return;
+                }
+            } else {
+                if (!playerName || !categoryId || !skillId || !drillId || isNaN(score)) {
+                    showError('Please fill in all fields.');
+                    return;
+                }
+            }
+            
+            try {
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Submitting...';
+                
+                // Find the drill with proper type conversion
+                let selectedDrill = allDrills.find(d => d.id == drillId);
+                
+                // If not found, try with string comparison
+                if (!selectedDrill) {
+                    selectedDrill = allDrills.find(d => d.id.toString() === drillId.toString());
+                }
+                
+                // If still not found, try to get from assignments or create fallback
+                if (!selectedDrill && assignedMode) {
+                    const assignment = userAssignments.find(a => a.drill_id == drillId);
+                    if (assignment) {
+                        selectedDrill = {
+                            id: assignment.drill_id,
+                            name: assignment.drill_name,
+                            max_score: assignment.max_score
+                        };
+                        console.log('🔧 Using drill data from assignment:', selectedDrill);
+                    }
+                }
+                
+                // Final fallback - create minimal drill object
+                if (!selectedDrill) {
+                    console.warn('⚠️ Drill not found in allDrills, creating fallback');
+                    const selectedOption = document.getElementById('drillName').options[document.getElementById('drillName').selectedIndex];
+                    const maxScore = selectedOption.getAttribute('data-maxscore') || '10';
+                    
+                    selectedDrill = {
+                        id: drillId,
+                        name: selectedOption.textContent || 'Unknown Drill',
+                        max_score: parseInt(maxScore)
+                    };
+                    console.log('🔧 Created fallback drill object:', selectedDrill);
+                }
+                
+                const maxScore = selectedDrill ? selectedDrill.max_score : 10;
+                
+                let assignmentId = null;
+                if (assignedMode) {
+                    if (assignmentContext && assignmentContext.assignmentId) {
+                        assignmentId = assignmentContext.assignmentId;
+                    } else {
+                        const selectedOption = document.getElementById('drillName').options[document.getElementById('drillName').selectedIndex];
+                        assignmentId = selectedOption.getAttribute('data-assignment-id');
+                    }
+                }
+                
+                console.log('📝 Score submission data:', {
+                    drillId,
+                    selectedDrill,
+                    maxScore,
+                    assignmentId,
+                    score
+                });
+                
+                const previousBest = userPersonalBests.get(parseInt(drillId));
+                const isNewPersonalBest = isPersonalBest(drillId, score);
+                const isNewPerfectScore = isPerfectScore(score, maxScore);
+                const isNewHalfwayScore = isHalfwayScore(score, maxScore);
+                
+                const scoreData = {
+                    user_id: currentUser.id,
+                    drill_id: parseInt(drillId),
+                    score: score,
+                    max_score: maxScore,
+                    submitted_by: currentUser.id,
+                    is_assigned: assignedMode ? 1 : 0,
+                    assignment_id: assignmentId ? parseInt(assignmentId) : null,
+                    notes: preSelectedDrill ? 'Submitted from training program' : '',
+                    practice_date: new Date().toISOString().split('T')[0]
+                };
+                
+                console.log('📤 Sending score data:', scoreData);
+                
+                await apiRequest('scores', 'POST', scoreData);
+                
+                if (isNewPersonalBest) {
+                    userPersonalBests.set(parseInt(drillId), score);
+                }
+                
+                if (isNewPerfectScore && isNewPersonalBest) {
+                    showPerfectScoreMessage(selectedDrill.name, score);
+                    setTimeout(() => {
+                        showPersonalBestMessage(selectedDrill.name, score, previousBest);
+                    }, 1000);
+                } else if (isNewPerfectScore) {
+                    showPerfectScoreMessage(selectedDrill.name, score);
+                } else if (isNewPersonalBest) {
+                    showPersonalBestMessage(selectedDrill.name, score, previousBest);
+                } else if (isNewHalfwayScore) {
+                    showHalfwayMessage(selectedDrill.name, score, maxScore);
+                } else {
+                    showSuccess(`Score submitted! ${playerName} scored ${score} on ${selectedDrill.name}.`);
+                }
+                
+                document.getElementById('score').value = '';
+                
+                const container = document.getElementById('entriesContainer');
+                container.innerHTML = '<div class="loading"><span class="spinner"></span>Updating your recent entries...</div>';
+                
+                setTimeout(async () => {
+                    await loadRecentEntries();
+                }, 500);
+                
+            } catch (error) {
+                console.error('Error submitting score:', error);
+                showError('Failed to submit score. Please try again.');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit Score';
+            }
+        }
+        
+        // ========================================
+        // RECENT ENTRIES
+        // ========================================
+        
+        async function loadRecentEntries() {
+            const container = document.getElementById('entriesContainer');
+            
+            try {
+                container.innerHTML = '<div class="loading"><span class="spinner"></span>Loading your recent entries...</div>';
+                
+                const scores = await apiRequest(`scores?user_id=${currentUser.id}&limit=10`, 'GET', null, true);
+                
+                if (scores.length === 0) {
+                    container.innerHTML = '<p style="text-align: center; color: #666;">No entries yet. Start practicing to see your progress!</p>';
+                    return;
+                }
+                
+                container.innerHTML = scores.map(entry => {
+                    const skillInfo = entry.is_assigned_drill 
+                        ? `Skill Level: ${entry.category_display} | Skill: ${entry.skill_display} | Assigned Drill`
+                        : `Skill Level: ${entry.category_display} | Skill: ${entry.skill_display}`;
+                    
+                    const entryDate = new Date(entry.submitted_at || entry.practice_date);
+                    const dateStr = entryDate.toLocaleDateString() + ' ' + entryDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                    
+                    const currentBest = userPersonalBests.get(parseInt(entry.drill_id));
+                    const isCurrentBest = currentBest && parseFloat(entry.score) === currentBest;
+                    
+                    const isPerfect = parseFloat(entry.score) === parseFloat(entry.max_possible_score);
+                    
+                    let entryClasses = 'entry';
+                    if (isPerfect) entryClasses += ' perfect-score';
+                    if (isCurrentBest) entryClasses += ' personal-best';
+                    
+                    const displayScore = Math.round(parseFloat(entry.score));
+                    
+                    return `
+                        <div class="${entryClasses}">
+                            <div class="entry-info">
+                                <div class="entry-details">
+                                    <strong>${entry.drill_name}</strong><br>
+                                    <small>${skillInfo}</small><br>
+                                    <small style="color: #999;">${dateStr}</small>
+                                </div>
+                                <div class="entry-score">${displayScore}</div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+                
+            } catch (error) {
+                console.error('Error loading recent entries:', error);
+                container.innerHTML = '<p style="text-align: center; color: #666;">Error loading your entries</p>';
+            }
+        }
+        
+        // ========================================
+        // UI HELPERS
+        // ========================================
+        
+        function showSuccess(message) {
+            const successDiv = document.getElementById('successMessage');
+            const errorDiv = document.getElementById('errorMessage');
+            const personalBestDiv = document.getElementById('personalBestMessage');
+            const perfectScoreDiv = document.getElementById('perfectScoreMessage');
+            const halfwayDiv = document.getElementById('halfwayMessage');
+            
+            errorDiv.style.display = 'none';
+            personalBestDiv.style.display = 'none';
+            perfectScoreDiv.style.display = 'none';
+            halfwayDiv.style.display = 'none';
+            successDiv.textContent = message;
+            successDiv.style.display = 'block';
+            setTimeout(() => successDiv.style.display = 'none', 5000);
+        }
+        
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            const successDiv = document.getElementById('successMessage');
+            const personalBestDiv = document.getElementById('personalBestMessage');
+            const perfectScoreDiv = document.getElementById('perfectScoreMessage');
+            const halfwayDiv = document.getElementById('halfwayMessage');
+            
+            successDiv.style.display = 'none';
+            personalBestDiv.style.display = 'none';
+            perfectScoreDiv.style.display = 'none';
+            halfwayDiv.style.display = 'none';
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            setTimeout(() => errorDiv.style.display = 'none', 8000);
+        }
+        
+        // ========================================
+        // MAIN INITIALIZATION
+        // ========================================
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Drill App v2.12 - Training Program Integration');
+            
+            const urlParams = new URLSearchParams(window.location.search);
+            const fromPortal = urlParams.get('portal') === 'student';
+            
+            if (!fromPortal) {
+                window.location.href = 'student-portal.html';
+                return;
+            }
+            
+            const hasAssignmentContext = handleAssignmentContext();
+            
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('appScreen').style.display = 'block';
+            
+            setupEventHandlers();
+            
+            try {
+                const drillAppSession = sessionStorage.getItem('drillAppSession');
+                
+                if (drillAppSession) {
+                    const session = JSON.parse(drillAppSession);
+                    
+                    const sessionAge = Date.now() - new Date(session.loginTime).getTime();
+                    
+                    if (sessionAge < 24 * 60 * 60 * 1000 && session.fromPortal) {
+                        currentUser = {
+                            id: session.userId,
+                            name: session.name,
+                            email: session.email,
+                            type: session.type || 'player'
+                        };
+                        
+                        document.getElementById('currentUserName').textContent = currentUser.name;
+                        document.getElementById('playerName').value = currentUser.name;
+                        
+                        initializeApp();
+                        return;
+                    }
+                }
+            } catch (e) {
+                console.error('Session error:', e);
+            }
+            
+            document.getElementById('currentUserName').textContent = 'Session Error';
+            document.getElementById('playerName').value = 'Please return to Student Portal';
+        });
+        
+        console.log('🎯 Drill App v2.12 - Training Program Integration Loaded');
+    </script>
+</body>
+</html>

@@ -1,0 +1,2013 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Training Content Admin - Steve Sherman Billiards</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+
+        .admin-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .nav-btn.primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .nav-btn.secondary {
+            background: #f8f9fa;
+            color: #333;
+            border: 2px solid #667eea;
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .search-filter {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .search-input {
+            padding: 10px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            min-width: 200px;
+        }
+
+        .filter-select {
+            padding: 10px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .add-btn {
+            padding: 12px 25px;
+            background: linear-gradient(45deg, #28a745, #20c997);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .add-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
+        }
+
+        .content-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .content-table th {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .content-table td {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            vertical-align: top;
+        }
+
+        .content-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .content-name {
+            font-weight: 600;
+            color: #333;
+            font-size: 16px;
+        }
+
+        .content-description {
+            color: #666;
+            font-size: 13px;
+            margin-top: 5px;
+            max-width: 300px;
+            line-height: 1.4;
+        }
+
+        .content-description .more-link {
+            color: #667eea;
+            cursor: pointer;
+            text-decoration: underline;
+            font-weight: 600;
+        }
+
+        .content-description .more-link:hover {
+            color: #764ba2;
+        }
+
+        .content-badges {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-pdf {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .badge-document {
+            background: #4ecdc4;
+            color: white;
+        }
+
+        .badge-image {
+            background: #45b7d1;
+            color: white;
+        }
+
+        .badge-video {
+            background: #f39c12;
+            color: white;
+        }
+
+        .badge-link {
+            background: #9b59b6;
+            color: white;
+        }
+
+        .badge-other {
+            background: #95a5a6;
+            color: white;
+        }
+
+        .badge-beginner {
+            background: #2ecc71;
+            color: white;
+        }
+
+        .badge-intermediate {
+            background: #f39c12;
+            color: white;
+        }
+
+        .badge-advanced {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .badge-public {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+
+        .badge-private {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .content-preview {
+            width: 80px;
+            height: 60px;
+            border-radius: 4px;
+            background: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .content-preview:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .content-preview.clickable::after {
+            content: '🔗';
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            font-size: 10px;
+            padding: 2px 4px;
+            border-radius: 4px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .content-preview.clickable:hover::after {
+            opacity: 1;
+        }
+
+        .content-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        .content-preview .file-icon {
+            font-size: 20px;
+            color: #667eea;
+        }
+
+        .content-meta {
+            font-size: 12px;
+            color: #999;
+            line-height: 1.3;
+        }
+
+        .credit-info {
+            font-size: 12px;
+            color: #666;
+            line-height: 1.4;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .credit-image {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #e0e0e0;
+            flex-shrink: 0;
+        }
+
+        .credit-details-container {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .credit-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 2px;
+        }
+
+        .credit-details {
+            color: #888;
+            font-style: italic;
+            word-break: break-all;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-download {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .btn-edit {
+            background: #ffc107;
+            color: #212529;
+        }
+
+        .btn-delete {
+            background: #dc3545;
+            color: white;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-content {
+            background: white;
+            margin: 2% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 95vh;
+            overflow-y: auto;
+            position: relative;
+            animation: slideIn 0.3s ease;
+        }
+
+        .description-modal .modal-content {
+            max-width: 500px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .modal-title {
+            font-size: 1.5em;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+            padding: 5px;
+        }
+
+        .close-btn:hover {
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 15px;
+        }
+
+        .form-col {
+            flex: 1;
+        }
+
+        /* Upload Method Toggle */
+        .upload-method-toggle {
+            display: flex;
+            margin-bottom: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 4px;
+            position: relative;
+        }
+
+        .upload-method-btn {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            background: transparent;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 2;
+        }
+
+        .upload-method-btn.active {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+        }
+
+        .upload-method-btn:not(.active) {
+            color: #666;
+        }
+
+        .upload-method-btn:not(.active):hover {
+            color: #333;
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        /* File Upload Section */
+        .file-upload-section {
+            display: none;
+        }
+
+        .file-upload-section.active {
+            display: block;
+        }
+
+        .file-upload {
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .file-upload:hover {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .file-upload.dragover {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .file-preview {
+            max-width: 100%;
+            max-height: 200px;
+            margin-top: 15px;
+            border-radius: 8px;
+            display: none;
+            object-fit: contain;
+            border: 1px solid #ddd;
+            padding: 4px;
+            background: white;
+        }
+
+        .file-info {
+            margin-top: 15px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            display: none;
+            font-size: 0.9em;
+        }
+
+        /* URL Input Section */
+        .url-input-section {
+            display: none;
+        }
+
+        .url-input-section.active {
+            display: block;
+        }
+
+        .url-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .url-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .url-preview {
+            margin-top: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            display: none;
+            border-left: 4px solid #667eea;
+        }
+
+        .url-preview-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .url-preview-url {
+            color: #666;
+            font-size: 14px;
+            word-break: break-all;
+            background: #fff;
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+
+        .url-validate-btn {
+            margin-top: 10px;
+            padding: 8px 16px;
+            background: #17a2b8;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .url-validate-btn:hover {
+            background: #138496;
+        }
+
+        .url-validate-btn:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+
+        .url-status {
+            margin-top: 10px;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .url-status.valid {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .url-status.invalid {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .url-status.checking {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .btn-cancel {
+            padding: 12px 25px;
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .btn-save {
+            padding: 12px 25px;
+            background: linear-gradient(45deg, #28a745, #20c997);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .btn-cancel:hover, .btn-save:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-message, .success-message, .info-message {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .info-message {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-style: italic;
+        }
+
+        .description-content {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #333;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        @media (max-width: 768px) {
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-filter {
+                flex-direction: column;
+            }
+
+            .content-table {
+                font-size: 14px;
+            }
+
+            .content-table th,
+            .content-table td {
+                padding: 10px;
+            }
+
+            .modal-content {
+                margin: 10px;
+                width: calc(100% - 20px);
+            }
+
+            .form-row {
+                flex-direction: column;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .content-preview {
+                width: 60px;
+                height: 45px;
+            }
+
+            .upload-method-toggle {
+                flex-direction: column;
+            }
+
+            .credit-info {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+
+            .credit-image {
+                margin-bottom: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📚 Training Content Management</h1>
+        <p>Steve Sherman Billiards - Manage Training Materials & Resources</p>
+    </div>
+
+    <div class="container">
+        <div class="admin-nav">
+            <div class="nav-buttons">
+                <a href="drill-admin-portal.html" class="nav-btn secondary">← Back to Admin Portal</a>
+                <button class="nav-btn primary" onclick="refreshData()">🔄 Refresh Data</button>
+                <button class="nav-btn secondary" onclick="debugStorage()">🔧 Debug Storage</button>
+            </div>
+            <div class="user-info">
+                <span id="currentUserDisplay">Training Content Admin</span>
+                <br><small>Admin Panel | Version 3.0 - Credit Info Fixed</small>
+            </div>
+        </div>
+
+        <div class="controls">
+            <div class="search-filter">
+                <input type="text" class="search-input" id="searchInput" placeholder="Search content..." onkeyup="debounceSearch()">
+                <select class="filter-select" id="typeFilter" onchange="filterContent()">
+                    <option value="">All Types</option>
+                    <option value="pdf">PDF Documents</option>
+                    <option value="document">Word Documents</option>
+                    <option value="image">Images</option>
+                    <option value="video">Videos</option>
+                    <option value="link">External Links</option>
+                    <option value="other">Other</option>
+                </select>
+                <select class="filter-select" id="categoryFilter" onchange="filterContent()">
+                    <option value="">All Categories</option>
+                </select>
+                <select class="filter-select" id="skillFilter" onchange="filterContent()">
+                    <option value="">All Skills</option>
+                </select>
+                <select class="filter-select" id="difficultyFilter" onchange="filterContent()">
+                    <option value="">All Levels</option>
+                    <option value="beginner">Beginner</option>
+                    <option value="intermediate">Intermediate</option>
+                    <option value="advanced">Advanced</option>
+                </select>
+                <select class="filter-select" id="visibilityFilter" onchange="filterContent()">
+                    <option value="">All Visibility</option>
+                    <option value="public">Public</option>
+                    <option value="private">Private</option>
+                </select>
+            </div>
+            <button class="add-btn" onclick="openUploadModal()">+ Add Content</button>
+        </div>
+
+        <div id="messageContainer"></div>
+
+        <div id="contentTableContainer">
+            <div class="loading">
+                <div class="spinner"></div>
+                Loading training content...
+            </div>
+        </div>
+    </div>
+
+    <!-- Upload Modal -->
+    <div id="uploadModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">Add Training Content</h2>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+
+            <form id="contentForm">
+                <input type="hidden" id="contentId">
+
+                <div class="form-group">
+                    <label class="form-label">Content Name *</label>
+                    <input type="text" id="contentName" class="form-input" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-col">
+                        <label class="form-label">Category *</label>
+                        <select id="contentCategory" class="form-select" required>
+                            <option value="">Select category...</option>
+                        </select>
+                    </div>
+                    <div class="form-col">
+                        <label class="form-label">Skill Level *</label>
+                        <select id="contentSkill" class="form-select" required>
+                            <option value="">Select skill...</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-col">
+                        <label class="form-label">Difficulty Level *</label>
+                        <select id="contentDifficulty" class="form-select" required>
+                            <option value="beginner">Beginner</option>
+                            <option value="intermediate">Intermediate</option>
+                            <option value="advanced">Advanced</option>
+                        </select>
+                    </div>
+                    <div class="form-col">
+                        <label class="form-label">Visibility *</label>
+                        <select id="contentVisibility" class="form-select" required>
+                            <option value="private">Private (Only You)</option>
+                            <option value="public">Public (All Users)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea id="contentDescription" class="form-textarea" placeholder="Describe this training material and how it should be used..."></textarea>
+                </div>
+
+                <!-- Upload Method Toggle -->
+                <div class="form-group">
+                    <label class="form-label">Content Type *</label>
+                    <div class="upload-method-toggle">
+                        <button type="button" class="upload-method-btn active" id="fileUploadBtn" onclick="switchUploadMethod('file')">
+                            📁 Upload File
+                        </button>
+                        <button type="button" class="upload-method-btn" id="urlLinkBtn" onclick="switchUploadMethod('url')">
+                            🔗 Link to URL
+                        </button>
+                    </div>
+                </div>
+
+                <!-- File Upload Section -->
+                <div class="file-upload-section active" id="fileUploadSection">
+                    <div class="form-group">
+                        <label class="form-label">Training Material File *</label>
+                        <div class="file-upload" onclick="document.getElementById('fileInput').click()">
+                            <div>📁 Click to select file</div>
+                            <small>PDF, Word documents, images, videos (Max: 50MB)</small>
+                        </div>
+                        <input type="file" id="fileInput" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif,.webp,.mp4,.webm,.mov" style="display: none" onchange="previewFile(event)">
+                        <img id="filePreview" class="file-preview">
+                        <div id="fileInfo" class="file-info"></div>
+                    </div>
+                </div>
+
+                <!-- URL Input Section -->
+                <div class="url-input-section" id="urlInputSection">
+                    <div class="form-group">
+                        <label class="form-label">External URL *</label>
+                        <input type="url" id="contentUrl" class="url-input" placeholder="https://example.com/training-material" oninput="validateUrl()">
+                        <div id="urlPreview" class="url-preview">
+                            <div class="url-preview-title">URL Preview</div>
+                            <div class="url-preview-url" id="urlPreviewUrl"></div>
+                            <button type="button" class="url-validate-btn" onclick="validateUrlAccess()">Test URL Access</button>
+                            <div id="urlStatus" class="url-status"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn-cancel" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="btn-save" id="submitBtn">Save Content</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Description Modal -->
+    <div id="descriptionModal" class="modal description-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="descriptionModalTitle">Content Description</h2>
+                <button class="close-btn" onclick="closeDescriptionModal()">&times;</button>
+            </div>
+            <div class="description-content" id="descriptionModalContent"></div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const API_BASE_URL = 'https://steveshermanbilliards.com/drill-api.php';
+        
+        // Global variables
+        let allContent = [];
+        let filteredContent = [];
+        let selectedFile = null;
+        let editingId = null;
+        let currentUser = null;
+        let categories = [];
+        let skills = [];
+        let searchTimeout = null;
+        let currentUploadMethod = 'file'; // 'file' or 'url'
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('📚 Training Content Admin Portal Loading...');
+            checkAuthAndLoadUser();
+        });
+
+        // API helper with AGGRESSIVE cache busting
+        async function apiRequest(endpoint, method = 'GET', data = null) {
+            try {
+                console.log(`🌐 API Request: ${method} ${API_BASE_URL}/${endpoint}`);
+                
+                // AGGRESSIVE CACHE BUSTING - Add multiple cache busting parameters
+                const cacheBuster = `nocache=${Math.random()}&t=${Date.now()}&v=${Math.floor(Math.random() * 1000000)}`;
+                const separator = endpoint.includes('?') ? '&' : '?';
+                const fullUrl = `${API_BASE_URL}/${endpoint}${separator}${cacheBuster}`;
+                
+                const options = { 
+                    method,
+                    headers: {
+                        'Cache-Control': 'no-cache, no-store, must-revalidate',
+                        'Pragma': 'no-cache',
+                        'Expires': '0'
+                    },
+                    cache: 'no-store'
+                };
+                
+                if (data) {
+                    if (data instanceof FormData) {
+                        options.body = data;
+                        console.log('📁 FormData request with file upload');
+                    } else {
+                        options.headers['Content-Type'] = 'application/json';
+                        options.body = JSON.stringify(data);
+                        console.log('📄 JSON request:', data);
+                    }
+                }
+                
+                console.log('🔗 Making fetch request with cache busting:', fullUrl);
+                const response = await fetch(fullUrl, options);
+                
+                console.log(`📊 Response status: ${response.status}`);
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('❌ API Error Response:', errorText);
+                    throw new Error(`HTTP ${response.status}: ${errorText}`);
+                }
+                
+                const result = await response.json();
+                console.log(`✅ API Success:`, result);
+                
+                return result;
+                
+            } catch (error) {
+                console.error('💥 API Request failed:', error);
+                throw error;
+            }
+        }
+
+        // Authentication check
+        function checkAuthAndLoadUser() {
+            console.log('🔐 Checking authentication...');
+            
+            // For admin portal, we'll use a simple check
+            currentUser = {
+                id: 1,
+                name: 'Training Content Admin',
+                type: 'admin'
+            };
+            
+            document.getElementById('currentUserDisplay').textContent = currentUser.name;
+            console.log('✅ User authenticated:', currentUser);
+            
+            // Load initial data
+            loadInitialData();
+        }
+
+        // Load initial data
+        async function loadInitialData() {
+            console.log('🔥 Loading initial data...');
+            
+            try {
+                // Load categories and skills in parallel
+                const [categoriesResult, skillsResult] = await Promise.all([
+                    apiRequest('categories'),
+                    apiRequest('skills')
+                ]);
+                
+                if (categoriesResult.success) {
+                    categories = categoriesResult.data;
+                    populateFilterOptions('categoryFilter', categories, 'display_name');
+                    populateFilterOptions('contentCategory', categories, 'display_name');
+                    console.log('✅ Categories loaded:', categories.length);
+                } else {
+                    throw new Error('Failed to load categories');
+                }
+                
+                if (skillsResult.success) {
+                    skills = skillsResult.data;
+                    populateFilterOptions('skillFilter', skills, 'display_name');
+                    populateFilterOptions('contentSkill', skills, 'display_name');
+                    console.log('✅ Skills loaded:', skills.length);
+                } else {
+                    throw new Error('Failed to load skills');
+                }
+                
+                // Load training content
+                await loadContent();
+                
+            } catch (error) {
+                console.error('💥 Failed to load initial data:', error);
+                showMessage('Failed to load initial data: ' + error.message, 'error');
+                
+                // Show error state in table
+                const container = document.getElementById('contentTableContainer');
+                container.innerHTML = `
+                    <div class="error-message">
+                        <strong>Failed to load data</strong><br>
+                        ${error.message}<br>
+                        <button onclick="loadInitialData()" class="btn-primary" style="margin-top: 10px;">Retry</button>
+                    </div>
+                `;
+            }
+        }
+
+        // Load training content
+        async function loadContent() {
+            console.log('📚 Loading training content...');
+            
+            try {
+                showLoadingState();
+                
+                const result = await apiRequest('training-content');
+                
+                if (result.success) {
+                    allContent = result.data || [];
+                    filteredContent = [...allContent];
+                    
+                    console.log('✅ Training content loaded:', allContent.length, 'items');
+                    console.log('📊 Raw content data:', allContent);
+                    
+                    // Debug: Log each item's URL fields
+                    allContent.forEach((item, index) => {
+                        console.log(`📋 Item ${index + 1}: ${item.name}`);
+                        console.log(`   - content_type: ${item.content_type}`);
+                        console.log(`   - file_url: ${item.file_url}`);
+                        console.log(`   - external_url: ${item.external_url}`);
+                        console.log(`   - external_link: ${item.external_link}`);
+                        console.log(`   - credit_to: ${item.credit_to}`);
+                        console.log(`   - credit_url: ${item.credit_url}`);
+                        console.log(`   - credit_image_url: ${item.credit_image_url}`);
+                        console.log(`   - all fields:`, Object.keys(item));
+                        console.log(`   - full item data:`, item);
+                    });
+                    
+                    renderContentTable();
+                    
+                } else {
+                    throw new Error(result.message || 'Failed to load training content');
+                }
+                
+            } catch (error) {
+                console.error('💥 Failed to load training content:', error);
+                showMessage('Failed to load training content: ' + error.message, 'error');
+                
+                // Show error state in table
+                const container = document.getElementById('contentTableContainer');
+                container.innerHTML = `
+                    <div class="error-message">
+                        <strong>Failed to load training content</strong><br>
+                        ${error.message}<br>
+                        <button onclick="loadContent()" class="btn-primary" style="margin-top: 10px;">Retry</button>
+                    </div>
+                `;
+            }
+        }
+
+        // Show loading state
+        function showLoadingState() {
+            const container = document.getElementById('contentTableContainer');
+            container.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    Loading training content...
+                </div>
+            `;
+        }
+
+        // Populate filter options
+        function populateFilterOptions(selectId, items, displayField) {
+            const select = document.getElementById(selectId);
+            if (!select) {
+                console.warn('⚠️ Select element not found:', selectId);
+                return;
+            }
+            
+            // Keep existing first option
+            const firstOption = select.querySelector('option');
+            select.innerHTML = '';
+            if (firstOption) {
+                select.appendChild(firstOption);
+            }
+            
+            items.forEach(item => {
+                const option = document.createElement('option');
+                option.value = item.id;
+                option.textContent = item[displayField] || item.name;
+                select.appendChild(option);
+            });
+            
+            console.log(`✅ Populated ${selectId} with ${items.length} options`);
+        }
+
+        // Render content table
+        function renderContentTable() {
+            console.log('🎨 Rendering content table with', filteredContent.length, 'items');
+            
+            const container = document.getElementById('contentTableContainer');
+            
+            if (filteredContent.length === 0) {
+                container.innerHTML = `
+                    <div class="no-data">
+                        📚 No training content found.<br>
+                        <small>Try adjusting your filters or add new content.</small>
+                    </div>
+                `;
+                return;
+            }
+            
+            const tableHTML = `
+                <table class="content-table">
+                    <thead>
+                        <tr>
+                            <th>Preview</th>
+                            <th>Content</th>
+                            <th>Type & Category</th>
+                            <th>Details</th>
+                            <th>Credit To</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${filteredContent.map(content => createContentRow(content)).join('')}
+                    </tbody>
+                </table>
+            `;
+            
+            container.innerHTML = tableHTML;
+        }
+
+        // Create content row
+        function createContentRow(content) {
+            const preview = createPreviewHTML(content);
+            const badges = createBadgesHTML(content);
+            const description = content.description ? 
+                (content.description.length > 100 ? 
+                    content.description.substring(0, 100) + `... <span class="more-link" onclick="showDescription('${content.name}', '${escapeQuotes(content.description)}')">more</span>` :
+                    content.description) : 
+                '<em>No description</em>';
+            
+            // Create credit information display
+            const creditInfo = createCreditInfoHTML(content);
+            
+            // PRE-CALCULATE the URL and action buttons to avoid template literal nesting issues
+            const contentUrl = getUrlForContent(content);
+            let actionButtons = '';
+            
+            console.log(`🎯 Creating row for ${content.name} (ID: ${content.id})`);
+            console.log(`   - content_type: ${content.content_type}`);
+            console.log(`   - contentUrl: ${contentUrl}`);
+            console.log(`   - external_url: ${content.external_url}`);
+            console.log(`   - file_url: ${content.file_url}`);
+            console.log(`   - credit_to: ${content.credit_to}`);
+            console.log(`   - credit_url: ${content.credit_url}`);
+            console.log(`   - credit_image_url: ${content.credit_image_url}`);
+            
+            if (content.content_type === 'link') {
+                if (contentUrl && contentUrl !== 'null' && contentUrl !== 'undefined' && contentUrl !== null) {
+                    actionButtons = `<button class="action-btn btn-download" data-url="${escapeHtml(contentUrl)}" onclick="openExternalLinkFromData(this)" title="Open Link">🔗 Open</button>`;
+                    console.log(`   ✅ Added link button with URL: ${contentUrl}`);
+                } else {
+                    console.log(`   ❌ No valid URL for link content`);
+                }
+            } else {
+                if (contentUrl && contentUrl !== 'null' && contentUrl !== null) {
+                    actionButtons = `<button class="action-btn btn-download" onclick="downloadContent(${content.id})" title="Download">💾 Download</button>`;
+                    console.log(`   ✅ Added download button with URL: ${contentUrl}`);
+                } else {
+                    console.log(`   ❌ No valid URL for file content`);
+                }
+            }
+            
+            // Add edit and delete buttons
+            actionButtons += `
+                <button class="action-btn btn-edit" onclick="editContent(${content.id})" title="Edit">✏️ Edit</button>
+                <button class="action-btn btn-delete" onclick="deleteContent(${content.id}, '${escapeQuotes(content.name)}')" title="Delete">🗑️ Delete</button>
+            `;
+            
+            return `
+                <tr>
+                    <td>${preview}</td>
+                    <td>
+                        <div class="content-name">${escapeHtml(content.name)}</div>
+                        <div class="content-description">${description}</div>
+                    </td>
+                    <td>
+                        <div class="content-badges">${badges}</div>
+                    </td>
+                    <td>
+                        <div class="content-meta">
+                            <div><strong>Difficulty:</strong> ${capitalizeFirst(content.difficulty_level)}</div>
+                            <div><strong>Visibility:</strong> ${capitalizeFirst(content.visibility)}</div>
+                            ${content.file_size_formatted ? `<div><strong>Size:</strong> ${content.file_size_formatted}</div>` : ''}
+                            ${content.download_count ? `<div><strong>Downloads:</strong> ${content.download_count}</div>` : ''}
+                        </div>
+                    </td>
+                    <td>
+                        ${creditInfo}
+                    </td>
+                    <td>
+                        <div class="action-buttons">
+                            ${actionButtons}
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }
+
+        // Create credit information HTML - UPDATED WITH IMAGE SUPPORT
+        function createCreditInfoHTML(content) {
+            console.log('🏷️ Creating credit info for:', content.name);
+            console.log('   - credit_to:', content.credit_to);
+            console.log('   - credit_url:', content.credit_url);
+            console.log('   - credit_image_url:', content.credit_image_url);
+            
+            if (content.credit_to) {
+                const creditName = escapeHtml(content.credit_to);
+                const creditUrl = content.credit_url;
+                const creditImageUrl = content.credit_image_url;
+                
+                let creditHtml = `<div class="credit-info">`;
+                
+                // Add image if available
+                if (creditImageUrl && creditImageUrl !== 'null' && creditImageUrl !== null && creditImageUrl.trim() !== '') {
+                    creditHtml += `<img src="${escapeHtml(creditImageUrl)}" alt="${creditName}" class="credit-image" onerror="this.style.display='none'">`;
+                }
+                
+                creditHtml += `<div class="credit-details-container">
+                    <div class="credit-name">${creditName}</div>`;
+                
+                if (creditUrl && creditUrl !== 'null' && creditUrl !== null && creditUrl.trim() !== '') {
+                    creditHtml += `<div class="credit-details">
+                        <a href="${escapeHtml(creditUrl)}" target="_blank" rel="noopener noreferrer" style="color: #667eea; text-decoration: none;">
+                            🔗 ${escapeHtml(creditUrl)}
+                        </a>
+                    </div>`;
+                }
+                
+                creditHtml += `</div></div>`;
+                
+                console.log('   ✅ Generated credit HTML with image and link');
+                return creditHtml;
+            } else {
+                console.log('   ➖ No credit information available');
+                return `<div class="credit-info">
+                    <div class="credit-details-container">
+                        <div class="credit-details" style="font-style: italic; color: #999;">
+                            No credit information
+                        </div>
+                    </div>
+                </div>`;
+            }
+        }
+
+        // Get the correct URL field based on content type
+        function getUrlForContent(content) {
+            if (content.content_type === 'link') {
+                // For link content, external_url should be the primary field
+                // Fall back to other fields only if external_url is not available
+                return content.external_url || content.external_link || content.file_url;
+            } else {
+                // For file content (pdf, image, video, document), use file_url
+                return content.file_url;
+            }
+        }
+
+        // Create preview HTML
+        function createPreviewHTML(content) {
+            console.log('🎨 Creating preview for content:', content.name, 'type:', content.content_type);
+            
+            // For link content, get the appropriate URL field
+            if (content.content_type === 'link') {
+                const linkUrl = getUrlForContent(content);
+                console.log('🔗 URL field selection for link content:', {
+                    external_url: content.external_url,
+                    external_link: content.external_link,
+                    file_url: content.file_url,
+                    chosen: linkUrl,
+                    reason: content.external_url ? 'external_url (primary)' : 
+                           content.external_link ? 'external_link (fallback)' : 
+                           content.file_url ? 'file_url (fallback)' : 'none found'
+                });
+                
+                if (linkUrl && linkUrl !== 'null' && linkUrl !== null && linkUrl !== 'undefined') {
+                    const previewHtml = `
+                        <div class="content-preview clickable" data-url="${escapeHtml(linkUrl)}" onclick="openExternalLinkFromData(this)" title="Open external link: ${escapeHtml(linkUrl)}" style="cursor: pointer; border: 2px solid #007bff;">
+                            <div class="file-icon" style="pointer-events: none;">🔗</div>
+                        </div>
+                    `;
+                    console.log('🔗 Generated preview HTML with URL:', linkUrl);
+                    return previewHtml;
+                } else {
+                    console.log('❌ No valid URL found for link content');
+                    return `
+                        <div class="content-preview" title="No URL available">
+                            <div class="file-icon" style="opacity: 0.5;">🔗</div>
+                        </div>
+                    `;
+                }
+            }
+            
+            // For image content, show thumbnail preview
+            if (content.content_type === 'image' && content.thumbnail_url) {
+                const fileUrl = getUrlForContent(content);
+                return `
+                    <div class="content-preview clickable" onclick="window.open('${fileUrl}', '_blank')" title="View full image">
+                        <img src="${content.thumbnail_url}" alt="${escapeHtml(content.name)}" onerror="this.parentElement.innerHTML='<div class=&quot;file-icon&quot;>🖼️</div>'">
+                    </div>
+                `;
+            }
+            
+            // For other file content (PDF, document, video)
+            const fileUrl = getUrlForContent(content);
+            if (fileUrl && fileUrl !== 'null' && fileUrl !== null) {
+                const icon = getFileIcon(content.content_type);
+                return `
+                    <div class="content-preview clickable" onclick="window.open('${fileUrl}', '_blank')" title="Open file">
+                        <div class="file-icon">${icon}</div>
+                    </div>
+                `;
+            }
+            
+            return `
+                <div class="content-preview" title="No file available">
+                    <div class="file-icon" style="opacity: 0.5;">📄</div>
+                </div>
+            `;
+        }
+
+        // Create badges HTML
+        function createBadgesHTML(content) {
+            const badges = [];
+            
+            // Content type badge
+            badges.push(`<span class="badge badge-${content.content_type}">${content.content_type.toUpperCase()}</span>`);
+            
+            // Category badge (if available)
+            if (content.category_display) {
+                badges.push(`<span class="badge" style="background: #6c757d; color: white;">${content.category_display}</span>`);
+            }
+            
+            // Skill badge (if available)
+            if (content.skill_display) {
+                badges.push(`<span class="badge" style="background: #17a2b8; color: white;">${content.skill_display}</span>`);
+            }
+            
+            // Difficulty badge
+            badges.push(`<span class="badge badge-${content.difficulty_level}">${content.difficulty_level.toUpperCase()}</span>`);
+            
+            // Visibility badge
+            badges.push(`<span class="badge badge-${content.visibility}">${content.visibility.toUpperCase()}</span>`);
+            
+            return badges.join('');
+        }
+
+        // Get file icon
+        function getFileIcon(contentType) {
+            const icons = {
+                'pdf': '📕',
+                'document': '📄',
+                'image': '🖼️',
+                'video': '🎥',
+                'link': '🔗',
+                'other': '📎'
+            };
+            return icons[contentType] || '📄';
+        }
+
+        // Utility functions
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function escapeQuotes(text) {
+            return text.replace(/'/g, "\\'").replace(/"/g, '\\"');
+        }
+
+        function capitalizeFirst(str) {
+            return str.charAt(0).toUpperCase() + str.slice(1);
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        }
+
+        // Show message
+        function showMessage(message, type = 'info') {
+            const container = document.getElementById('messageContainer');
+            const alertClass = type === 'error' ? 'error-message' : 
+                             type === 'success' ? 'success-message' : 'info-message';
+            
+            container.innerHTML = `<div class="${alertClass}">${message}</div>`;
+            
+            // Auto-hide after 5 seconds
+            setTimeout(() => {
+                container.innerHTML = '';
+            }, 5000);
+        }
+
+        // Show description modal
+        function showDescription(title, description) {
+            document.getElementById('descriptionModalTitle').textContent = title;
+            document.getElementById('descriptionModalContent').textContent = description;
+            document.getElementById('descriptionModal').style.display = 'block';
+        }
+
+        function closeDescriptionModal() {
+            document.getElementById('descriptionModal').style.display = 'none';
+        }
+
+        // Filter functions
+        function debounceSearch() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(filterContent, 300);
+        }
+
+        function filterContent() {
+            console.log('🔍 Filtering content...');
+            
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const typeFilter = document.getElementById('typeFilter').value;
+            const categoryFilter = document.getElementById('categoryFilter').value;
+            const skillFilter = document.getElementById('skillFilter').value;
+            const difficultyFilter = document.getElementById('difficultyFilter').value;
+            const visibilityFilter = document.getElementById('visibilityFilter').value;
+            
+            filteredContent = allContent.filter(content => {
+                const matchesSearch = !searchTerm || 
+                    content.name.toLowerCase().includes(searchTerm) ||
+                    (content.description && content.description.toLowerCase().includes(searchTerm));
+                
+                const matchesType = !typeFilter || content.content_type === typeFilter;
+                const matchesCategory = !categoryFilter || content.category_id == categoryFilter;
+                const matchesSkill = !skillFilter || content.skill_id == skillFilter;
+                const matchesDifficulty = !difficultyFilter || content.difficulty_level === difficultyFilter;
+                const matchesVisibility = !visibilityFilter || content.visibility === visibilityFilter;
+                
+                return matchesSearch && matchesType && matchesCategory && 
+                       matchesSkill && matchesDifficulty && matchesVisibility;
+            });
+            
+            console.log(`🔍 Filtered to ${filteredContent.length} items from ${allContent.length} total`);
+            renderContentTable();
+        }
+
+        // Modal functions
+        function openUploadModal() {
+            resetForm();
+            editingId = null;
+            document.getElementById('modalTitle').textContent = 'Add Training Content';
+            document.getElementById('submitBtn').textContent = 'Save Content';
+            document.getElementById('uploadModal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('uploadModal').style.display = 'none';
+            resetForm();
+        }
+
+        function resetForm() {
+            document.getElementById('contentForm').reset();
+            document.getElementById('contentId').value = '';
+            document.getElementById('filePreview').style.display = 'none';
+            document.getElementById('fileInfo').style.display = 'none';
+            document.getElementById('urlPreview').style.display = 'none';
+            selectedFile = null;
+            
+            // Reset upload method to file
+            switchUploadMethod('file');
+        }
+
+        // Upload method switching
+        function switchUploadMethod(method) {
+            currentUploadMethod = method;
+            
+            // Update buttons
+            document.getElementById('fileUploadBtn').classList.toggle('active', method === 'file');
+            document.getElementById('urlLinkBtn').classList.toggle('active', method === 'url');
+            
+            // Update sections
+            document.getElementById('fileUploadSection').classList.toggle('active', method === 'file');
+            document.getElementById('urlInputSection').classList.toggle('active', method === 'url');
+            
+            console.log('🔄 Switched upload method to:', method);
+        }
+
+        // File preview
+        function previewFile(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            selectedFile = file;
+            
+            const preview = document.getElementById('filePreview');
+            const info = document.getElementById('fileInfo');
+            
+            // Show file info
+            info.innerHTML = `
+                <strong>File:</strong> ${file.name}<br>
+                <strong>Size:</strong> ${formatFileSize(file.size)}<br>
+                <strong>Type:</strong> ${file.type}
+            `;
+            info.style.display = 'block';
+            
+            // Show image preview if it's an image
+            if (file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            } else {
+                preview.style.display = 'none';
+            }
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        // URL validation
+        function validateUrl() {
+            const url = document.getElementById('contentUrl').value;
+            const preview = document.getElementById('urlPreview');
+            const urlDisplay = document.getElementById('urlPreviewUrl');
+            const status = document.getElementById('urlStatus');
+            
+            if (url) {
+                urlDisplay.textContent = url;
+                preview.style.display = 'block';
+                status.innerHTML = '';
+            } else {
+                preview.style.display = 'none';
+            }
+        }
+
+        function validateUrlAccess() {
+            const url = document.getElementById('contentUrl').value;
+            const btn = document.querySelector('.url-validate-btn');
+            const status = document.getElementById('urlStatus');
+            
+            if (!url) {
+                status.innerHTML = '<span class="invalid">Please enter a URL first</span>';
+                status.className = 'url-status invalid';
+                return;
+            }
+            
+            btn.disabled = true;
+            btn.textContent = 'Testing...';
+            status.innerHTML = 'Checking URL accessibility...';
+            status.className = 'url-status checking';
+            
+            // Simple URL validation (you could enhance this with actual URL testing)
+            setTimeout(() => {
+                btn.disabled = false;
+                btn.textContent = 'Test URL Access';
+                
+                try {
+                    new URL(url);
+                    status.innerHTML = 'URL format is valid';
+                    status.className = 'url-status valid';
+                } catch (e) {
+                    status.innerHTML = 'Invalid URL format';
+                    status.className = 'url-status invalid';
+                }
+            }, 1000);
+        }
+
+        // Form submission
+        document.getElementById('contentForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            console.log('📤 Submitting content form...');
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const originalText = submitBtn.textContent;
+            
+            try {
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Saving...';
+                
+                const formData = collectFormData();
+                
+                if (editingId) {
+                    await updateContent(editingId, formData);
+                } else {
+                    await createContent(formData);
+                }
+                
+            } catch (error) {
+                console.error('💥 Form submission failed:', error);
+                showMessage('Failed to save content: ' + error.message, 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
+            }
+        });
+
+        // Collect form data
+        function collectFormData() {
+            const name = document.getElementById('contentName').value.trim();
+            const description = document.getElementById('contentDescription').value.trim();
+            const categoryId = document.getElementById('contentCategory').value;
+            const skillId = document.getElementById('contentSkill').value;
+            const difficulty = document.getElementById('contentDifficulty').value;
+            const visibility = document.getElementById('contentVisibility').value;
+            
+            if (!name || !categoryId || !skillId) {
+                throw new Error('Please fill in all required fields');
+            }
+            
+            if (currentUploadMethod === 'url') {
+                const url = document.getElementById('contentUrl').value.trim();
+                if (!url) {
+                    throw new Error('Please enter a URL');
+                }
+                
+                return {
+                    name,
+                    description,
+                    category_id: parseInt(categoryId),
+                    skill_id: parseInt(skillId),
+                    difficulty_level: difficulty,
+                    visibility,
+                    content_type: 'link',
+                    external_url: url,
+                    created_by: currentUser.id
+                };
+            } else {
+                if (!selectedFile && !editingId) {
+                    throw new Error('Please select a file to upload');
+                }
+                
+                const formData = new FormData();
+                formData.append('name', name);
+                formData.append('description', description);
+                formData.append('category_id', categoryId);
+                formData.append('skill_id', skillId);
+                formData.append('difficulty_level', difficulty);
+                formData.append('visibility', visibility);
+                formData.append('created_by', currentUser.id);
+                
+                if (selectedFile) {
+                    formData.append('file', selectedFile);
+                }
+                
+                return formData;
+            }
+        }
+
+        // Create content
+        async function createContent(formData) {
+            console.log('➕ Creating new content...');
+            
+            const result = await apiRequest('training-content', 'POST', formData);
+            
+            if (result.success) {
+                showMessage('Training content created successfully!', 'success');
+                closeModal();
+                await loadContent(); // Reload the content list
+            } else {
+                throw new Error(result.message || 'Failed to create content');
+            }
+        }
+
+        // Update content
+        async function updateContent(id, formData) {
+            console.log('✏️ Updating content:', id);
+            
+            const result = await apiRequest(`training-content/${id}`, 'PUT', formData);
+            
+            if (result.success) {
+                showMessage('Training content updated successfully!', 'success');
+                closeModal();
+                await loadContent(); // Reload the content list
+            } else {
+                throw new Error(result.message || 'Failed to update content');
+            }
+        }
+
+        // Edit content
+        async function editContent(id) {
+            console.log('✏️ Editing content:', id);
+            
+            try {
+                const result = await apiRequest(`training-content/${id}`);
+                
+                if (result.success) {
+                    const content = result.data;
+                    
+                    // Populate form
+                    document.getElementById('contentId').value = content.id;
+                    document.getElementById('contentName').value = content.name;
+                    document.getElementById('contentDescription').value = content.description || '';
+                    document.getElementById('contentCategory').value = content.category_id;
+                    document.getElementById('contentSkill').value = content.skill_id;
+                    document.getElementById('contentDifficulty').value = content.difficulty_level;
+                    document.getElementById('contentVisibility').value = content.visibility;
+                    
+                    // Set upload method based on content type
+                    if (content.content_type === 'link') {
+                        switchUploadMethod('url');
+                        // FIXED: Use external_url for link content instead of file_url
+                        document.getElementById('contentUrl').value = content.external_url || '';
+                        validateUrl();
+                    } else {
+                        switchUploadMethod('file');
+                        // Show current file info if available
+                        if (content.original_filename) {
+                            const info = document.getElementById('fileInfo');
+                            info.innerHTML = `
+                                <strong>Current File:</strong> ${content.original_filename}<br>
+                                ${content.file_size_formatted ? `<strong>Size:</strong> ${content.file_size_formatted}<br>` : ''}
+                                <small>Select a new file to replace the current one</small>
+                            `;
+                            info.style.display = 'block';
+                        }
+                    }
+                    
+                    editingId = id;
+                    document.getElementById('modalTitle').textContent = 'Edit Training Content';
+                    document.getElementById('submitBtn').textContent = 'Update Content';
+                    document.getElementById('uploadModal').style.display = 'block';
+                    
+                } else {
+                    throw new Error(result.message || 'Failed to load content');
+                }
+                
+            } catch (error) {
+                console.error('💥 Failed to load content for editing:', error);
+                showMessage('Failed to load content: ' + error.message, 'error');
+            }
+        }
+
+        // Delete content
+        async function deleteContent(id, name) {
+            if (!confirm(`Are you sure you want to delete "${name}"?\n\nThis action cannot be undone.`)) {
+                return;
+            }
+            
+            console.log('🗑️ Deleting content:', id);
+            
+            try {
+                const result = await apiRequest(`training-content/${id}`, 'DELETE');
+                
+                if (result.success) {
+                    showMessage('Training content deleted successfully!', 'success');
+                    await loadContent(); // Reload the content list
+                } else {
+                    throw new Error(result.message || 'Failed to delete content');
+                }
+                
+            } catch (error) {
+                console.error('💥 Failed to delete content:', error);
+                showMessage('Failed to delete content: ' + error.message, 'error');
+            }
+        }
+
+        // Open external link from data attribute (safer method)
+        function openExternalLinkFromData(element) {
+            const url = element.getAttribute('data-url');
+            console.log('🔗 Element clicked:', element);
+            console.log('🔗 Raw data-url attribute:', url);
+            console.log('🔗 Element dataset:', element.dataset);
+            
+            if (!url) {
+                console.error('❌ No URL found in data-url attribute');
+                showMessage('No URL found for this link', 'error');
+                return;
+            }
+            
+            console.log('🔗 Opening external link from data:', url);
+            openExternalLink(url);
+        }
+
+        // Open external link with validation
+        function openExternalLink(url) {
+            console.log('🔗 Opening external link:', url);
+            
+            // Validate URL
+            if (!url || url === 'null' || url === 'undefined') {
+                console.error('❌ Invalid URL:', url);
+                showMessage('Invalid URL - cannot open link', 'error');
+                return;
+            }
+            
+            // Ensure URL has protocol
+            let finalUrl = url;
+            if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                finalUrl = 'https://' + url;
+                console.log('🔗 Added https:// to URL:', finalUrl);
+            }
+            
+            try {
+                // Validate URL format
+                new URL(finalUrl);
+                window.open(finalUrl, '_blank', 'noopener,noreferrer');
+                console.log('✅ Successfully opened:', finalUrl);
+            } catch (error) {
+                console.error('❌ Invalid URL format:', finalUrl, error);
+                showMessage('Invalid URL format - cannot open link', 'error');
+            }
+        }
+
+        // Download content
+        function downloadContent(id) {
+            const content = allContent.find(c => c.id === id);
+            if (content && content.file_url) {
+                window.open(content.file_url, '_blank');
+            }
+        }
+
+        // Utility functions for admin
+        async function refreshData() {
+            console.log('🔄 Refreshing data...');
+            showMessage('Refreshing data...', 'info');
+            await loadInitialData();
+            showMessage('Data refreshed successfully!', 'success');
+        }
+
+        async function debugStorage() {
+            console.log('🔧 Debug storage...');
+            
+            try {
+                const result = await apiRequest('debug-blob');
+                console.log('🔧 Debug result:', result);
+                
+                if (result.success) {
+                    const data = result.data;
+                    alert(`Debug Information:\n\n` +
+                        `Table exists: ${data.table_exists}\n` +
+                        `Uploads directory: ${data.directory_info.uploads_dir.exists ? 'EXISTS' : 'MISSING'}\n` +
+                        `Directory writable: ${data.directory_info.uploads_dir.writable ? 'YES' : 'NO'}\n` +
+                        `Thumbnails directory: ${data.directory_info.thumbnails_dir.exists ? 'EXISTS' : 'MISSING'}\n` +
+                        `PHP uploads enabled: ${data.php_upload_settings.file_uploads}\n` +
+                        `Max upload size: ${data.php_upload_settings.upload_max_filesize}\n` +
+                        `GD library: ${data.gd_available ? 'AVAILABLE' : 'MISSING'}`);
+                } else {
+                    alert('Debug failed: ' + result.message);
+                }
+            } catch (error) {
+                console.error('💥 Debug failed:', error);
+                alert('Debug failed: ' + error.message);
+            }
+        }
+
+        // Close modals when clicking outside
+        window.onclick = function(event) {
+            const uploadModal = document.getElementById('uploadModal');
+            const descModal = document.getElementById('descriptionModal');
+            
+            if (event.target === uploadModal) {
+                closeModal();
+            }
+            if (event.target === descModal) {
+                closeDescriptionModal();
+            }
+        };
+    </script>
+</body>
+</html>

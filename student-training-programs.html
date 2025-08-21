@@ -1,0 +1,1217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Training Programs - Steve Sherman Billiards</title>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .logo {
+            width: 60px;
+            height: 60px;
+            margin-right: 15px;
+        }
+
+        .brand-text {
+            text-align: left;
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .brand-text h2 {
+            font-size: 1.1em;
+            margin: 0;
+            color: #333;
+            font-weight: 600;
+            line-height: 1.2;
+        }
+
+        .page-title {
+            font-size: 2.5em;
+            margin: 20px 0 10px 0;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-align: center;
+        }
+
+        .student-info {
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .student-details {
+            color: #333;
+            font-weight: 600;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-1px);
+        }
+
+        .main-layout {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 30px;
+            min-height: 600px;
+        }
+
+        .programs-sidebar {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            overflow-y: auto;
+            max-height: 800px;
+        }
+
+        .programs-sidebar h3 {
+            margin-bottom: 20px;
+            color: #333;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .program-item {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            cursor: pointer;
+        }
+
+        .program-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+            border-color: #667eea;
+        }
+
+        .program-item.selected {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .program-name {
+            font-weight: 600;
+            font-size: 1.1em;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .program-progress {
+            background: #e9ecef;
+            border-radius: 10px;
+            height: 8px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .program-progress-bar {
+            height: 100%;
+            background: linear-gradient(45deg, #28a745, #20c997);
+            transition: width 0.3s ease;
+        }
+
+        .program-stats {
+            font-size: 0.85em;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .program-difficulty {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-block;
+        }
+
+        .difficulty-beginner {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .difficulty-intermediate {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .difficulty-advanced {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .content-area {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .units-panel, .assignments-panel {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            overflow-y: auto;
+            max-height: 700px;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .panel-title {
+            color: #333;
+            font-size: 1.3em;
+        }
+
+        .unit-item {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .unit-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+            border-color: #667eea;
+        }
+
+        .unit-item.selected {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .unit-item.locked {
+            background: #f5f5f5;
+            border-color: #dc3545;
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .unit-item.locked:hover {
+            transform: none;
+            box-shadow: none;
+        }
+
+        .unit-order {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #667eea;
+            color: white;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .unit-order.locked {
+            background: #dc3545;
+        }
+
+        .unit-title {
+            font-weight: 600;
+            font-size: 1.1em;
+            color: #333;
+            margin-bottom: 8px;
+            padding-right: 35px;
+        }
+
+        .unit-progress {
+            background: #e9ecef;
+            border-radius: 5px;
+            height: 6px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        .unit-progress-bar {
+            height: 100%;
+            background: linear-gradient(45deg, #28a745, #20c997);
+            transition: width 0.3s ease;
+        }
+
+        .unit-stats {
+            font-size: 0.85em;
+            color: #666;
+        }
+
+        .lock-status {
+            font-size: 0.8em;
+            font-weight: 600;
+            margin-top: 5px;
+        }
+
+        .lock-status.unlocked {
+            color: #28a745;
+        }
+
+        .lock-status.locked {
+            color: #dc3545;
+        }
+
+        .assignment-item {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-left: 4px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .assignment-item.drill {
+            border-left-color: #667eea;
+        }
+
+        .assignment-item.training-content {
+            border-left-color: #28a745;
+        }
+
+        .assignment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+
+        .assignment-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .assignment-type {
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .type-drill {
+            background: #667eea;
+            color: white;
+        }
+
+        .type-training-content {
+            background: #28a745;
+            color: white;
+        }
+
+        .assignment-details {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .drill-stats {
+            background: rgba(102, 126, 234, 0.08);
+            border-radius: 6px;
+            padding: 8px;
+            margin: 8px 0;
+            font-size: 0.85em;
+        }
+
+        .drill-stats-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 4px;
+        }
+
+        .drill-stats-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .drill-stats-label {
+            color: #666;
+            font-weight: 500;
+        }
+
+        .drill-stats-value {
+            color: #333;
+            font-weight: 600;
+        }
+
+        .assignment-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .assignment-btn {
+            padding: 4px 8px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-view {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-view:hover {
+            background: #5a6fd8;
+            transform: translateY(-1px);
+        }
+
+        .btn-practice {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-practice:hover {
+            background: #218838;
+            transform: translateY(-1px);
+        }
+
+        .loading {
+            text-align: center;
+            color: #667eea;
+            font-weight: 600;
+            padding: 40px;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+            padding: 40px 20px;
+        }
+
+        .empty-content {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+            padding: 40px 20px;
+            grid-column: 1 / -1;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        @media (max-width: 1024px) {
+            .main-layout {
+                grid-template-columns: 250px 1fr;
+                gap: 20px;
+            }
+
+            .content-area {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                padding: 20px;
+            }
+
+            .main-layout {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .programs-sidebar {
+                max-height: 300px;
+            }
+
+            .header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .brand-text {
+                text-align: center;
+                min-width: auto;
+            }
+
+            .student-info {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <img src="images/logo.png" alt="Steve Sherman Billiards Logo" class="logo">
+            <div class="brand-text">
+                <h2>Steve Sherman Billiards Training System</h2>
+            </div>
+        </div>
+        <h1 class="page-title">My Training Programs</h1>
+
+        <!-- Student Info -->
+        <div class="student-info">
+            <div class="student-details">
+                <span>Student: <strong id="currentStudent">Loading...</strong></span><br>
+                <small>View your assigned training programs and track progress | Version 4.0 - Clean Snapshot Only</small>
+            </div>
+            <div class="action-buttons">
+                <button class="btn btn-secondary" onclick="forceRefresh()">🔄 Refresh</button>
+                <button class="btn btn-secondary" onclick="window.close()">Close</button>
+            </div>
+        </div>
+
+        <!-- Messages -->
+        <div id="errorMessage" class="error-message" style="display: none;"></div>
+        <div id="successMessage" class="success-message" style="display: none;"></div>
+
+        <!-- Main Layout -->
+        <div class="main-layout">
+            <!-- Programs Sidebar -->
+            <div class="programs-sidebar">
+                <h3>My Programs</h3>
+                <div id="programsContainer">
+                    <div class="loading">Loading your training programs...</div>
+                </div>
+            </div>
+
+            <!-- Content Area -->
+            <div class="content-area">
+                <!-- Units Panel -->
+                <div class="units-panel">
+                    <div class="panel-header">
+                        <h3 class="panel-title" id="unitsTitle">Select a Program</h3>
+                    </div>
+                    <div id="unitsContainer">
+                        <div class="empty-content">
+                            Select a training program from the left to view its units and assignments.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Assignments Panel -->
+                <div class="assignments-panel">
+                    <div class="panel-header">
+                        <h3 class="panel-title" id="assignmentsTitle">Unit Assignments</h3>
+                    </div>
+                    <div id="assignmentsContainer">
+                        <div class="empty-content">
+                            Select a unit to view its assignments and training materials.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const API_BASE_URL = 'https://steveshermanbilliards.com/drill-api.php';
+        
+        // State - Clean version only tracks snapshot data
+        let currentStudent = null;
+        let assignedPrograms = [];
+        let selectedProgram = null;
+        let selectedAssignment = null;
+        let assignedUnits = [];
+        let selectedUnit = null;
+        let unitAssignments = [];
+        let drillStats = {};
+        let programAssignmentDate = null;
+
+        // API Helper Function with cache busting
+        async function apiRequest(endpoint, method = 'GET', data = null) {
+            try {
+                let url = `${API_BASE_URL}/${endpoint}`;
+                if (method === 'GET') {
+                    const separator = endpoint.includes('?') ? '&' : '?';
+                    url += `${separator}_t=${Date.now()}&_r=${Math.random()}`;
+                }
+                
+                const options = {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Cache-Control': 'no-cache, no-store, must-revalidate',
+                        'Pragma': 'no-cache',
+                        'Expires': '0'
+                    },
+                    cache: 'no-store'
+                };
+                
+                if (data) {
+                    options.body = JSON.stringify(data);
+                }
+                
+                console.log('🌐 API Request:', method, url);
+                
+                const response = await fetch(url, options);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const result = await response.json();
+                console.log('📡 API Response:', result);
+                
+                if (!result.success) {
+                    throw new Error(result.message || 'API request failed');
+                }
+                
+                return result;
+            } catch (error) {
+                console.error('❌ API Error:', error);
+                throw error;
+            }
+        }
+
+        // Initialization - CLEAN VERSION - Matches coach interface approach
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('🚀 Student Training Programs loaded - Version 4.0 Clean Snapshot Only');
+            
+            try {
+                initializeSession();
+                await loadData();
+            } catch (error) {
+                console.error('❌ Error initializing:', error);
+                showError('Failed to initialize: ' + error.message);
+            }
+        });
+
+        // CLEAN: Session initialization - handles student parameter but NO fallback logic
+        function initializeSession() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const studentData = urlParams.get('student');
+            
+            console.log('🔍 URL student parameter:', studentData);
+            
+            if (!studentData) {
+                // Check session storage as backup
+                try {
+                    const sessionData = sessionStorage.getItem('userSession');
+                    console.log('🔍 Session storage data:', sessionData);
+                    if (sessionData) {
+                        currentStudent = JSON.parse(sessionData);
+                        console.log('🔍 Parsed session student:', currentStudent);
+                    }
+                } catch (e) {
+                    console.log('No valid session data available');
+                }
+                
+                if (!currentStudent) {
+                    throw new Error('No student data provided. Please access this page through the proper student portal.');
+                }
+            } else {
+                try {
+                    currentStudent = JSON.parse(atob(studentData));
+                    console.log('🔍 URL parsed student:', currentStudent);
+                } catch (error) {
+                    throw new Error('Invalid student data format');
+                }
+            }
+            
+            console.log('✅ Final currentStudent:', currentStudent);
+            document.getElementById('currentStudent').textContent = currentStudent.name || 'Unknown Student';
+        }
+
+        // CLEAN: Load data - matches coach interface pattern exactly
+        async function loadData() {
+            try {
+                console.log('📚 Loading data for student ID:', currentStudent.id);
+                console.log('📚 Student object:', JSON.stringify(currentStudent, null, 2));
+                
+                // Load assigned programs (snapshot data) - SAME API CALL AS COACH INTERFACE
+                const apiUrl = `training-program-assignments?user_id=${currentStudent.id}`;
+                console.log('🌐 Making API call:', apiUrl);
+                
+                const programsResponse = await apiRequest(apiUrl);
+                console.log('📋 Training program assignments response:', programsResponse);
+                
+                if (!programsResponse.data || programsResponse.data.length === 0) {
+                    console.log('❌ No training program assignments found for user', currentStudent.id);
+                    assignedPrograms = [];
+                } else {
+                    console.log('📊 Raw assignments data:', programsResponse.data);
+                    
+                    // Transform the data to match expected format
+                    assignedPrograms = programsResponse.data.map(assignment => {
+                        console.log('📋 Processing assignment:', assignment);
+                        
+                        if (!programAssignmentDate || new Date(assignment.assigned_date) < new Date(programAssignmentDate)) {
+                            programAssignmentDate = assignment.assigned_date;
+                        }
+                        
+                        return {
+                            id: assignment.program_id,
+                            assignment_id: assignment.id,
+                            name: assignment.program_name,
+                            description: assignment.program_description,
+                            difficulty_level: assignment.difficulty_level,
+                            estimated_duration_weeks: assignment.estimated_duration_weeks,
+                            unit_count: assignment.total_units,
+                            assignment_date: assignment.assigned_date,
+                            progress_percentage: assignment.progress_percentage || 0,
+                            locking_mode: assignment.locking_mode || 'unlocked'
+                        };
+                    });
+                    
+                    console.log('✅ Final processed programs:', assignedPrograms);
+                    console.log('✅ Loaded assigned programs count:', assignedPrograms.length);
+                }
+                
+                renderPrograms();
+                
+            } catch (error) {
+                console.error('❌ Error loading data:', error);
+                throw error;
+            }
+        }
+
+        function renderPrograms() {
+            const container = document.getElementById('programsContainer');
+            
+            if (assignedPrograms.length === 0) {
+                container.innerHTML = '<div class="empty-state">No training programs assigned yet.<br>Contact your coach to get started!</div>';
+                return;
+            }
+            
+            container.innerHTML = assignedPrograms.map(program => {
+                const progress = program.progress_percentage || 0;
+                
+                return `
+                    <div class="program-item" onclick="selectProgram(${program.id}, ${program.assignment_id})" data-program-id="${program.id}">
+                        <div class="program-name">${program.name}</div>
+                        <div class="program-progress">
+                            <div class="program-progress-bar" style="width: ${progress}%"></div>
+                        </div>
+                        <div class="program-stats">
+                            Progress: ${Math.round(progress)}% • ${program.unit_count || 0} units • ${program.estimated_duration_weeks || 'TBD'} weeks
+                        </div>
+                        <span class="program-difficulty difficulty-${program.difficulty_level}">${program.difficulty_level}</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function loadDrillStats(drillId, assignmentDate) {
+            try {
+                if (drillStats[drillId]) {
+                    return drillStats[drillId];
+                }
+
+                const scoresResponse = await apiRequest(`scores?user_id=${currentStudent.id}&drill_id=${drillId}&limit=1000`);
+                const scores = scoresResponse.data || [];
+                
+                const filteredScores = scores.filter(score => {
+                    const scoreDate = new Date(score.practice_date || score.submitted_at);
+                    const assignDate = new Date(assignmentDate);
+                    return scoreDate >= assignDate;
+                });
+
+                let stats = {
+                    attempts: 0,
+                    maxScore: 0,
+                    avgScore: 0
+                };
+
+                if (filteredScores.length > 0) {
+                    stats.attempts = filteredScores.length;
+                    stats.maxScore = Math.max(...filteredScores.map(s => parseInt(s.score) || 0));
+                    
+                    const totalScore = filteredScores.reduce((sum, s) => sum + (parseInt(s.score) || 0), 0);
+                    stats.avgScore = Math.round(totalScore / filteredScores.length);
+                }
+
+                drillStats[drillId] = stats;
+                return stats;
+                
+            } catch (error) {
+                console.error('Error loading drill stats for drill', drillId, ':', error);
+                return { attempts: 0, maxScore: 0, avgScore: 0 };
+            }
+        }
+
+        // CLEAN: Only snapshot-based program selection
+        async function selectProgram(programId, assignmentId) {
+            try {
+                console.log('🎯 Selecting program ID:', programId, 'assignment ID:', assignmentId);
+                
+                // Clear previous selections
+                document.querySelectorAll('.program-item').forEach(item => {
+                    item.classList.remove('selected');
+                });
+                
+                // Select new program
+                const programElement = document.querySelector(`[data-program-id="${programId}"]`);
+                if (!programElement) {
+                    throw new Error(`Program element not found for ID: ${programId}`);
+                }
+                programElement.classList.add('selected');
+                
+                const numericProgramId = parseInt(programId);
+                selectedProgram = assignedPrograms.find(p => parseInt(p.id) === numericProgramId);
+                selectedAssignment = selectedProgram;
+                
+                if (!selectedProgram) {
+                    throw new Error(`Program not found with ID: ${programId}`);
+                }
+                
+                selectedUnit = null;
+                
+                console.log('📚 Selected program:', selectedProgram.name, 'Assignment ID:', assignmentId);
+                
+                // Load assigned units for this assignment (snapshot data only)
+                await loadAssignedUnits(assignmentId);
+                
+                // Update UI
+                document.getElementById('unitsTitle').textContent = `${selectedProgram.name} - Units`;
+                document.getElementById('assignmentsTitle').textContent = 'Unit Assignments';
+                
+                // Clear assignments panel
+                document.getElementById('assignmentsContainer').innerHTML = '<div class="empty-content">Select a unit to view its assignments.</div>';
+                
+            } catch (error) {
+                console.error('❌ Error selecting program:', error);
+                showError('Failed to load program units: ' + error.message);
+            }
+        }
+
+        // CLEAN: Load assigned units (snapshot data only)
+        async function loadAssignedUnits(assignmentId) {
+            try {
+                console.log('📋 Loading assigned units for assignment ID:', assignmentId);
+                
+                const response = await apiRequest(`training-program-units-assigned?assignment_id=${assignmentId}`);
+                assignedUnits = response.data || [];
+                
+                console.log('📚 Loaded assigned units:', assignedUnits.length);
+                
+                renderAssignedUnits();
+                
+            } catch (error) {
+                console.error('❌ Error loading assigned units:', error);
+                assignedUnits = [];
+                renderAssignedUnits();
+            }
+        }
+
+        // CLEAN: Render assigned units with lock status
+        function renderAssignedUnits() {
+            const container = document.getElementById('unitsContainer');
+            
+            if (assignedUnits.length === 0) {
+                container.innerHTML = '<div class="empty-state">No units available in this program yet.</div>';
+                return;
+            }
+            
+            container.innerHTML = assignedUnits.map(unit => {
+                const progress = calculateUnitProgress(unit);
+                const isLocked = unit.is_locked == 1;
+                const lockClass = isLocked ? 'locked' : '';
+                const orderClass = isLocked ? 'locked' : '';
+                
+                return `
+                    <div class="unit-item ${lockClass}" ${!isLocked ? `onclick="selectAssignedUnit(${unit.id})"` : ''} data-unit-id="${unit.id}">
+                        <div class="unit-order ${orderClass}">${unit.unit_order || '?'}</div>
+                        <div class="unit-title">${unit.name}</div>
+                        <div class="unit-progress">
+                            <div class="unit-progress-bar" style="width: ${progress}%"></div>
+                        </div>
+                        <div class="unit-stats">
+                            Progress: ${progress}% • ${unit.estimated_duration_days || 'TBD'} days
+                        </div>
+                        <div class="lock-status ${isLocked ? 'locked' : 'unlocked'}">
+                            ${isLocked ? '🔒 Locked - Contact your coach to unlock' : '🔓 Unlocked and available'}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function calculateUnitProgress(unit) {
+            // TODO: Calculate actual progress based on completed assignments
+            return Math.floor(Math.random() * 100);
+        }
+
+        // CLEAN: Select assigned units (snapshot data only)
+        async function selectAssignedUnit(assignedUnitId) {
+            try {
+                console.log('🎯 Selecting assigned unit ID:', assignedUnitId);
+                
+                // Clear previous selections
+                document.querySelectorAll('.unit-item').forEach(item => {
+                    item.classList.remove('selected');
+                });
+                
+                // Select new unit
+                const unitElement = document.querySelector(`[data-unit-id="${assignedUnitId}"]`);
+                if (!unitElement) {
+                    throw new Error(`Unit element not found for ID: ${assignedUnitId}`);
+                }
+                unitElement.classList.add('selected');
+                
+                const numericUnitId = parseInt(assignedUnitId);
+                selectedUnit = assignedUnits.find(u => parseInt(u.id) === numericUnitId);
+                
+                if (!selectedUnit) {
+                    throw new Error(`Unit not found with ID: ${assignedUnitId}`);
+                }
+                
+                console.log('📋 Selected assigned unit:', selectedUnit.name);
+                
+                // Load assignments for this assigned unit (snapshot data only)
+                await loadAssignedUnitContent(assignedUnitId);
+                
+                // Update assignments panel title
+                document.getElementById('assignmentsTitle').textContent = `${selectedUnit.name} - Assignments`;
+                
+            } catch (error) {
+                console.error('❌ Error selecting unit:', error);
+                showError('Failed to load unit assignments: ' + error.message);
+            }
+        }
+
+        // CLEAN: Load assigned unit content (snapshot data only)
+        async function loadAssignedUnitContent(assignedUnitId) {
+            try {
+                console.log('📋 Loading content for assigned unit ID:', assignedUnitId);
+                
+                const response = await apiRequest(`training-program-content-assigned?assigned_unit_id=${assignedUnitId}`);
+                unitAssignments = response.data || [];
+                
+                console.log('📖 Loaded assigned unit content:', unitAssignments.length);
+                
+                renderAssignments();
+                
+            } catch (error) {
+                console.error('❌ Error loading assigned unit content:', error);
+                unitAssignments = [];
+                renderAssignments();
+            }
+        }
+
+        async function renderAssignments() {
+            const container = document.getElementById('assignmentsContainer');
+            
+            if (unitAssignments.length === 0) {
+                container.innerHTML = '<div class="empty-state">No assignments in this unit yet.</div>';
+                return;
+            }
+            
+            // Separate drill and content assignments
+            const drillAssignments = unitAssignments.filter(a => a.content_type === 'drill');
+            const contentAssignments = unitAssignments.filter(a => a.content_type === 'training_content');
+            
+            let html = '';
+            
+            // Render drill assignments with stats
+            if (drillAssignments.length > 0) {
+                html += '<div style="margin-bottom: 20px;"><h4 style="color: #667eea; margin-bottom: 10px;">🎯 Practice Drills</h4>';
+                
+                // Load stats for all drill assignments
+                for (const assignment of drillAssignments) {
+                    const stats = await loadDrillStats(assignment.drill_id, selectedProgram.assignment_date);
+                    assignment._stats = stats;
+                }
+                
+                html += drillAssignments.map(assignment => renderDrillAssignment(assignment)).join('');
+                html += '</div>';
+            }
+            
+            // Render content assignments
+            if (contentAssignments.length > 0) {
+                html += '<div><h4 style="color: #28a745; margin-bottom: 10px;">📚 Training Materials</h4>';
+                html += contentAssignments.map(assignment => renderContentAssignment(assignment)).join('');
+                html += '</div>';
+            }
+            
+            container.innerHTML = html;
+        }
+
+        function renderDrillAssignment(assignment) {
+            const stats = assignment._stats || { attempts: 0, maxScore: 0, avgScore: 0 };
+            
+            return `
+                <div class="assignment-item drill">
+                    <div class="assignment-header">
+                        <div>
+                            <div class="assignment-name">${assignment.drill_name || 'Unknown Drill'}</div>
+                            <span class="assignment-type type-drill">Drill</span>
+                        </div>
+                    </div>
+                    <div class="assignment-details">
+                        ${assignment.drill_category ? `${assignment.drill_category} • ` : ''}
+                        ${assignment.drill_skill ? `${assignment.drill_skill} • ` : ''}
+                        ${assignment.points_possible ? `${assignment.points_possible} points` : ''}
+                        ${assignment.estimated_duration_minutes ? ` • ${assignment.estimated_duration_minutes} min` : ''}
+                    </div>
+                    ${stats.attempts > 0 ? `
+                    <div class="drill-stats">
+                        <div class="drill-stats-row">
+                            <span class="drill-stats-label">Practice Sessions:</span>
+                            <span class="drill-stats-value">${stats.attempts}</span>
+                        </div>
+                        <div class="drill-stats-row">
+                            <span class="drill-stats-label">Best Score:</span>
+                            <span class="drill-stats-value">${stats.maxScore}</span>
+                        </div>
+                        <div class="drill-stats-row">
+                            <span class="drill-stats-label">Average Score:</span>
+                            <span class="drill-stats-value">${stats.avgScore}</span>
+                        </div>
+                    </div>
+                    ` : ''}
+                    <div class="assignment-actions">
+                        <button class="assignment-btn btn-view" onclick="viewDrill(${assignment.drill_id})">👁️ View Details</button>
+                        <button class="assignment-btn btn-practice" onclick="practiceDrill(${assignment.drill_id})">🎯 Practice</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderContentAssignment(assignment) {
+            return `
+                <div class="assignment-item training-content">
+                    <div class="assignment-header">
+                        <div>
+                            <div class="assignment-name">${assignment.content_name || assignment.content_title || 'Training Material'}</div>
+                            <span class="assignment-type type-training-content">Content</span>
+                        </div>
+                    </div>
+                    <div class="assignment-details">
+                        ${assignment.content_category ? `${assignment.content_category} • ` : ''}
+                        ${assignment.content_skill ? `${assignment.content_skill} • ` : ''}
+                        ${assignment.content_difficulty ? `${assignment.content_difficulty.toUpperCase()}` : ''}
+                        ${assignment.file_size_formatted ? ` • ${assignment.file_size_formatted}` : ''}
+                    </div>
+                    <div class="assignment-actions">
+                        <button class="assignment-btn btn-view" onclick="viewContent(${assignment.content_id})">👁️ View Content</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Action Functions
+        function viewDrill(drillId) {
+            const drillDisplayUrl = `drill-display.html?drill_id=${drillId}&portal=student`;
+            window.open(drillDisplayUrl, '_blank', 'width=1000,height=800,scrollbars=yes,resizable=yes');
+        }
+
+        function practiceDrill(drillId) {
+            try {
+                // Get drill details for context
+                const assignment = unitAssignments.find(a => a.drill_id == drillId);
+                const drillName = assignment ? assignment.drill_name : 'Selected Drill';
+                
+                console.log('🎯 Opening drill app for practice:', { drillId, drillName });
+                
+                // Set up session data for the drill app
+                const drillAppSession = {
+                    userId: currentStudent.id,
+                    name: currentStudent.display_name || currentStudent.name,
+                    email: currentStudent.email || 'student@example.com',
+                    type: 'student',
+                    loginTime: new Date().toISOString(),
+                    fromPortal: true,
+                    fromAssignments: true,
+                    preSelectDrill: {
+                        drillId: drillId,
+                        drillName: drillName,
+                        assignmentId: assignment ? assignment.id : null
+                    }
+                };
+                
+                // Store session data
+                sessionStorage.setItem('drillAppSession', JSON.stringify(drillAppSession));
+                
+                // Construct URL with all required parameters
+                const drillAppUrl = `drill-app.html?portal=student&drill_id=${drillId}&mode=practice&from=training_program`;
+                
+                console.log('🌐 Opening drill app URL:', drillAppUrl);
+                
+                // Open the drill app
+                const newWindow = window.open(drillAppUrl, '_blank', 'width=1200,height=900,scrollbars=yes,resizable=yes');
+                
+                if (!newWindow) {
+                    console.error('❌ Popup blocked - trying same window');
+                    window.location.href = drillAppUrl;
+                }
+                
+            } catch (error) {
+                console.error('❌ Error opening drill app:', error);
+                showError('Failed to open drill practice. Please try again.');
+            }
+        }
+
+        function viewContent(contentId) {
+            const contentDisplayUrl = `training-content-display.html?content_id=${contentId}&portal=student`;
+            window.open(contentDisplayUrl, '_blank', 'width=1000,height=800,scrollbars=yes,resizable=yes');
+        }
+
+        async function forceRefresh() {
+            try {
+                showSuccess('Refreshing data...');
+                
+                // Clear all state
+                selectedProgram = null;
+                selectedAssignment = null;
+                selectedUnit = null;
+                assignedUnits = [];
+                unitAssignments = [];
+                drillStats = {}; // Clear drill stats cache
+                
+                await loadData();
+                
+                // Reset UI
+                document.getElementById('unitsContainer').innerHTML = '<div class="empty-content">Select a training program to view its units.</div>';
+                document.getElementById('assignmentsContainer').innerHTML = '<div class="empty-content">Select a unit to view its assignments.</div>';
+                document.getElementById('unitsTitle').textContent = 'Select a Program';
+                document.getElementById('assignmentsTitle').textContent = 'Unit Assignments';
+                
+                showSuccess('Data refreshed successfully!');
+                
+            } catch (error) {
+                console.error('❌ Error refreshing data:', error);
+                showError('Failed to refresh data: ' + error.message);
+            }
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            const successDiv = document.getElementById('successMessage');
+            
+            successDiv.style.display = 'none';
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                errorDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        function showSuccess(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            const successDiv = document.getElementById('successMessage');
+            
+            errorDiv.style.display = 'none';
+            successDiv.textContent = message;
+            successDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                successDiv.style.display = 'none';
+            }, 3000);
+        }
+
+        console.log('🎯 Student Training Programs Interface Ready - Version 4.0 Clean Snapshot Only');
+        console.log('📡 API URL:', API_BASE_URL);
+    </script>
+</body>
+</html>

@@ -1,0 +1,1422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Training Program Administration - Steve Sherman Billiards</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+
+        .admin-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .nav-btn.primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .nav-btn.secondary {
+            background: #f8f9fa;
+            color: #333;
+            border: 2px solid #667eea;
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .search-filter {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .search-input {
+            padding: 10px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            min-width: 200px;
+        }
+
+        .filter-select {
+            padding: 10px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .add-btn {
+            padding: 12px 25px;
+            background: linear-gradient(45deg, #28a745, #20c997);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .add-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
+        }
+
+        .programs-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .programs-table th {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .programs-table td {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            vertical-align: top;
+        }
+
+        .programs-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .program-name {
+            font-weight: 600;
+            color: #333;
+            font-size: 16px;
+        }
+
+        .program-category {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .category-beginner {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .category-intermediate {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .category-advanced {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .program-skill {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .program-duration {
+            font-weight: 600;
+            color: #667eea;
+            font-size: 16px;
+        }
+
+        .program-units {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .credit-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .credit-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            object-fit: cover;
+        }
+
+        .credit-name {
+            font-size: 13px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .no-credit {
+            color: #999;
+            font-style: italic;
+            font-size: 13px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-edit {
+            background: #ffc107;
+            color: #212529;
+        }
+
+        .btn-units {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .btn-delete {
+            background: #dc3545;
+            color: white;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-content {
+            background: white;
+            margin: 2% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 95vh;
+            overflow-y: auto;
+            position: relative;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .modal-title {
+            font-size: 1.5em;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+            padding: 5px;
+        }
+
+        .close-btn:hover {
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 15px;
+        }
+
+        .form-col {
+            flex: 1;
+        }
+
+        .credit-preview {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .credit-preview-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            object-fit: cover;
+        }
+
+        .credit-preview-info {
+            flex: 1;
+        }
+
+        .credit-preview-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .credit-preview-url {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .btn-cancel {
+            padding: 12px 25px;
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .btn-save {
+            padding: 12px 25px;
+            background: linear-gradient(45deg, #28a745, #20c997);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .btn-cancel:hover, .btn-save:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-message, .success-message {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .warning-message {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+        }
+
+        .warning-message {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-style: italic;
+        }
+
+        @media (max-width: 768px) {
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-filter {
+                flex-direction: column;
+            }
+
+            .programs-table {
+                font-size: 14px;
+            }
+
+            .programs-table th,
+            .programs-table td {
+                padding: 10px;
+            }
+
+            .modal-content {
+                margin: 10px;
+                width: calc(100% - 20px);
+            }
+
+            .form-row {
+                flex-direction: column;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎯 Training Program Administration</h1>
+        <p>Steve Sherman Billiards - Manage Training Programs & Templates</p>
+    </div>
+
+    <div class="container">
+        <div class="admin-nav">
+            <div class="nav-buttons">
+                <a href="drill-admin-portal.html" class="nav-btn secondary">← Back to Admin Portal</a>
+                <button class="nav-btn primary" onclick="refreshData()">🔄 Refresh Data</button>
+                <button class="nav-btn secondary" onclick="toggleDebugPanel()">🔍 Debug Panel</button>
+            </div>
+            <div class="user-info">
+                <span>Training Program Management | Version 1.1 (with Credits)</span>
+            </div>
+        </div>
+
+        <!-- Debug Panel -->
+        <div id="debugPanel" style="display: none; background: #f8f9fa; border: 2px solid #007bff; border-radius: 8px; padding: 15px; margin-bottom: 20px;">
+            <h3 style="color: #007bff; margin-bottom: 15px;">🔍 Debug Information</h3>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px;">
+                <div>
+                    <h4>Credits Data (<span id="debugCreditsCount">0</span>)</h4>
+                    <pre id="debugCredits" style="background: white; padding: 10px; border-radius: 4px; max-height: 200px; overflow-y: auto; font-size: 12px;"></pre>
+                </div>
+                
+                <div>
+                    <h4>Programs Data (<span id="debugProgramsCount">0</span>)</h4>
+                    <pre id="debugPrograms" style="background: white; padding: 10px; border-radius: 4px; max-height: 200px; overflow-y: auto; font-size: 12px;"></pre>
+                </div>
+                
+                <div>
+                    <h4>Categories Data (<span id="debugCategoriesCount">0</span>)</h4>
+                    <pre id="debugCategories" style="background: white; padding: 10px; border-radius: 4px; max-height: 200px; overflow-y: auto; font-size: 12px;"></pre>
+                </div>
+                
+                <div>
+                    <h4>Skills Data (<span id="debugSkillsCount">0</span>)</h4>
+                    <pre id="debugSkills" style="background: white; padding: 10px; border-radius: 4px; max-height: 200px; overflow-y: auto; font-size: 12px;"></pre>
+                </div>
+            </div>
+            
+            <div style="margin-top: 15px;">
+                <h4>API Tests</h4>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button onclick="testCreditsAPI()" class="nav-btn secondary">Test Credits API</button>
+                    <button onclick="testProgramsAPI()" class="nav-btn secondary">Test Programs API</button>
+                    <button onclick="testCategoriesAPI()" class="nav-btn secondary">Test Categories API</button>
+                    <button onclick="testSkillsAPI()" class="nav-btn secondary">Test Skills API</button>
+                </div>
+            </div>
+            
+            <div id="debugResults" style="margin-top: 15px; padding: 10px; background: white; border-radius: 4px; min-height: 50px;">
+                <strong>API Test Results will appear here...</strong>
+            </div>
+        </div>
+
+        <div class="controls">
+            <div class="search-filter">
+                <input type="text" class="search-input" id="searchInput" placeholder="Search programs...">
+                <select class="filter-select" id="categoryFilter">
+                    <option value="">All Categories</option>
+                </select>
+                <select class="filter-select" id="skillFilter">
+                    <option value="">All Skills</option>
+                </select>
+                <select class="filter-select" id="difficultyFilter">
+                    <option value="">All Difficulty Levels</option>
+                    <option value="beginner">Beginner</option>
+                    <option value="intermediate">Intermediate</option>
+                    <option value="advanced">Advanced</option>
+                </select>
+            </div>
+            <button class="add-btn" onclick="openAddModal()">+ Add New Program</button>
+        </div>
+
+        <div id="messageContainer"></div>
+
+        <div id="programsTableContainer">
+            <div class="loading">
+                <div class="spinner"></div>
+                Loading training programs...
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Modal -->
+    <div id="programModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">Add New Training Program</h2>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+
+            <form id="programForm">
+                <div class="form-group">
+                    <label class="form-label">Program Name *</label>
+                    <input type="text" class="form-input" id="programName" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-textarea" id="programDescription" placeholder="Brief description of the training program..."></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-col">
+                        <label class="form-label">Category *</label>
+                        <select class="form-select" id="programCategory" required>
+                            <option value="">Select Category</option>
+                        </select>
+                    </div>
+                    <div class="form-col">
+                        <label class="form-label">Skill *</label>
+                        <select class="form-select" id="programSkill" required>
+                            <option value="">Select Skill</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-col">
+                        <label class="form-label">Difficulty Level *</label>
+                        <select class="form-select" id="programDifficulty" required>
+                            <option value="">Select Difficulty</option>
+                            <option value="beginner">Beginner</option>
+                            <option value="intermediate">Intermediate</option>
+                            <option value="advanced">Advanced</option>
+                        </select>
+                    </div>
+                    <div class="form-col">
+                        <label class="form-label">Estimated Duration (weeks)</label>
+                        <input type="number" class="form-input" id="programDuration" min="1" max="52" placeholder="8">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Credit To (Optional)</label>
+                    <select class="form-select" id="programCredit" onchange="updateCreditPreview()">
+                        <option value="">No Credit Assignment</option>
+                    </select>
+                    <div id="creditPreview" class="credit-preview" style="display: none;">
+                        <img id="creditPreviewIcon" src="" alt="Credit Icon" class="credit-preview-icon">
+                        <div class="credit-preview-info">
+                            <div id="creditPreviewName" class="credit-preview-name"></div>
+                            <div id="creditPreviewUrl" class="credit-preview-url"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn-cancel" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="btn-save">Save Program</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const API_BASE_URL = 'https://steveshermanbilliards.com/drill-api.php';
+        
+        // Global variables
+        let allPrograms = [];
+        let allCategories = [];
+        let allSkills = [];
+        let allCredits = [];
+        let currentEditId = null;
+        let filteredPrograms = [];
+
+        // ========================================
+        // API FUNCTIONS
+        // ========================================
+
+        async function apiRequest(endpoint, method = 'GET', data = null) {
+            try {
+                const options = {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Cache-Control': 'no-cache, no-store, must-revalidate',
+                        'Pragma': 'no-cache',
+                        'Expires': '0'
+                    }
+                };
+                
+                if (data) {
+                    options.body = JSON.stringify(data);
+                }
+                
+                // Add cache-busting timestamp to all requests
+                const separator = endpoint.includes('?') ? '&' : '?';
+                const url = `${API_BASE_URL}/${endpoint}${separator}_t=${Date.now()}&_cb=${Math.random()}`;
+                console.log('🌐 API Request:', method, url);
+                
+                const response = await fetch(url, options);
+                console.log('📡 API Response Status:', response.status);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const result = await response.json();
+                console.log('📄 API Result:', result);
+                
+                if (!result.success) {
+                    throw new Error(result.message || 'API request failed');
+                }
+                
+                return result.data;
+            } catch (error) {
+                console.error('❌ API Error:', error);
+                throw error;
+            }
+        }
+
+        // ========================================
+        // INITIALIZATION
+        // ========================================
+
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🎯 Training Program Admin Interface Loading...');
+            initializeAdmin();
+            setupEventListeners();
+        });
+
+        async function initializeAdmin() {
+            try {
+                console.log('🚀 Loading data from API...');
+                showMessage('Loading training program data...', 'info');
+                
+                // Load data one by one to see which fails
+                console.log('📡 Loading categories...');
+                const categories = await apiRequest('categories');
+                console.log('✅ Categories loaded:', categories);
+                
+                console.log('📡 Loading skills...');
+                const skills = await apiRequest('skills');
+                console.log('✅ Skills loaded:', skills);
+                
+                console.log('📡 Loading programs...');
+                const programs = await apiRequest('training-programs');
+                console.log('✅ Programs loaded:', programs);
+                
+                console.log('📡 Loading credits...');
+                let credits = [];
+                try {
+                    credits = await apiRequest('credits');
+                    console.log('✅ Credits loaded:', credits);
+                } catch (creditError) {
+                    console.warn('⚠️ Credits API failed:', creditError);
+                    console.log('📝 Continuing without credits support...');
+                    showMessage('Warning: Credits system not available - ' + creditError.message, 'warning');
+                }
+                
+                console.log('✅ Data loaded:', { categories, skills, programs, credits });
+                
+                allCategories = categories;
+                allSkills = skills;
+                allPrograms = programs;
+                allCredits = credits;
+                filteredPrograms = [...allPrograms];
+                
+                setupFilters();
+                setupModalSelects();
+                renderProgramsTable();
+                updateDebugPanel(); // Update debug info
+                
+                clearMessage();
+                console.log('✅ Training Program Admin interface initialized');
+                console.log(`📊 Loaded: ${categories.length} categories, ${skills.length} skills, ${programs.length} programs, ${credits.length} credits`);
+                
+            } catch (error) {
+                console.error('❌ Error initializing admin:', error);
+                showMessage('Failed to load training program data: ' + error.message, 'error');
+                
+                const container = document.getElementById('programsTableContainer');
+                container.innerHTML = `
+                    <div class="no-data">
+                        <h3>🔧 Connection Issue</h3>
+                        <p>Could not connect to the database API.</p>
+                        <p><strong>API URL:</strong> ${API_BASE_URL}</p>
+                        <p><strong>Error:</strong> ${error.message}</p>
+                        <button class="nav-btn primary" onclick="window.open('${API_BASE_URL}/categories', '_blank')">Test API Directly</button>
+                        <button class="nav-btn primary" onclick="initializeAdmin()">Retry Connection</button>
+                    </div>
+                `;
+            }
+        }
+
+        function setupEventListeners() {
+            document.getElementById('searchInput').addEventListener('input', filterPrograms);
+            document.getElementById('categoryFilter').addEventListener('change', filterPrograms);
+            document.getElementById('skillFilter').addEventListener('change', filterPrograms);
+            document.getElementById('difficultyFilter').addEventListener('change', filterPrograms);
+            
+            document.getElementById('programForm').addEventListener('submit', handleFormSubmit);
+            
+            document.getElementById('programModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeModal();
+                }
+            });
+
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    if (document.getElementById('programModal').style.display === 'block') {
+                        closeModal();
+                    }
+                }
+            });
+        }
+
+        function setupFilters() {
+            const categoryFilter = document.getElementById('categoryFilter');
+            categoryFilter.innerHTML = '<option value="">All Categories</option>';
+            allCategories.forEach(cat => {
+                const option = document.createElement('option');
+                option.value = cat.id;
+                option.textContent = cat.display_name;
+                categoryFilter.appendChild(option);
+            });
+            
+            const skillFilter = document.getElementById('skillFilter');
+            skillFilter.innerHTML = '<option value="">All Skills</option>';
+            allSkills.forEach(skill => {
+                const option = document.createElement('option');
+                option.value = skill.id;
+                option.textContent = skill.display_name;
+                skillFilter.appendChild(option);
+            });
+        }
+
+        function setupModalSelects() {
+            const categorySelect = document.getElementById('programCategory');
+            categorySelect.innerHTML = '<option value="">Select Category</option>';
+            allCategories.forEach(cat => {
+                const option = document.createElement('option');
+                option.value = cat.id;
+                option.textContent = cat.display_name;
+                categorySelect.appendChild(option);
+            });
+            
+            const skillSelect = document.getElementById('programSkill');
+            skillSelect.innerHTML = '<option value="">Select Skill</option>';
+            allSkills.forEach(skill => {
+                const option = document.createElement('option');
+                option.value = skill.id;
+                option.textContent = skill.display_name;
+                skillSelect.appendChild(option);
+            });
+
+            const creditSelect = document.getElementById('programCredit');
+            creditSelect.innerHTML = '<option value="">No Credit Assignment</option>';
+            console.log('🏗️ Setting up credit select with', allCredits.length, 'credits');
+            allCredits.forEach(credit => {
+                console.log('📝 Adding credit:', credit.organization_name);
+                const option = document.createElement('option');
+                option.value = credit.id;
+                option.textContent = credit.organization_name;
+                option.dataset.website = credit.website_url || '';
+                option.dataset.icon = credit.icon_url || '';
+                creditSelect.appendChild(option);
+            });
+            console.log('✅ Credit select setup complete, total options:', creditSelect.options.length);
+        }
+
+        function updateCreditPreview() {
+            const creditSelect = document.getElementById('programCredit');
+            const preview = document.getElementById('creditPreview');
+            const previewIcon = document.getElementById('creditPreviewIcon');
+            const previewName = document.getElementById('creditPreviewName');
+            const previewUrl = document.getElementById('creditPreviewUrl');
+            
+            if (creditSelect.value) {
+                const creditData = allCredits.find(c => c.id == creditSelect.value);
+                
+                if (creditData) {
+                    previewName.textContent = creditData.organization_name;
+                    previewUrl.textContent = creditData.website_url || 'No website provided';
+                    
+                    if (creditData.icon_url) {
+                        previewIcon.src = creditData.icon_url;
+                        previewIcon.style.display = 'block';
+                    } else {
+                        previewIcon.style.display = 'none';
+                    }
+                    
+                    preview.style.display = 'flex';
+                } else {
+                    preview.style.display = 'none';
+                }
+            } else {
+                preview.style.display = 'none';
+            }
+        }
+
+        // ========================================
+        // FILTERING & SEARCH
+        // ========================================
+
+        function filterPrograms() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const categoryId = document.getElementById('categoryFilter').value;
+            const skillId = document.getElementById('skillFilter').value;
+            const difficulty = document.getElementById('difficultyFilter').value;
+            
+            filteredPrograms = allPrograms.filter(program => {
+                const matchesSearch = program.name.toLowerCase().includes(searchTerm) ||
+                                    (program.description && program.description.toLowerCase().includes(searchTerm));
+                const matchesCategory = !categoryId || program.category_id == categoryId;
+                const matchesSkill = !skillId || program.skill_id == skillId;
+                const matchesDifficulty = !difficulty || program.difficulty_level === difficulty;
+                
+                return matchesSearch && matchesCategory && matchesSkill && matchesDifficulty;
+            });
+            
+            renderProgramsTable();
+        }
+
+        // ========================================
+        // TABLE RENDERING
+        // ========================================
+
+        function renderProgramsTable() {
+            const container = document.getElementById('programsTableContainer');
+            
+            if (filteredPrograms.length === 0) {
+                container.innerHTML = '<div class="no-data">No training programs found matching your criteria.</div>';
+                return;
+            }
+            
+            const table = `
+                <table class="programs-table">
+                    <thead>
+                        <tr>
+                            <th>Program Name</th>
+                            <th>Category</th>
+                            <th>Skill</th>
+                            <th>Difficulty</th>
+                            <th>Duration</th>
+                            <th>Units</th>
+                            <th>Credit To</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${filteredPrograms.map(program => renderProgramRow(program)).join('')}
+                    </tbody>
+                </table>
+            `;
+            
+            container.innerHTML = table;
+        }
+
+        function renderProgramRow(program) {
+            const categoryClass = `category-${program.difficulty_level}`;
+            
+            let creditDisplay = '<span class="no-credit">No credit assigned</span>';
+            if (program.credit_organization_name) {
+                creditDisplay = `
+                    <div class="credit-info">
+                        ${program.credit_icon_url ? `<img src="${program.credit_icon_url}" alt="Credit Icon" class="credit-icon">` : ''}
+                        <div class="credit-name">${program.credit_organization_name}</div>
+                    </div>
+                `;
+            }
+            
+            return `
+                <tr data-program-id="${program.id}">
+                    <td>
+                        <div class="program-name">${program.name}</div>
+                        ${program.description ? `<div style="color: #666; font-size: 13px; margin-top: 5px;">${program.description}</div>` : ''}
+                    </td>
+                    <td>
+                        <span class="program-category ${categoryClass}">${program.category_display || 'N/A'}</span>
+                    </td>
+                    <td>
+                        <span class="program-skill">${program.skill_display || 'N/A'}</span>
+                    </td>
+                    <td>
+                        <span class="program-category ${categoryClass}">${program.difficulty_level}</span>
+                    </td>
+                    <td>
+                        <span class="program-duration">${program.estimated_duration_weeks || 'TBD'} weeks</span>
+                    </td>
+                    <td>
+                        <span class="program-units">${program.unit_count || 0} units</span>
+                    </td>
+                    <td>
+                        ${creditDisplay}
+                    </td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="action-btn btn-edit" onclick="editProgram(${program.id})" data-program-id="${program.id}">Edit</button>
+                            <button class="action-btn btn-units" onclick="manageUnits(${program.id}, '${program.name.replace(/'/g, "\\'")}')">Manage Units</button>
+                            <button class="action-btn btn-delete" onclick="deleteProgram(${program.id}, '${program.name.replace(/'/g, "\\'")}')">Delete</button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }
+
+        // ========================================
+        // MODAL FUNCTIONS
+        // ========================================
+
+        function openAddModal() {
+            console.log('📝 Opening Add Modal');
+            currentEditId = null;
+            document.getElementById('modalTitle').textContent = 'Add New Training Program';
+            document.getElementById('programForm').reset();
+            document.getElementById('creditPreview').style.display = 'none';
+            document.getElementById('programModal').style.display = 'block';
+            console.log('✅ Add modal opened');
+        }
+
+        function editProgram(id) {
+            console.log('✏️ Edit Program called with ID:', id, 'Type:', typeof id);
+            
+            try {
+                const programIdNum = parseInt(id);
+                const programIdStr = String(id);
+                
+                if (isNaN(programIdNum)) {
+                    throw new Error('Invalid program ID: ' + id);
+                }
+                
+                let program = allPrograms.find(p => p.id === programIdNum);
+                if (!program) {
+                    program = allPrograms.find(p => p.id === programIdStr);
+                }
+                if (!program) {
+                    program = allPrograms.find(p => String(p.id) === programIdStr);
+                }
+                if (!program) {
+                    program = allPrograms.find(p => parseInt(p.id) === programIdNum);
+                }
+                
+                if (!program) {
+                    console.error('❌ Program not found with ID:', id);
+                    console.log('Available programs:', allPrograms.map(p => ({ id: p.id, idType: typeof p.id, name: p.name })));
+                    showMessage('Program not found with ID: ' + id, 'error');
+                    return;
+                }
+                
+                console.log('✅ Found program to edit:', program);
+                
+                currentEditId = programIdNum;
+                document.getElementById('modalTitle').textContent = 'Edit Training Program';
+                
+                document.getElementById('programName').value = program.name || '';
+                document.getElementById('programDescription').value = program.description || '';
+                document.getElementById('programCategory').value = program.category_id || '';
+                document.getElementById('programSkill').value = program.skill_id || '';
+                document.getElementById('programDifficulty').value = program.difficulty_level || '';
+                document.getElementById('programDuration').value = program.estimated_duration_weeks || '';
+                
+                document.getElementById('programCredit').value = program.credit_id || '';
+                updateCreditPreview();
+                
+                document.getElementById('programModal').style.display = 'block';
+                
+                console.log('✅ Edit modal opened for program:', program.name);
+                
+            } catch (error) {
+                console.error('❌ Error in editProgram:', error);
+                showMessage('Error opening edit form: ' + error.message, 'error');
+            }
+        }
+
+        function manageUnits(programId, programName) {
+            console.log('📚 Managing units for program:', programId, programName);
+            
+            const unitsUrl = `training-program-units.html?program_id=${programId}&program_name=${encodeURIComponent(programName)}`;
+            window.open(unitsUrl, '_blank', 'width=1200,height=800,scrollbars=yes,resizable=yes');
+        }
+
+        function closeModal() {
+            console.log('❌ Closing modal');
+            document.getElementById('programModal').style.display = 'none';
+            currentEditId = null;
+        }
+
+        // ========================================
+        // CRUD OPERATIONS
+        // ========================================
+
+        async function handleFormSubmit(e) {
+            e.preventDefault();
+            
+            const formData = {
+                name: document.getElementById('programName').value,
+                description: document.getElementById('programDescription').value,
+                category_id: parseInt(document.getElementById('programCategory').value),
+                skill_id: parseInt(document.getElementById('programSkill').value),
+                difficulty_level: document.getElementById('programDifficulty').value,
+                estimated_duration_weeks: parseInt(document.getElementById('programDuration').value) || null,
+                credit_id: document.getElementById('programCredit').value ? parseInt(document.getElementById('programCredit').value) : null,
+                created_by: 1
+            };
+            
+            console.log('📝 Form data to submit:', formData);
+            
+            try {
+                if (currentEditId) {
+                    console.log('📝 Updating program ID:', currentEditId);
+                    await apiRequest(`training-programs/${currentEditId}`, 'PUT', formData);
+                    showMessage('Training program updated successfully!', 'success');
+                } else {
+                    console.log('📝 Creating new program');
+                    await apiRequest('training-programs', 'POST', formData);
+                    showMessage('Training program created successfully!', 'success');
+                }
+                
+                closeModal();
+                refreshData();
+                
+            } catch (error) {
+                console.error('Error saving program:', error);
+                showMessage('Error saving program: ' + error.message, 'error');
+            }
+        }
+
+        async function deleteProgram(id, name) {
+            if (!confirm(`Are you sure you want to delete "${name}"?\n\nThis will also delete all units and content within this program.\n\nThis action cannot be undone.`)) {
+                return;
+            }
+            
+            try {
+                console.log('🗑️ Deleting program - ID:', id, 'Name:', name, 'Type of ID:', typeof id);
+                
+                const programId = parseInt(id);
+                if (isNaN(programId)) {
+                    throw new Error('Invalid program ID');
+                }
+                
+                const url = `${API_BASE_URL}/training-programs/${programId}`;
+                console.log('🌐 Delete URL:', url);
+                
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ action: 'delete' })
+                });
+                
+                console.log('📡 Delete Response Status:', response.status);
+                
+                const responseText = await response.text();
+                console.log('📄 Raw Response:', responseText);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${responseText}`);
+                }
+                
+                let result;
+                try {
+                    result = JSON.parse(responseText);
+                } catch (parseError) {
+                    throw new Error('Invalid JSON response: ' + responseText);
+                }
+                
+                console.log('📄 Parsed Result:', result);
+                
+                if (!result.success) {
+                    throw new Error(result.message || 'Delete request failed');
+                }
+                
+                showMessage('Training program deleted successfully!', 'success');
+                
+                console.log('📄 Refreshing program list after delete...');
+                await refreshData();
+                
+                console.log('✅ Delete operation completed');
+                
+            } catch (error) {
+                console.error('❌ Error deleting program:', error);
+                showMessage('Error deleting program: ' + error.message, 'error');
+            }
+        }
+
+        async function refreshData() {
+            try {
+                console.log('📄 Refreshing program data...');
+                showMessage('Refreshing data...', 'info');
+                
+                allPrograms = [];
+                filteredPrograms = [];
+                
+                const timestamp = Date.now();
+                const programs = await fetch(`${API_BASE_URL}/training-programs?_t=${timestamp}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                        }
+                        return response.json();
+                    })
+                    .then(result => {
+                        if (!result.success) {
+                            throw new Error(result.message || 'API request failed');
+                        }
+                        return result.data;
+                    });
+                
+                console.log('✅ Fresh program data loaded:', programs);
+                
+                allPrograms = programs;
+                filteredPrograms = [...allPrograms];
+                
+                filterPrograms();
+                clearMessage();
+                console.log('✅ Data refreshed successfully');
+                
+            } catch (error) {
+                console.error('❌ Error refreshing data:', error);
+                showMessage('Error refreshing data: ' + error.message, 'error');
+            }
+        }
+
+        // ========================================
+        // MESSAGE FUNCTIONS
+        // ========================================
+
+        function showMessage(message, type) {
+            const container = document.getElementById('messageContainer');
+            const className = type === 'error' ? 'error-message' : 
+                            type === 'success' ? 'success-message' : 
+                            type === 'warning' ? 'warning-message' : 'info-message';
+            
+            container.innerHTML = `<div class="${className}">${message}</div>`;
+            
+            if (type === 'success') {
+                setTimeout(() => clearMessage(), 3000);
+            }
+        }
+
+        function clearMessage() {
+            document.getElementById('messageContainer').innerHTML = '';
+        }
+
+        // ========================================
+        // DEBUG FUNCTIONS
+        // ========================================
+
+        function toggleDebugPanel() {
+            const panel = document.getElementById('debugPanel');
+            if (panel.style.display === 'none') {
+                panel.style.display = 'block';
+                updateDebugPanel();
+            } else {
+                panel.style.display = 'none';
+            }
+        }
+
+        function updateDebugPanel() {
+            document.getElementById('debugCreditsCount').textContent = allCredits.length;
+            document.getElementById('debugCredits').textContent = JSON.stringify(allCredits, null, 2);
+            
+            document.getElementById('debugProgramsCount').textContent = allPrograms.length;
+            document.getElementById('debugPrograms').textContent = JSON.stringify(allPrograms, null, 2);
+            
+            document.getElementById('debugCategoriesCount').textContent = allCategories.length;
+            document.getElementById('debugCategories').textContent = JSON.stringify(allCategories, null, 2);
+            
+            document.getElementById('debugSkillsCount').textContent = allSkills.length;
+            document.getElementById('debugSkills').textContent = JSON.stringify(allSkills, null, 2);
+        }
+
+        async function testCreditsAPI() {
+            const resultsDiv = document.getElementById('debugResults');
+            resultsDiv.innerHTML = '<strong>Testing Credits API...</strong>';
+            
+            try {
+                const url = `${API_BASE_URL}/credits`;
+                console.log('Testing Credits API:', url);
+                
+                const response = await fetch(url);
+                const responseText = await response.text();
+                
+                resultsDiv.innerHTML = `
+                    <strong>Credits API Test Results:</strong><br>
+                    <strong>Status:</strong> ${response.status} ${response.statusText}<br>
+                    <strong>URL:</strong> ${url}<br>
+                    <strong>Raw Response:</strong><br>
+                    <pre style="background: #f0f0f0; padding: 5px; margin: 5px 0;">${responseText}</pre>
+                `;
+                
+                if (response.ok) {
+                    try {
+                        const parsed = JSON.parse(responseText);
+                        resultsDiv.innerHTML += `<strong>Parsed JSON:</strong><br><pre style="background: #f0f0f0; padding: 5px;">${JSON.stringify(parsed, null, 2)}</pre>`;
+                    } catch (e) {
+                        resultsDiv.innerHTML += `<strong>JSON Parse Error:</strong> ${e.message}`;
+                    }
+                }
+                
+            } catch (error) {
+                resultsDiv.innerHTML = `<strong>Credits API Error:</strong> ${error.message}`;
+            }
+        }
+
+        async function testProgramsAPI() {
+            const resultsDiv = document.getElementById('debugResults');
+            resultsDiv.innerHTML = '<strong>Testing Programs API...</strong>';
+            
+            try {
+                const url = `${API_BASE_URL}/training-programs`;
+                console.log('Testing Programs API:', url);
+                
+                const response = await fetch(url);
+                const responseText = await response.text();
+                
+                resultsDiv.innerHTML = `
+                    <strong>Programs API Test Results:</strong><br>
+                    <strong>Status:</strong> ${response.status} ${response.statusText}<br>
+                    <strong>URL:</strong> ${url}<br>
+                    <strong>Raw Response:</strong><br>
+                    <pre style="background: #f0f0f0; padding: 5px; margin: 5px 0; max-height: 300px; overflow-y: auto;">${responseText}</pre>
+                `;
+                
+            } catch (error) {
+                resultsDiv.innerHTML = `<strong>Programs API Error:</strong> ${error.message}`;
+            }
+        }
+
+        async function testCategoriesAPI() {
+            const resultsDiv = document.getElementById('debugResults');
+            resultsDiv.innerHTML = '<strong>Testing Categories API...</strong>';
+            
+            try {
+                const url = `${API_BASE_URL}/categories`;
+                const response = await fetch(url);
+                const responseText = await response.text();
+                
+                resultsDiv.innerHTML = `
+                    <strong>Categories API Test Results:</strong><br>
+                    <strong>Status:</strong> ${response.status} ${response.statusText}<br>
+                    <strong>Raw Response:</strong><br>
+                    <pre style="background: #f0f0f0; padding: 5px; margin: 5px 0;">${responseText}</pre>
+                `;
+                
+            } catch (error) {
+                resultsDiv.innerHTML = `<strong>Categories API Error:</strong> ${error.message}`;
+            }
+        }
+
+        async function testSkillsAPI() {
+            const resultsDiv = document.getElementById('debugResults');
+            resultsDiv.innerHTML = '<strong>Testing Skills API...</strong>';
+            
+            try {
+                const url = `${API_BASE_URL}/skills`;
+                const response = await fetch(url);
+                const responseText = await response.text();
+                
+                resultsDiv.innerHTML = `
+                    <strong>Skills API Test Results:</strong><br>
+                    <strong>Status:</strong> ${response.status} ${response.statusText}<br>
+                    <strong>Raw Response:</strong><br>
+                    <pre style="background: #f0f0f0; padding: 5px; margin: 5px 0;">${responseText}</pre>
+                `;
+                
+            } catch (error) {
+                resultsDiv.innerHTML = `<strong>Skills API Error:</strong> ${error.message}`;
+            }
+        }
+
+        console.log('🎯 Training Program Admin Interface Ready - Version 1.1 (with Credits)');
+        console.log('📡 API URL:', API_BASE_URL);
+        
+        window.debugAdmin = {
+            allPrograms: () => allPrograms,
+            allCategories: () => allCategories,
+            allSkills: () => allSkills,
+            allCredits: () => allCredits,
+            testAPI: () => apiRequest('categories').then(console.log).catch(console.error),
+            testEdit: (id) => editProgram(id)
+        };
+    </script>
+</body>
+</html>

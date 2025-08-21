@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Events - Steve Sherman Billiards</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header-top {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .logo {
+            width: 50px;
+            height: 50px;
+            margin-right: 15px;
+        }
+
+        .brand-text h2 {
+            font-size: 1em;
+            margin: 0;
+            color: #333;
+            font-weight: 600;
+            line-height: 1.2;
+        }
+
+        .header h1 {
+            font-size: 2.2em;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 15px 0;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-info {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 12px;
+        }
+
+        .user-info {
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .user-info h3 {
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .user-info p {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .filter-bar {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filter-select {
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            min-width: 120px;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .events-grid {
+            display: grid;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .event-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border-left: 5px solid #667eea;
+            transition: all 0.3s ease;
+        }
+
+        .event-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .event-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .event-title {
+            font-size: 1.4em;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .event-series {
+            font-size: 0.9em;
+            color: #667eea;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .event-status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-scheduled {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .status-active {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+
+        .status-complete {
+            background: #f3e5f5;
+            color: #7b1fa2;
+        }
+
+        .status-cancelled {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .event-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 15px 0;
+        }
+
+        .event-detail {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .detail-label {
+            font-size: 0.8em;
+            color: #666;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .detail-value {
+            font-size: 0.9em;
+            color: #333;
+        }
+
+        .event-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #f0f0f0;
+            flex-wrap: wrap;
+        }
+
+        .my-progress {
+            background: rgba(40, 167, 69, 0.1);
+            border-radius: 8px;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid rgba(40, 167, 69, 0.3);
+        }
+
+        .my-progress h4 {
+            color: #155724;
+            margin-bottom: 8px;
+            font-size: 0.9em;
+        }
+
+        .progress-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 10px;
+            text-align: center;
+        }
+
+        .progress-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .progress-value {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #28a745;
+        }
+
+        .progress-label {
+            font-size: 0.7em;
+            color: #666;
+            margin-top: 2px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+
+        .empty-state-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                padding: 20px;
+            }
+
+            .nav-bar {
+                flex-direction: column;
+                gap: 15px;
+                align-items: stretch;
+            }
+
+            .nav-buttons {
+                justify-content: center;
+            }
+
+            .event-details {
+                grid-template-columns: 1fr;
+            }
+
+            .filter-bar {
+                flex-direction: column;
+            }
+
+            .event-actions {
+                justify-content: center;
+            }
+
+            .progress-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-top">
+                <img src="images/logo.png" alt="Steve Sherman Billiards Logo" class="logo">
+                <div class="brand-text">
+                    <h2>Steve Sherman Billiards Training System</h2>
+                </div>
+            </div>
+            <h1>My Events</h1>
+        </div>
+
+        <!-- Navigation -->
+        <div class="nav-bar">
+            <div class="nav-buttons">
+                <button id="backBtn" class="btn btn-secondary" onclick="goBack()">
+                    ← Back to Portal
+                </button>
+                <button id="refreshBtn" class="btn btn-secondary">
+                    🔄 Refresh
+                </button>
+            </div>
+        </div>
+
+        <!-- User Info -->
+        <div class="user-info">
+            <h3>Welcome, <span id="userName">Student</span></h3>
+            <p>View your assigned events, track progress, and submit scores</p>
+        </div>
+
+        <!-- Filters -->
+        <div class="filter-bar">
+            <select id="statusFilter" class="filter-select">
+                <option value="">All Statuses</option>
+                <option value="scheduled">Scheduled</option>
+                <option value="active">Active</option>
+                <option value="complete">Complete</option>
+                <option value="cancelled">Cancelled</option>
+            </select>
+            <select id="seriesFilter" class="filter-select">
+                <option value="">All Series</option>
+            </select>
+            <select id="dateFilter" class="filter-select">
+                <option value="">All Dates</option>
+                <option value="upcoming">Upcoming</option>
+                <option value="current">Current</option>
+                <option value="past">Past</option>
+            </select>
+        </div>
+
+        <!-- Alert Messages -->
+        <div id="alertContainer"></div>
+
+        <!-- Loading State -->
+        <div id="loadingState" class="loading">
+            <div class="spinner"></div>
+            <p>Loading your events...</p>
+        </div>
+
+        <!-- Events Grid -->
+        <div id="eventsGrid" class="events-grid" style="display: none;"></div>
+
+        <!-- Empty State -->
+        <div id="emptyState" class="empty-state" style="display: none;">
+            <div class="empty-state-icon">📅</div>
+            <h3>No Events Found</h3>
+            <p>You are not currently assigned to any events, or no events match your filters.</p>
+            <button class="btn btn-secondary" onclick="clearFilters()">Clear Filters</button>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const API_BASE_URL = 'https://steveshermanbilliards.com/drill-api.php';
+
+        // Global state
+        let currentSession = null;
+        let userEvents = [];
+        let userScores = [];
+        let drills = [];
+
+        // ========================================
+        // SESSION MANAGEMENT
+        // ========================================
+
+        function loadUserSession() {
+            // Try to get user data from URL parameters first
+            const urlParams = new URLSearchParams(window.location.search);
+            const userParam = urlParams.get('user');
+            
+            if (userParam) {
+                try {
+                    const userData = JSON.parse(atob(userParam));
+                    currentSession = {
+                        userId: userData.id,
+                        name: userData.name,
+                        email: userData.email,
+                        type: userData.type || 'student'
+                    };
+                    console.log('✅ Session loaded from URL parameters:', currentSession);
+                    return true;
+                } catch (e) {
+                    console.error('❌ Failed to parse user data from URL:', e);
+                }
+            }
+            
+            // Fallback to session storage
+            try {
+                const savedSession = sessionStorage.getItem('studentSession');
+                if (savedSession) {
+                    currentSession = JSON.parse(savedSession);
+                    console.log('✅ Session loaded from storage:', currentSession);
+                    return true;
+                }
+            } catch (e) {
+                console.error('❌ Failed to load session from storage:', e);
+            }
+            
+            return false;
+        }
+
+        // ========================================
+        // API HELPER FUNCTION
+        // ========================================
+
+        async function apiRequest(endpoint, method = 'GET', data = null) {
+            try {
+                const options = {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                };
+                
+                if (data) {
+                    options.body = JSON.stringify(data);
+                }
+                
+                console.log('🌐 API Request:', method, `${API_BASE_URL}/${endpoint}`, data);
+                
+                const response = await fetch(`${API_BASE_URL}/${endpoint}`, options);
+                
+                console.log('📡 HTTP Response Status:', response.status);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const result = await response.json();
+                console.log('📄 API Response:', result);
+                
+                if (!result.success) {
+                    throw new Error(result.message || 'API request failed');
+                }
+                
+                return result;
+            } catch (error) {
+                console.error('❌ API Error:', error);
+                throw error;
+            }
+        }
+
+        // ========================================
+        // DATA LOADING FUNCTIONS
+        // ========================================
+
+        async function loadUserEvents() {
+            if (!currentSession || !currentSession.userId) {
+                throw new Error('No user session found');
+            }
+
+            try {
+                console.log('📅 Loading events for user ID:', currentSession.userId);
+                
+                // Load all challenge events
+                const eventsResponse = await apiRequest('challenge-events');
+                const allEvents = eventsResponse.data || [];
+                
+                // Load event participants to filter user's events
+                const participantsResponse = await apiRequest(`challenge-participants?user_id=${currentSession.userId}`);
+                const userParticipations = participantsResponse.data || [];
+                
+                console.log('🔍 All events:', allEvents);
+                console.log('🔍 User participations:', userParticipations);
+
+                // Extract event IDs where this user is a participant
+                const userEventIds = userParticipations.map(p => p.challenge_event_id);
+                console.log('🔍 User event IDs:', userEventIds);
+
+                userEvents = allEvents.filter(event => userEventIds.includes(parseInt(event.id)));
+                console.log('🔍 Filtered user events:', userEvents);
+                
+                console.log('📅 User events loaded:', userEvents.length);
+                console.log('📅 Events:', userEvents);
+                
+                updateSeriesFilter();
+                return userEvents;
+                
+            } catch (error) {
+                console.error('❌ Failed to load user events:', error);
+                userEvents = [];
+                throw error;
+            }
+        }
+
+        async function loadUserScores() {
+            if (!currentSession || !currentSession.userId) {
+                return;
+            }
+
+            try {
+                console.log('📊 Loading challenge scores for user ID:', currentSession.userId);
+                
+                // Load user's challenge scores from wp_challenge_scores table
+                const scoresResponse = await apiRequest(`challenge-scores?user_id=${currentSession.userId}`);
+                userScores = scoresResponse.data || [];
+                
+                // Additional client-side filtering to ensure only this user's scores
+                userScores = userScores.filter(score => 
+                    score.user_id == currentSession.userId
+                );
+                
+                console.log('📊 User challenge scores loaded:', userScores.length);
+                console.log('📊 Scores data:', userScores);
+                
+            } catch (error) {
+                console.error('❌ Failed to load user challenge scores:', error);
+                userScores = [];
+            }
+        }
+
+        async function loadDrills() {
+            try {
+                const response = await apiRequest('drills');
+                drills = response.data || [];
+                console.log('🎯 Drills loaded:', drills.length);
+            } catch (error) {
+                console.error('❌ Failed to load drills:', error);
+                drills = [];
+            }
+        }
+
+        async function refreshData() {
+            const refreshBtn = document.getElementById('refreshBtn');
+            
+            refreshBtn.disabled = true;
+            refreshBtn.textContent = '🔄 Refreshing...';
+            
+            try {
+                await Promise.all([
+                    loadUserEvents(),
+                    loadUserScores(),
+                    loadDrills()
+                ]);
+                
+                renderEvents();
+                showAlert('Data refreshed successfully!', 'success');
+            } catch (error) {
+                showAlert('Failed to refresh data: ' + error.message, 'error');
+            } finally {
+                refreshBtn.disabled = false;
+                refreshBtn.textContent = '🔄 Refresh';
+            }
+        }
+
+        // ========================================
+        // UI FUNCTIONS
+        // ========================================
+
+        function updateSeriesFilter() {
+            const select = document.getElementById('seriesFilter');
+            const currentValue = select.value;
+            
+            const seriesNames = [...new Set(userEvents.map(event => event.series_name))].sort();
+            
+            select.innerHTML = '<option value="">All Series</option>';
+            seriesNames.forEach(series => {
+                const option = document.createElement('option');
+                option.value = series;
+                option.textContent = series;
+                select.appendChild(option);
+            });
+            
+            if (currentValue && seriesNames.includes(currentValue)) {
+                select.value = currentValue;
+            }
+        }
+
+        function renderEvents() {
+            const grid = document.getElementById('eventsGrid');
+            const loadingState = document.getElementById('loadingState');
+            const emptyState = document.getElementById('emptyState');
+
+            loadingState.style.display = 'none';
+
+            if (userEvents.length === 0) {
+                grid.style.display = 'none';
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            emptyState.style.display = 'none';
+            grid.style.display = 'grid';
+
+            grid.innerHTML = userEvents.map(event => createEventCard(event)).join('');
+        }
+
+        function createEventCard(event) {
+            const drill = drills.find(d => d.id == event.drill_id);
+            const startDate = new Date(event.start_date).toLocaleDateString();
+            const endDate = new Date(event.end_date).toLocaleDateString();
+            
+            // Find user's scores for this event from wp_challenge_scores table
+            const eventScores = userScores.filter(score => score.challenge_event_id == event.id);
+            const bestScore = eventScores.length > 0 
+                ? Math.max(...eventScores.map(s => parseFloat(s.percentage || 0)))
+                : null;
+            const attemptsUsed = eventScores.length;
+            
+            // Get the latest score details
+            const latestScore = eventScores.length > 0 
+                ? eventScores.sort((a, b) => new Date(b.submitted_at) - new Date(a.submitted_at))[0]
+                : null;
+            
+            // Determine if user can still submit scores
+            const now = new Date();
+            const eventEnd = new Date(event.end_date);
+            const canSubmit = event.status === 'active' && now <= eventEnd && attemptsUsed < event.max_attempts;
+            
+            return `
+                <div class="event-card">
+                    <div class="event-header">
+                        <div>
+                            <div class="event-series">${escapeHtml(event.series_name)}</div>
+                            <div class="event-title">${escapeHtml(event.title)}</div>
+                        </div>
+                        <span class="event-status status-${event.status}">${event.status}</span>
+                    </div>
+                    
+                    <div class="event-details">
+                        <div class="event-detail">
+                            <span class="detail-label">Drill</span>
+                            <span class="detail-value">${drill ? escapeHtml(drill.name) : 'Unknown Drill'}</span>
+                        </div>
+                        <div class="event-detail">
+                            <span class="detail-label">Start Date</span>
+                            <span class="detail-value">${startDate}</span>
+                        </div>
+                        <div class="event-detail">
+                            <span class="detail-label">End Date</span>
+                            <span class="detail-value">${endDate}</span>
+                        </div>
+                        <div class="event-detail">
+                            <span class="detail-label">Max Attempts</span>
+                            <span class="detail-value">${event.max_attempts}</span>
+                        </div>
+                    </div>
+                    
+                    ${event.description ? `
+                        <div style="margin: 15px 0;">
+                            <span class="detail-label">Description</span>
+                            <p style="margin-top: 5px; color: #666; font-size: 0.9em;">${escapeHtml(event.description)}</p>
+                        </div>
+                    ` : ''}
+                    
+                    <div class="my-progress">
+                        <h4>My Progress</h4>
+                        <div class="progress-grid">
+                            <div class="progress-item">
+                                <span class="progress-value">${attemptsUsed}</span>
+                                <span class="progress-label">Attempts</span>
+                            </div>
+                            <div class="progress-item">
+                                <span class="progress-value">${bestScore !== null ? bestScore.toFixed(1) + '%' : '--'}</span>
+                                <span class="progress-label">Best Score</span>
+                            </div>
+                            <div class="progress-item">
+                                <span class="progress-value">${event.max_attempts - attemptsUsed}</span>
+                                <span class="progress-label">Remaining</span>
+                            </div>
+                            ${latestScore ? `
+                                <div class="progress-item">
+                                    <span class="progress-value">${parseFloat(latestScore.score).toFixed(1)}/${latestScore.max_possible_score}</span>
+                                    <span class="progress-label">Latest Score</span>
+                                </div>
+                            ` : ''}
+                        </div>
+                        ${latestScore && latestScore.practice_date ? `
+                            <div style="margin-top: 8px; font-size: 0.8em; color: #666; text-align: center;">
+                                Last attempt: ${new Date(latestScore.practice_date).toLocaleDateString()}
+                            </div>
+                        ` : ''}
+                    </div>
+                    
+                    <div class="event-actions">
+                        <button class="btn btn-info btn-small" onclick="viewEventResults(${event.id})">
+                            📊 View Results
+                        </button>
+                        ${canSubmit ? `
+                            <button class="btn btn-success btn-small" onclick="enterScore(${event.id})">
+                                ✏️ Enter Score (Attempt ${attemptsUsed + 1})
+                            </button>
+                        ` : `
+                            <button class="btn btn-secondary btn-small" disabled>
+                                ${attemptsUsed >= event.max_attempts ? '✏️ Max Attempts Reached' : '⏰ Event Ended'}
+                            </button>
+                        `}
+                        ${eventScores.length > 0 ? `
+                            <button class="btn btn-warning btn-small" onclick="viewMyScores(${event.id})">
+                                📋 My Scores
+                            </button>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+        }
+
+        // ========================================
+        // FILTERING
+        // ========================================
+
+        function filterEvents() {
+            const statusFilter = document.getElementById('statusFilter').value;
+            const seriesFilter = document.getElementById('seriesFilter').value;
+            const dateFilter = document.getElementById('dateFilter').value;
+
+            let filtered = userEvents.filter(event => {
+                const matchesStatus = !statusFilter || event.status === statusFilter;
+                const matchesSeries = !seriesFilter || event.series_name === seriesFilter;
+                
+                let matchesDate = true;
+                if (dateFilter) {
+                    const now = new Date();
+                    const startDate = new Date(event.start_date);
+                    const endDate = new Date(event.end_date);
+                    
+                    switch (dateFilter) {
+                        case 'upcoming':
+                            matchesDate = startDate > now;
+                            break;
+                        case 'current':
+                            matchesDate = startDate <= now && endDate >= now;
+                            break;
+                        case 'past':
+                            matchesDate = endDate < now;
+                            break;
+                    }
+                }
+
+                return matchesStatus && matchesSeries && matchesDate;
+            });
+
+            const grid = document.getElementById('eventsGrid');
+            const emptyState = document.getElementById('emptyState');
+
+            if (filtered.length === 0) {
+                grid.style.display = 'none';
+                emptyState.style.display = 'block';
+                emptyState.innerHTML = `
+                    <div class="empty-state-icon">🔍</div>
+                    <h3>No Events Found</h3>
+                    <p>No events match your current filters.</p>
+                    <button class="btn btn-secondary" onclick="clearFilters()">Clear Filters</button>
+                `;
+            } else {
+                emptyState.style.display = 'none';
+                grid.style.display = 'grid';
+                grid.innerHTML = filtered.map(event => createEventCard(event)).join('');
+            }
+        }
+
+        function clearFilters() {
+            document.getElementById('statusFilter').value = '';
+            document.getElementById('seriesFilter').value = '';
+            document.getElementById('dateFilter').value = '';
+            renderEvents();
+        }
+
+        // ========================================
+        // EVENT ACTIONS (PLACEHOLDERS)
+        // ========================================
+
+        function viewEventResults(eventId) {
+            const event = userEvents.find(e => e.id === eventId);
+            if (!event) {
+                showAlert('Event not found', 'error');
+                return;
+            }
+            
+            // Placeholder - will be wired later
+            showAlert(`View results for "${event.title}" - Coming soon! This will show leaderboards and all participant scores.`, 'info');
+            console.log('📊 View results requested for event:', eventId);
+        }
+
+        function enterScore(eventId) {
+            const event = userEvents.find(e => e.id === eventId);
+            if (!event) {
+                showAlert('Event not found', 'error');
+                return;
+            }
+            
+            // Placeholder - will be wired later
+            showAlert(`Enter score for "${event.title}" - Coming soon! This will open the score submission form.`, 'info');
+            console.log('✏️ Enter score requested for event:', eventId);
+        }
+
+        function viewMyScores(eventId) {
+            const event = userEvents.find(e => e.id === eventId);
+            if (!event) {
+                showAlert('Event not found', 'error');
+                return;
+            }
+            
+            const eventScores = userScores.filter(score => score.challenge_event_id == eventId);
+            
+            if (eventScores.length === 0) {
+                showAlert('No scores found for this event', 'info');
+                return;
+            }
+            
+            // Show detailed score breakdown
+            let scoreDetails = `Scores for "${event.title}":\n\n`;
+            eventScores.forEach((score, index) => {
+                const attemptNum = score.attempt_number || (index + 1);
+                const practiceDate = score.practice_date ? new Date(score.practice_date).toLocaleDateString() : 'Unknown';
+                scoreDetails += `Attempt ${attemptNum}: ${score.score}/${score.max_possible_score} (${parseFloat(score.percentage).toFixed(1)}%) - ${practiceDate}\n`;
+                if (score.session_notes) {
+                    scoreDetails += `  Notes: ${score.session_notes}\n`;
+                }
+                scoreDetails += '\n';
+            });
+            
+            alert(scoreDetails);
+            console.log('📋 View my scores for event:', eventId, eventScores);
+        }
+
+        // ========================================
+        // NAVIGATION
+        // ========================================
+
+        function goBack() {
+            // Try to go back to student portal
+            if (window.opener) {
+                window.close();
+            } else {
+                window.location.href = 'student-portal.html';
+            }
+        }
+
+        // ========================================
+        // INITIALIZATION
+        // ========================================
+
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('📅 Student Events Page Loaded');
+            console.log('🔧 DOM Content Loaded - About to initialize...');
+            initializeApp();
+        });
+
+        async function initializeApp() {
+            console.log('🚀 STARTING initializeApp...');
+            try {
+                // Load user session
+                if (!loadUserSession()) {
+                    console.log('❌ No user session found');
+                    showAlert('No user session found. Please login again.', 'error');
+                    setTimeout(() => {
+                        window.location.href = 'student-portal.html';
+                    }, 3000);
+                    return;
+                }
+                
+                console.log('✅ User session loaded, starting data load...');
+                
+                // Update UI with user info
+                document.getElementById('userName').textContent = currentSession.name || 'Student';
+                
+                // Load data
+                console.log('🔄 About to start Promise.all...');
+                await Promise.all([
+                    loadUserEvents(),
+                    loadUserScores(),
+                    loadDrills()
+                ]);
+                
+                console.log('✅ All data loaded, setting up event listeners...');
+                
+                // Setup event listeners
+                setupEventListeners();
+                
+                // Show events
+                console.log('🎨 About to render events...');
+                renderEvents();
+                console.log('✅ App initialization complete!');
+                
+            } catch (error) {
+                console.error('❌ Failed to initialize app:', error);
+                showAlert('Failed to load events: ' + error.message, 'error');
+            }
+        }
+
+        function setupEventListeners() {
+            document.getElementById('statusFilter').addEventListener('change', filterEvents);
+            document.getElementById('seriesFilter').addEventListener('change', filterEvents);
+            document.getElementById('dateFilter').addEventListener('change', filterEvents);
+            document.getElementById('refreshBtn').addEventListener('click', refreshData);
+        }
+
+        // ========================================
+        // UTILITY FUNCTIONS
+        // ========================================
+
+        function showAlert(message, type = 'success') {
+            const container = document.getElementById('alertContainer');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.textContent = message;
+            
+            container.appendChild(alert);
+            
+            setTimeout(() => {
+                if (alert.parentNode) {
+                    alert.parentNode.removeChild(alert);
+                }
+            }, 5000);
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        console.log('📅 Student Events Script Loaded');
+    </script>
+</body>
+</html>

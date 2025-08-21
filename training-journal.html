@@ -1,0 +1,1829 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Training Journal - Steve Sherman Billiards</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .logo {
+            width: 60px;
+            height: 60px;
+            margin-right: 15px;
+        }
+
+        .brand-text {
+            text-align: left;
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .brand-text h2 {
+            font-size: 1.1em;
+            margin: 0;
+            color: #333;
+            font-weight: 600;
+            line-height: 1.2;
+        }
+
+        .page-title {
+            font-size: 2.5em;
+            margin: 20px 0 10px 0;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-align: center;
+        }
+
+        .user-info {
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .user-details {
+            color: #333;
+            font-weight: 600;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-1px);
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+            transform: translateY(-1px);
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+            transform: translateY(-1px);
+        }
+
+        .debug-panel {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            font-family: monospace;
+            font-size: 12px;
+            color: #495057;
+            white-space: pre-wrap;
+            overflow-x: auto;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+            min-height: 500px;
+        }
+
+        .journal-list {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            overflow-y: auto;
+            max-height: 500px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #journalEntries {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 10px;
+        }
+
+        .journal-list h3 {
+            margin-bottom: 20px;
+            color: #333;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .journal-entry-item {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .journal-entry-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+            border-color: #667eea;
+        }
+
+        .journal-entry-item.selected {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .entry-title {
+            font-weight: 600;
+            font-size: 1.1em;
+            color: #333;
+            margin-bottom: 5px;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            hyphens: auto;
+            line-height: 1.3;
+        }
+
+        .entry-date {
+            font-size: 0.8em;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .entry-preview {
+            font-size: 0.9em;
+            color: #777;
+            line-height: 1.4;
+        }
+
+        .journal-editor {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .editor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .editor-title {
+            color: #333;
+            font-size: 1.3em;
+            flex: 1;
+        }
+
+        .editor-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 600;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-textarea {
+            min-height: 300px;
+            resize: vertical;
+            font-family: inherit;
+            line-height: 1.5;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+            padding: 40px 20px;
+        }
+
+        .loading {
+            text-align: center;
+            color: #667eea;
+            font-weight: 600;
+            padding: 20px;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+            display: none;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+            display: none;
+        }
+
+        .floating-add-btn {
+            display: none;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 500px;
+            margin: 10% auto;
+            position: relative;
+            animation: slideIn 0.3s ease;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 1.5em;
+            color: #333;
+            flex: 1;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-btn:hover {
+            color: #333;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                padding: 20px;
+            }
+
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .journal-list {
+                max-height: 300px;
+            }
+
+            .header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .brand-text {
+                text-align: center;
+                min-width: auto;
+            }
+
+            .user-info {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .floating-add-btn {
+                bottom: 20px;
+                right: 20px;
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+            }
+
+            .modal-content {
+                margin: 5% auto;
+                max-width: 90%;
+            }
+
+            .editor-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .editor-actions {
+                justify-content: center;
+            }
+        }
+
+        .pagination-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            padding: 15px 0;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .page-info {
+            font-weight: 600;
+            color: #333;
+            font-size: 0.9em;
+        }
+
+        .search-container {
+            position: relative;
+        }
+
+        #searchInput {
+            padding-right: 35px;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+            min-height: 500px;
+        }
+
+        .journal-list {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            overflow-y: auto;
+            max-height: 600px;
+        }
+
+        .journal-list h3 {
+            margin-bottom: 20px;
+            color: #333;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .journal-entry-item {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .journal-entry-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+            border-color: #667eea;
+        }
+
+        .journal-entry-item.selected {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .entry-title {
+            font-weight: 600;
+            font-size: 1.1em;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .entry-date {
+            font-size: 0.8em;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .entry-preview {
+            font-size: 0.9em;
+            color: #777;
+            line-height: 1.4;
+        }
+
+        .journal-editor {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .editor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .editor-title {
+            color: #333;
+            font-size: 1.3em;
+            flex: 1;
+        }
+
+        .editor-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 600;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-textarea {
+            min-height: 300px;
+            resize: vertical;
+            font-family: inherit;
+            line-height: 1.5;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+            padding: 40px 20px;
+        }
+
+        .loading {
+            text-align: center;
+            color: #667eea;
+            font-weight: 600;
+            padding: 20px;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+            display: none;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+            display: none;
+        }
+
+        .floating-add-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #28a745, #20c997);
+            color: white;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(40, 167, 69, 0.3);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .floating-add-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 25px rgba(40, 167, 69, 0.4);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 500px;
+            margin: 10% auto;
+            position: relative;
+            animation: slideIn 0.3s ease;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 1.5em;
+            color: #333;
+            flex: 1;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-btn:hover {
+            color: #333;
+        }
+
+        .pagination-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            padding: 15px 0;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .page-info {
+            font-weight: 600;
+            color: #333;
+            font-size: 0.9em;
+        }
+
+        .search-container {
+            position: relative;
+        }
+
+        #searchInput {
+            padding-right: 35px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <img src="images/logo.png" alt="Steve Sherman Billiards Logo" class="logo">
+            <div class="brand-text">
+                <h2>Steve Sherman Billiards Training System</h2>
+            </div>
+        </div>
+        <h1 class="page-title">Training Journal</h1>
+
+        <!-- Debug Panel (remove this after fixing) -->
+        <div id="debugPanel" class="debug-panel" style="display: none;">
+            <strong>DEBUG INFO:</strong>
+            <div id="debugContent"></div>
+        </div>
+
+        <!-- User Info -->
+        <div class="user-info">
+            <div class="user-details">
+                <span>Journal for: <strong id="currentUser"></strong></span><br>
+                <small>Session: <span id="sessionInfo"></span> | User ID: <span id="userIdDisplay">Loading...</span> | Version 1.4</small>
+            </div>
+            <div class="action-buttons">
+                <button class="btn btn-primary" onclick="createNewEntry()">+ New Entry</button>
+                <button class="btn btn-secondary" onclick="forceRefresh()">🔄 Refresh</button>
+                <button class="btn btn-secondary" onclick="window.close()">Close Journal</button>
+            </div>
+        </div>
+
+        <!-- Messages -->
+        <div id="errorMessage" class="error-message"></div>
+        <div id="successMessage" class="success-message"></div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Journal List -->
+            <div class="journal-list">
+                <div class="journal-list-header">
+                    <h3>Journal Entries</h3>
+                    
+                    <!-- Search Field -->
+                    <div class="search-container" style="margin-bottom: 15px;">
+                        <input type="text" id="searchInput" class="form-input" 
+                               placeholder="Search journal titles..." 
+                               oninput="handleSearch(this.value)"
+                               style="margin-bottom: 0;">
+                    </div>
+                    
+                    <!-- Sort Controls -->
+                    <div class="sort-controls">
+                        <button class="sort-btn active" id="sortByDate" onclick="setSortOrder('date')">📅 By Date</button>
+                        <button class="sort-btn" id="sortByTitle" onclick="setSortOrder('title')">🔤 By Title</button>
+                    </div>
+                </div>
+                
+                <div id="journalEntries">
+                    <div class="loading">Loading your journal entries...</div>
+                </div>
+                
+                <!-- Pagination Controls -->
+                <div id="paginationControls" class="pagination-controls" style="display: none;">
+                    <button class="btn btn-secondary" id="prevBtn" onclick="changePage(-1)" disabled>← Previous</button>
+                    <span id="pageInfo" class="page-info">Page 1 of 1</span>
+                    <button class="btn btn-secondary" id="nextBtn" onclick="changePage(1)" disabled>Next →</button>
+                </div>
+            </div>
+
+            <!-- Journal Editor -->
+            <div class="journal-editor">
+                <div class="editor-header">
+                    <h3 class="editor-title" id="editorTitle">Select an entry to view or edit</h3>
+                    <div class="editor-actions" id="editorActions" style="display: none;">
+                        <button class="btn btn-success" onclick="saveEntry()">Save</button>
+                        <button class="btn btn-danger" onclick="deleteEntry()">Delete</button>
+                        <button class="btn btn-secondary" onclick="cancelEdit()">Cancel</button>
+                    </div>
+                </div>
+                
+                <div id="editorContent">
+                    <div class="empty-state">
+                        Select a journal entry from the list to view or edit it, or create a new entry to get started.
+                    </div>
+                </div>
+
+                <div id="editorForm" style="display: none;">
+                    <form id="journalForm">
+                        <div class="form-group">
+                            <label for="entryTitle" class="form-label">Title:</label>
+                            <input type="text" id="entryTitle" name="title" class="form-input" 
+                                   placeholder="Enter a title for your journal entry" required maxlength="255">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="entryContent" class="form-label">Your thoughts and notes:</label>
+                            <textarea id="entryContent" name="content" class="form-input form-textarea" 
+                                      placeholder="Write about your training session, what you learned, areas to improve, goals, or any other thoughts..." required></textarea>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Confirm Delete</h3>
+                <button class="close-btn" onclick="closeDeleteModal()">&times;</button>
+            </div>
+            <p>Are you sure you want to delete this journal entry? This action cannot be undone.</p>
+            <div style="text-align: right; margin-top: 20px; display: flex; gap: 10px; justify-content: flex-end;">
+                <button class="btn btn-secondary" onclick="closeDeleteModal()">Cancel</button>
+                <button class="btn btn-danger" onclick="confirmDelete()">Delete Entry</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const API_BASE_URL = 'https://steveshermanbilliards.com/drill-api.php';
+
+        // Session and state management
+        let currentSession = null;
+        let journalEntries = [];
+        let filteredEntries = [];
+        let currentEntry = null;
+        let isEditing = false;
+        let entryToDelete = null;
+        let currentPage = 1;
+        const entriesPerPage = 10;
+        let searchTerm = '';
+        let sortOrder = 'date'; // 'date' or 'title'
+
+        function clearSearch() {
+            document.getElementById('searchInput').value = '';
+            handleSearch('');
+        }
+
+        // ========================================
+        // DEBUGGING FUNCTIONS (Simplified)
+        // ========================================
+
+        function updateDebugInfo() {
+            // Debug info now only logged to console for development
+            const debugData = {
+                url: window.location.href,
+                search: window.location.search,
+                currentSession: currentSession,
+                journalCount: journalEntries.length,
+                filteredCount: filteredEntries.length,
+                currentPage: currentPage,
+                searchTerm: searchTerm
+            };
+            
+            console.log('📊 Debug Info:', debugData);
+        }
+
+        // ========================================
+        // API HELPER FUNCTION (Enhanced with Cache Busting)
+        // ========================================
+
+        async function apiRequest(endpoint, method = 'GET', data = null) {
+            try {
+                const options = {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Cache-Control': 'no-cache, no-store, must-revalidate',
+                        'Pragma': 'no-cache',
+                        'Expires': '0'
+                    }
+                };
+                
+                if (data) {
+                    options.body = JSON.stringify(data);
+                }
+                
+                // Add cache-busting timestamp to GET requests
+                let fullUrl = `${API_BASE_URL}/${endpoint}`;
+                if (method === 'GET') {
+                    const separator = endpoint.includes('?') ? '&' : '?';
+                    fullUrl += `${separator}_t=${Date.now()}&_r=${Math.random()}`;
+                }
+                
+                console.log('🌐 API Request:', method, fullUrl, data);
+                
+                const response = await fetch(fullUrl, options);
+                
+                console.log('📡 HTTP Response Status:', response.status);
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('❌ HTTP Error Response:', errorText);
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const result = await response.json();
+                console.log('📄 API Response:', result);
+                
+                if (!result.success) {
+                    throw new Error(result.message || 'API request failed');
+                }
+                
+                return result;
+            } catch (error) {
+                console.error('❌ API Error:', error);
+                throw error;
+            }
+        }
+
+        // ========================================
+        // SESSION MANAGEMENT (Enhanced)
+        // ========================================
+
+        function initializeSession() {
+            console.log('🚀 Training Journal - Initializing session (Enhanced Debug Version)');
+            
+            // Try to get session from various sources
+            let session = null;
+            let userData = null;
+            
+            // 1. Check URL parameters first
+            const urlParams = new URLSearchParams(window.location.search);
+            const userParam = urlParams.get('user');
+            
+            console.log('🔍 URL Parameters:', {
+                fullURL: window.location.href,
+                search: window.location.search,
+                userParam: userParam
+            });
+            
+            if (userParam) {
+                try {
+                    userData = JSON.parse(atob(userParam));
+                    console.log('📝 Decoded user data from URL:', userData);
+                    
+                    // Ensure we have a valid user ID (convert to integer)
+                    let userId = parseInt(userData.id) || null;
+                    
+                    // If ID is still invalid, try other fields
+                    if (!userId) {
+                        userId = parseInt(userData.userId) || parseInt(userData.user_id) || null;
+                    }
+                    
+                    if (!userId) {
+                        console.error('❌ No valid user ID found in decoded data');
+                        console.error('❌ Available fields:', Object.keys(userData));
+                        throw new Error('No valid user ID found');
+                    }
+                    
+                    session = {
+                        userId: userId,
+                        name: userData.name || userData.display_name || userData.email || 'Student',
+                        email: userData.email || '',
+                        type: userData.type || 'student',
+                        loginTime: new Date(),
+                        fromPortal: true
+                    };
+                    
+                    console.log('✅ Session created from URL data:', session);
+                    
+                } catch (e) {
+                    console.error('❌ Failed to parse URL user data:', e);
+                    showError('Failed to decode user session data. Please try again from the student portal.');
+                    return false;
+                }
+            }
+            
+            // 2. If no URL data, try sessionStorage
+            if (!session) {
+                console.log('🔍 No URL data found, checking sessionStorage...');
+                
+                try {
+                    const storedSession = sessionStorage.getItem('studentSession') || 
+                                        sessionStorage.getItem('drillAppSession') || 
+                                        sessionStorage.getItem('reportSession');
+                    
+                    if (storedSession) {
+                        const parsedSession = JSON.parse(storedSession);
+                        console.log('📝 Found stored session:', parsedSession);
+                        
+                        let userId = parseInt(parsedSession.userId) || parseInt(parsedSession.user_id) || parseInt(parsedSession.id) || null;
+                        
+                        if (userId) {
+                            session = {
+                                userId: userId,
+                                name: parsedSession.name || parsedSession.display_name || parsedSession.email || 'Student',
+                                email: parsedSession.email || '',
+                                type: parsedSession.type || 'student',
+                                loginTime: parsedSession.loginTime ? new Date(parsedSession.loginTime) : new Date(),
+                                fromPortal: parsedSession.fromPortal || false
+                            };
+                            console.log('✅ Session created from storage:', session);
+                        }
+                    }
+                } catch (e) {
+                    console.log('⚠️ Could not access sessionStorage:', e);
+                }
+            }
+            
+            // 3. Final validation
+            if (!session || !session.userId) {
+                console.error('❌ No valid session found');
+                showError('No valid session found. Please return to the student portal and try again.');
+                
+                // Show debug info in UI
+                document.getElementById('currentUser').textContent = 'No User Found';
+                document.getElementById('userIdDisplay').textContent = 'Invalid';
+                document.getElementById('sessionInfo').textContent = 'No Session';
+                
+                updateDebugInfo();
+                return false;
+            }
+            
+            console.log('✅ Session initialized successfully:', session);
+            currentSession = session;
+            
+            // Update UI with user info
+            document.getElementById('currentUser').textContent = session.name || session.email || 'Student';
+            document.getElementById('userIdDisplay').textContent = session.userId;
+            document.getElementById('sessionInfo').textContent = new Date().toLocaleString();
+            
+            updateDebugInfo();
+            return true;
+        }
+
+        // ========================================
+        // JOURNAL MANAGEMENT (Enhanced)
+        // ========================================
+
+        async function loadJournalEntries() {
+            if (!currentSession || !currentSession.userId) {
+                showError('No valid session. Please login again.');
+                return;
+            }
+
+            const userId = parseInt(currentSession.userId);
+            if (!userId || userId <= 0) {
+                showError('Invalid user ID. Please login again.');
+                return;
+            }
+
+            try {
+                console.log('📚 Loading journal entries for user ID:', userId);
+                
+                // Test API connection first
+                try {
+                    const versionResponse = await apiRequest('version');
+                    console.log('✅ API connection verified:', versionResponse.data);
+                } catch (apiError) {
+                    console.error('❌ API connection failed:', apiError);
+                    throw new Error('Cannot connect to server. Please check your internet connection.');
+                }
+                
+                // Construct the journal endpoint URL with explicit user_id parameter
+                const journalEndpoint = `journal?user_id=${userId}`;
+                console.log('📡 Calling journal endpoint:', journalEndpoint);
+                
+                const response = await apiRequest(journalEndpoint);
+                
+                console.log('📚 Raw journal response:', response);
+                
+                // Handle different response formats
+                let entries = [];
+                if (response.data && Array.isArray(response.data)) {
+                    entries = response.data;
+                } else if (Array.isArray(response)) {
+                    entries = response;
+                } else if (response.data) {
+                    entries = [response.data];
+                } else {
+                    entries = [];
+                }
+                
+                console.log('📚 Processed journal entries:', entries.length, entries);
+                
+                // Additional client-side filtering to ensure we only show this user's entries
+                journalEntries = entries.filter(entry => {
+                    const entryUserId = parseInt(entry.user_id) || parseInt(entry.userId);
+                    const matches = entryUserId === userId;
+                    if (!matches) {
+                        console.warn('⚠️ Filtering out entry with mismatched user ID:', entry.id, 'entry user:', entryUserId, 'current user:', userId);
+                    }
+                    return matches;
+                });
+                
+                // Sort entries by date descending (newest first) initially
+                journalEntries.sort((a, b) => {
+                    const dateA = new Date(a.updated_at || a.created_at);
+                    const dateB = new Date(b.updated_at || b.created_at);
+                    return dateB - dateA;
+                });
+                
+                console.log('📚 Filtered and sorted journal entries for user:', journalEntries.length);
+                
+                // Initialize pagination and filtering
+                sortOrder = 'date'; // Reset sort order
+                filteredEntries = sortEntries(journalEntries);
+                
+                // Preserve current page if possible, otherwise reset to 1
+                const totalPages = Math.ceil(filteredEntries.length / entriesPerPage);
+                if (currentPage > totalPages) {
+                    currentPage = 1;
+                }
+                
+                // Reset sort buttons
+                document.getElementById('sortByDate').classList.add('active');
+                document.getElementById('sortByTitle').classList.remove('active');
+                
+                // Preserve search term if it exists
+                const currentSearchTerm = document.getElementById('searchInput')?.value?.toLowerCase()?.trim() || '';
+                if (currentSearchTerm && currentSearchTerm !== searchTerm) {
+                    searchTerm = currentSearchTerm;
+                    handleSearch(currentSearchTerm);
+                } else {
+                    displayJournalEntries();
+                }
+                
+            } catch (error) {
+                console.error('❌ Error loading journal entries:', error);
+                showError('Failed to load journal entries: ' + error.message);
+                
+                // Show detailed error state
+                document.getElementById('journalEntries').innerHTML = `
+                    <div class="empty-state">
+                        <p style="color: #dc3545;">Failed to load journal entries</p>
+                        <p><small>Error: ${error.message}</small></p>
+                        <p><small>User ID: ${currentSession?.userId || 'Unknown'}</small></p>
+                        <button class="btn btn-primary" onclick="loadJournalEntries()" style="margin-top: 10px;">Retry</button>
+                    </div>
+                `;
+            }
+        }
+
+        // ========================================
+        // SEARCH, SORTING AND PAGINATION
+        // ========================================
+
+        function setSortOrder(order) {
+            sortOrder = order;
+            currentPage = 1; // Reset to first page when changing sort
+            
+            // Update UI buttons
+            document.getElementById('sortByDate').classList.remove('active');
+            document.getElementById('sortByTitle').classList.remove('active');
+            
+            if (order === 'date') {
+                document.getElementById('sortByDate').classList.add('active');
+            } else {
+                document.getElementById('sortByTitle').classList.add('active');
+            }
+            
+            // Apply current search and new sort order
+            handleSearch(searchTerm);
+        }
+
+        function sortEntries(entries) {
+            const sorted = [...entries];
+            
+            if (sortOrder === 'title') {
+                sorted.sort((a, b) => a.title.toLowerCase().localeCompare(b.title.toLowerCase()));
+            } else {
+                // Sort by date (newest first)
+                sorted.sort((a, b) => {
+                    const dateA = new Date(a.updated_at || a.created_at);
+                    const dateB = new Date(b.updated_at || b.created_at);
+                    return dateB - dateA;
+                });
+            }
+            
+            return sorted;
+        }
+
+        function handleSearch(term) {
+            searchTerm = term.toLowerCase().trim();
+            currentPage = 1; // Reset to first page when searching
+            
+            let filtered;
+            if (searchTerm === '') {
+                filtered = [...journalEntries];
+            } else {
+                // Wildcard search - matches if search term is found anywhere in title
+                filtered = journalEntries.filter(entry => 
+                    entry.title.toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            // Apply sorting to filtered results
+            filteredEntries = sortEntries(filtered);
+            
+            displayJournalEntries();
+        }
+
+        function changePage(direction) {
+            const totalPages = Math.ceil(filteredEntries.length / entriesPerPage);
+            const newPage = currentPage + direction;
+            
+            if (newPage >= 1 && newPage <= totalPages) {
+                currentPage = newPage;
+                displayJournalEntries();
+            }
+        }
+
+        function updatePaginationControls() {
+            const totalPages = Math.ceil(filteredEntries.length / entriesPerPage);
+            const paginationControls = document.getElementById('paginationControls');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const pageInfo = document.getElementById('pageInfo');
+            
+            // Always show the pagination area to display record count
+            paginationControls.style.display = 'flex';
+            
+            // Calculate record numbers
+            const endRecord = Math.min(currentPage * entriesPerPage, filteredEntries.length);
+            const totalRecords = journalEntries.length; // Total for this user, not filtered
+            
+            // Show/hide navigation buttons based on whether pagination is needed
+            if (totalPages <= 1 && filteredEntries.length <= entriesPerPage) {
+                // Hide navigation buttons when not needed
+                prevBtn.style.display = 'none';
+                nextBtn.style.display = 'none';
+            } else {
+                // Show navigation buttons when needed
+                prevBtn.style.display = 'inline-block';
+                nextBtn.style.display = 'inline-block';
+                
+                // Update button states
+                prevBtn.disabled = currentPage <= 1;
+                nextBtn.disabled = currentPage >= totalPages;
+            }
+            
+            // Always show record count
+            if (searchTerm) {
+                pageInfo.textContent = `Record ${endRecord} of ${totalRecords} (${filteredEntries.length} matches)`;
+            } else {
+                pageInfo.textContent = `Record ${endRecord} of ${totalRecords}`;
+            }
+        }
+
+        function displayJournalEntries() {
+            const container = document.getElementById('journalEntries');
+            
+            if (!filteredEntries || filteredEntries.length === 0) {
+                if (searchTerm) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <p>No journal entries found matching "${searchTerm}"</p>
+                            <button class="btn btn-secondary" onclick="clearSearch()" style="margin-top: 10px;">Clear Search</button>
+                        </div>
+                    `;
+                } else {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <p>No journal entries yet for User ID: ${currentSession?.userId || 'Unknown'}</p>
+                            <p>Click "New Entry" to start writing!</p>
+                            <button class="btn btn-primary" onclick="createNewEntry()" style="margin-top: 10px;">Create First Entry</button>
+                        </div>
+                    `;
+                }
+                updatePaginationControls();
+                return;
+            }
+            
+            // Calculate entries for current page
+            const startIndex = (currentPage - 1) * entriesPerPage;
+            const endIndex = startIndex + entriesPerPage;
+            const pageEntries = filteredEntries.slice(startIndex, endIndex);
+            
+            let html = '';
+            pageEntries.forEach(entry => {
+                const date = new Date(entry.updated_at || entry.created_at);
+                const formattedDate = date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                
+                html += `
+                    <div class="journal-entry-item" onclick="selectEntry(${entry.id})" data-id="${entry.id}">
+                        <div class="entry-title">${escapeHtml(entry.title)}</div>
+                        <div class="entry-date">${formattedDate}</div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+            updatePaginationControls();
+        }
+
+        // ========================================
+        // FORCE REFRESH FUNCTION
+        // ========================================
+
+        async function forceRefresh() {
+            console.log('🔄 Force refreshing journal data...');
+            
+            // Clear any cached data
+            journalEntries = [];
+            filteredEntries = [];
+            currentEntry = null;
+            isEditing = false;
+            
+            // Reset pagination and search
+            currentPage = 1;
+            searchTerm = '';
+            sortOrder = 'date';
+            document.getElementById('searchInput').value = '';
+            
+            // Reset sort buttons
+            document.getElementById('sortByDate').classList.add('active');
+            document.getElementById('sortByTitle').classList.remove('active');
+            
+            // Clear UI state
+            document.querySelectorAll('.journal-entry-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            
+            // Show loading state
+            document.getElementById('journalEntries').innerHTML = '<div class="loading">Force refreshing journal entries...</div>';
+            
+            // Reset editor to empty state
+            const editorTitle = document.getElementById('editorTitle');
+            const editorContent = document.getElementById('editorContent');
+            const editorForm = document.getElementById('editorForm');
+            const editorActions = document.getElementById('editorActions');
+            
+            editorTitle.textContent = 'Select an entry to view or edit';
+            editorActions.style.display = 'none';
+            editorForm.style.display = 'none';
+            editorContent.innerHTML = '<div class="empty-state">Select a journal entry from the list to view or edit it, or create a new entry to get started.</div>';
+            editorContent.style.display = 'block';
+            
+            // Force reload from server
+            try {
+                await loadJournalEntries();
+                showSuccess('Journal refreshed successfully!');
+            } catch (error) {
+                showError('Failed to refresh journal: ' + error.message);
+            }
+        }
+
+        function selectEntry(entryId) {
+            if (isEditing && hasUnsavedChanges()) {
+                if (!confirm('You have unsaved changes. Do you want to discard them?')) {
+                    return;
+                }
+            }
+            
+            const entry = journalEntries.find(e => e.id == entryId);
+            if (!entry) {
+                showError('Journal entry not found.');
+                return;
+            }
+            
+            currentEntry = entry;
+            isEditing = true; // Start in edit mode by default
+            
+            // Update UI selection
+            document.querySelectorAll('.journal-entry-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            document.querySelector(`[data-id="${entryId}"]`).classList.add('selected');
+            
+            // Show the entry in edit mode immediately
+            editEntry(entry);
+        }
+
+        function displayEntry(entry) {
+            const editorTitle = document.getElementById('editorTitle');
+            const editorContent = document.getElementById('editorContent');
+            const editorForm = document.getElementById('editorForm');
+            const editorActions = document.getElementById('editorActions');
+            
+            editorTitle.textContent = entry.title;
+            editorActions.style.display = 'flex';
+            editorForm.style.display = 'none';
+            
+            const date = new Date(entry.updated_at || entry.created_at);
+            const formattedDate = date.toLocaleDateString() + ' at ' + date.toLocaleTimeString();
+            
+            editorContent.innerHTML = `
+                <div style="margin-bottom: 15px; padding: 10px; background: #f8f9fa; border-radius: 8px; font-size: 0.9em; color: #666;">
+                    <strong>Entry ID:</strong> ${entry.id}<br>
+                    <strong>User ID:</strong> ${entry.user_id}<br>
+                    <strong>Created:</strong> ${new Date(entry.created_at).toLocaleDateString()} at ${new Date(entry.created_at).toLocaleTimeString()}<br>
+                    <strong>Last Updated:</strong> ${formattedDate}
+                </div>
+                <div style="white-space: pre-wrap; line-height: 1.6; font-size: 1em; color: #333;">
+                    ${escapeHtml(entry.content)}
+                </div>
+            `;
+            editorContent.style.display = 'block';
+        }
+
+        function createNewEntry() {
+            if (isEditing && hasUnsavedChanges()) {
+                if (!confirm('You have unsaved changes. Do you want to discard them?')) {
+                    return;
+                }
+            }
+            
+            currentEntry = null;
+            isEditing = true;
+            
+            // Clear selection
+            document.querySelectorAll('.journal-entry-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            
+            const editorTitle = document.getElementById('editorTitle');
+            const editorContent = document.getElementById('editorContent');
+            const editorForm = document.getElementById('editorForm');
+            const editorActions = document.getElementById('editorActions');
+            
+            editorTitle.textContent = `New Journal Entry (User: ${currentSession?.userId})`;
+            editorActions.style.display = 'flex';
+            editorContent.style.display = 'none';
+            editorForm.style.display = 'block';
+            
+            // Clear form
+            document.getElementById('entryTitle').value = '';
+            document.getElementById('entryContent').value = '';
+            
+            // Focus on title field
+            document.getElementById('entryTitle').focus();
+        }
+
+        function editEntry(entry) {
+            isEditing = true;
+            
+            const editorTitle = document.getElementById('editorTitle');
+            const editorContent = document.getElementById('editorContent');
+            const editorForm = document.getElementById('editorForm');
+            const editorActions = document.getElementById('editorActions');
+            
+            editorTitle.textContent = 'Editing: ' + entry.title;
+            editorActions.style.display = 'flex';
+            editorContent.style.display = 'none';
+            editorForm.style.display = 'block';
+            
+            // Populate form with current entry data
+            document.getElementById('entryTitle').value = entry.title;
+            document.getElementById('entryContent').value = entry.content;
+            
+            // Focus on title field for editing
+            document.getElementById('entryTitle').focus();
+        }
+
+        async function saveEntry() {
+            // Prevent double submission
+            const saveButton = document.querySelector('#editorActions .btn-success');
+            if (saveButton.disabled) {
+                console.log('Save already in progress, preventing duplicate');
+                return;
+            }
+            
+            const title = document.getElementById('entryTitle').value.trim();
+            const content = document.getElementById('entryContent').value.trim();
+            
+            if (!title || !content) {
+                showError('Please enter both a title and content for your journal entry.');
+                return;
+            }
+            
+            if (title.length > 255) {
+                showError('Title is too long. Please keep it under 255 characters.');
+                return;
+            }
+            
+            if (!currentSession || !currentSession.userId) {
+                showError('No valid session. Please login again.');
+                return;
+            }
+            
+            // Disable save button to prevent double submission
+            saveButton.disabled = true;
+            saveButton.textContent = 'Saving...';
+            
+            try {
+                const data = {
+                    user_id: parseInt(currentSession.userId),
+                    title: title,
+                    content: content
+                };
+                
+                console.log('💾 Saving journal entry with data:', data);
+                
+                let response;
+                if (currentEntry) {
+                    // Update existing entry
+                    console.log('📝 Updating journal entry:', currentEntry.id);
+                    response = await apiRequest(`journal/${currentEntry.id}`, 'PUT', data);
+                } else {
+                    // Create new entry
+                    console.log('📝 Creating new journal entry');
+                    response = await apiRequest('journal', 'POST', data);
+                }
+                
+                console.log('✅ Save response:', response);
+                
+                showSuccess(currentEntry ? 'Journal entry updated successfully!' : 'Journal entry created successfully!');
+                
+                // Clear current entry and editing state BEFORE reloading
+                const wasNewEntry = !currentEntry;
+                currentEntry = null;
+                isEditing = false;
+                
+                // Clear form
+                document.getElementById('entryTitle').value = '';
+                document.getElementById('entryContent').value = '';
+                
+                // Hide editor form and show empty state
+                const editorTitle = document.getElementById('editorTitle');
+                const editorContent = document.getElementById('editorContent');
+                const editorForm = document.getElementById('editorForm');
+                const editorActions = document.getElementById('editorActions');
+                
+                editorTitle.textContent = 'Select an entry to view or edit';
+                editorActions.style.display = 'none';
+                editorForm.style.display = 'none';
+                editorContent.innerHTML = '<div class="empty-state">Select a journal entry from the list to view or edit it, or create a new entry to get started.</div>';
+                editorContent.style.display = 'block';
+                
+                // Clear any selected entries in the list
+                document.querySelectorAll('.journal-entry-item').forEach(item => {
+                    item.classList.remove('selected');
+                });
+                
+                // Force reload entries from server with cache busting
+                console.log('🔄 Force reloading journal entries from server...');
+                
+                // Clear any existing data first
+                journalEntries = [];
+                filteredEntries = [];
+                
+                await loadJournalEntries();
+                
+                // If it was a new entry, try to find and select it
+                if (wasNewEntry && response.data && response.data.id) {
+                    const newEntryId = response.data.id;
+                    console.log('🔍 Looking for new entry ID:', newEntryId);
+                    
+                    // Small delay to ensure UI is updated
+                    setTimeout(() => {
+                        const entryElement = document.querySelector(`[data-id="${newEntryId}"]`);
+                        if (entryElement) {
+                            console.log('✅ Found new entry in list, selecting it');
+                            selectEntry(newEntryId);
+                        } else {
+                            console.log('⚠️ New entry not found in current view, might be on different page');
+                            // Try to find it in the full list and navigate to correct page
+                            const entryIndex = filteredEntries.findIndex(e => e.id == newEntryId);
+                            if (entryIndex !== -1) {
+                                const entryPage = Math.ceil((entryIndex + 1) / entriesPerPage);
+                                console.log(`📄 New entry found on page ${entryPage}, navigating...`);
+                                currentPage = entryPage;
+                                displayJournalEntries();
+                                setTimeout(() => selectEntry(newEntryId), 100);
+                            }
+                        }
+                    }, 200);
+                }
+                
+            } catch (error) {
+                console.error('❌ Error saving journal entry:', error);
+                showError('Failed to save journal entry: ' + error.message);
+            } finally {
+                // Re-enable save button
+                saveButton.disabled = false;
+                saveButton.textContent = 'Save';
+            }
+        }
+
+        function deleteEntry() {
+            if (!currentEntry) {
+                showError('No entry selected to delete.');
+                return;
+            }
+            
+            entryToDelete = currentEntry;
+            document.getElementById('deleteModal').style.display = 'block';
+        }
+
+        async function confirmDelete() {
+            if (!entryToDelete) {
+                closeDeleteModal();
+                return;
+            }
+            
+            try {
+                console.log('🗑️ Deleting journal entry:', entryToDelete.id);
+                
+                await apiRequest(`journal/${entryToDelete.id}`, 'DELETE', {
+                    user_id: parseInt(currentSession.userId)
+                });
+                
+                showSuccess('Journal entry deleted successfully!');
+                
+                // Clear current selection and reload entries
+                currentEntry = null;
+                isEditing = false;
+                entryToDelete = null;
+                
+                await loadJournalEntries();
+                
+                // Show empty state in editor
+                const editorTitle = document.getElementById('editorTitle');
+                const editorContent = document.getElementById('editorContent');
+                const editorForm = document.getElementById('editorForm');
+                const editorActions = document.getElementById('editorActions');
+                
+                editorTitle.textContent = 'Select an entry to view or edit';
+                editorActions.style.display = 'none';
+                editorForm.style.display = 'none';
+                editorContent.innerHTML = '<div class="empty-state">Select a journal entry from the list to view or edit it, or create a new entry to get started.</div>';
+                editorContent.style.display = 'block';
+                
+                closeDeleteModal();
+                
+            } catch (error) {
+                console.error('❌ Error deleting journal entry:', error);
+                showError('Failed to delete journal entry: ' + error.message);
+                closeDeleteModal();
+            }
+        }
+
+        function cancelEdit() {
+            if (hasUnsavedChanges()) {
+                if (!confirm('You have unsaved changes. Do you want to discard them?')) {
+                    return;
+                }
+            }
+            
+            isEditing = false;
+            
+            if (currentEntry) {
+                displayEntry(currentEntry);
+            } else {
+                // Show empty state
+                const editorTitle = document.getElementById('editorTitle');
+                const editorContent = document.getElementById('editorContent');
+                const editorForm = document.getElementById('editorForm');
+                const editorActions = document.getElementById('editorActions');
+                
+                editorTitle.textContent = 'Select an entry to view or edit';
+                editorActions.style.display = 'none';
+                editorForm.style.display = 'none';
+                editorContent.innerHTML = '<div class="empty-state">Select a journal entry from the list to view or edit it, or create a new entry to get started.</div>';
+                editorContent.style.display = 'block';
+            }
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').style.display = 'none';
+            entryToDelete = null;
+        }
+
+        // ========================================
+        // UI HELPERS
+        // ========================================
+
+        function hasUnsavedChanges() {
+            if (!isEditing) return false;
+            
+            const title = document.getElementById('entryTitle').value.trim();
+            const content = document.getElementById('entryContent').value.trim();
+            
+            if (currentEntry) {
+                return title !== currentEntry.title || content !== currentEntry.content;
+            } else {
+                return title || content;
+            }
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            
+            // Hide success message
+            document.getElementById('successMessage').style.display = 'none';
+            
+            // Auto-hide after 10 seconds (longer for errors)
+            setTimeout(() => {
+                errorDiv.style.display = 'none';
+            }, 10000);
+            
+            // Scroll to top to ensure message is visible
+            window.scrollTo(0, 0);
+            
+            // Update debug info
+            updateDebugInfo();
+        }
+
+        function showSuccess(message) {
+            const successDiv = document.getElementById('successMessage');
+            successDiv.textContent = message;
+            successDiv.style.display = 'block';
+            
+            // Hide error message
+            document.getElementById('errorMessage').style.display = 'none';
+            
+            // Auto-hide after 3 seconds
+            setTimeout(() => {
+                successDiv.style.display = 'none';
+            }, 3000);
+            
+            // Scroll to top to ensure message is visible
+            window.scrollTo(0, 0);
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // ========================================
+        // EVENT LISTENERS
+        // ========================================
+
+        // Handle editor action buttons click events
+        document.addEventListener('click', function(e) {
+            // Only handle clicks directly on buttons, not bubbled events
+            if (e.target.classList.contains('btn-success') && e.target.textContent.includes('Save')) {
+                e.preventDefault();
+                e.stopPropagation();
+                saveEntry();
+            } else if (e.target.classList.contains('btn-danger') && e.target.textContent.includes('Delete')) {
+                e.preventDefault();
+                e.stopPropagation();
+                deleteEntry();
+            } else if (e.target.classList.contains('btn-secondary') && e.target.textContent.includes('Cancel')) {
+                e.preventDefault();
+                e.stopPropagation();
+                cancelEdit();
+            }
+        });
+
+        // Add edit functionality when viewing an entry - remove since we start in edit mode
+        // document.addEventListener('dblclick', function(e) {
+        //     if (e.target.closest('.journal-editor') && currentEntry && !isEditing) {
+        //         editEntry(currentEntry);
+        //     }
+        // });
+
+        // Handle keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Ctrl+S or Cmd+S to save
+            if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                e.preventDefault();
+                if (isEditing) {
+                    saveEntry();
+                }
+            }
+            
+            // Escape to cancel editing
+            if (e.key === 'Escape') {
+                if (isEditing) {
+                    cancelEdit();
+                } else if (document.getElementById('deleteModal').style.display === 'block') {
+                    closeDeleteModal();
+                }
+            }
+        });
+
+        // Handle page unload with unsaved changes
+        window.addEventListener('beforeunload', function(e) {
+            if (hasUnsavedChanges()) {
+                e.preventDefault();
+                e.returnValue = '';
+                return '';
+            }
+        });
+
+        // Close modal when clicking outside
+        document.getElementById('deleteModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeDeleteModal();
+            }
+        });
+
+        // ========================================
+        // INITIALIZATION
+        // ========================================
+
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('📔 Training Journal - DOM Loaded (Enhanced Debug Version)');
+            
+            if (initializeSession()) {
+                loadJournalEntries();
+            } else {
+                console.error('❌ Failed to initialize session');
+            }
+        });
+
+        console.log('📔 Training Journal v1.1 - Enhanced Debug Version');
+        console.log('📡 API URL:', API_BASE_URL);
+    </script>
+</body>
+</html>

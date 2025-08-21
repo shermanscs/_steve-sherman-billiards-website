@@ -1,0 +1,1577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Assign Training Programs - Steve Sherman Billiards</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .logo {
+            width: 60px;
+            height: 60px;
+            margin-right: 15px;
+        }
+
+        .brand-text {
+            text-align: left;
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .brand-text h2 {
+            font-size: 1.1em;
+            margin: 0;
+            color: #333;
+            font-weight: 600;
+            line-height: 1.2;
+        }
+
+        .page-title {
+            font-size: 2.5em;
+            margin: 20px 0 10px 0;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-align: center;
+        }
+
+        .coach-info {
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .coach-details {
+            color: #333;
+            font-weight: 600;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-1px);
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+            transform: translateY(-1px);
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+
+        .btn-warning:hover {
+            background: #e0a800;
+            transform: translateY(-1px);
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            min-height: 500px;
+        }
+
+        .students-panel, .programs-panel {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            overflow-y: auto;
+            max-height: 700px;
+        }
+
+        .panel-header {
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .panel-header h3 {
+            color: #333;
+        }
+
+        .student-item, .program-item {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .program-item.available {
+            cursor: pointer;
+        }
+
+        .program-item.available:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+            border-color: #667eea;
+        }
+
+        .program-item.assigned {
+            background: rgba(102, 126, 234, 0.05);
+            border-color: rgba(102, 126, 234, 0.3);
+        }
+
+        .program-name {
+            font-weight: 600;
+            font-size: 1.1em;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .program-details {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 8px;
+        }
+
+        .program-meta {
+            font-size: 0.8em;
+            color: #888;
+            margin-bottom: 10px;
+        }
+
+        /* NEW: Credit information styling */
+        .credit-info {
+            background: rgba(40, 167, 69, 0.1);
+            border: 1px solid rgba(40, 167, 69, 0.3);
+            border-radius: 6px;
+            padding: 8px 10px;
+            margin: 8px 0;
+            font-size: 0.75em;
+            color: #155724;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .credit-icon {
+            width: 16px;
+            height: 16px;
+            border-radius: 3px;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+
+        .credit-text {
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .credit-org {
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .credit-link {
+            color: #0066cc;
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .credit-link:hover {
+            text-decoration: underline;
+        }
+
+        .program-actions {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+        }
+
+        .program-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-assign {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-assign:hover {
+            background: #218838;
+            transform: translateY(-1px);
+        }
+
+        .btn-remove {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-remove:hover {
+            background: #c82333;
+            transform: translateY(-1px);
+        }
+
+        .btn-view {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-view:hover {
+            background: #5a6fd8;
+            transform: translateY(-1px);
+        }
+
+        .btn-manage {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .btn-manage:hover {
+            background: #138496;
+            transform: translateY(-1px);
+        }
+
+        .assignment-date {
+            font-size: 0.75em;
+            color: #888;
+            margin-top: 8px;
+            font-style: italic;
+        }
+
+        .assignment-info {
+            background: rgba(23, 162, 184, 0.1);
+            border-radius: 6px;
+            padding: 8px;
+            margin-top: 8px;
+            font-size: 0.8em;
+        }
+
+        .locking-mode {
+            font-weight: 600;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 11px;
+            text-transform: uppercase;
+        }
+
+        .locking-unlocked {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .locking-progressive {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .locking-locked {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .difficulty-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-block;
+        }
+
+        .difficulty-beginner {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .difficulty-intermediate {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .difficulty-advanced {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .assignment-section {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #e0e0e0;
+            text-align: center;
+        }
+
+        .assign-btn {
+            padding: 15px 30px;
+            background: linear-gradient(45deg, #28a745, #20c997);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 10px;
+        }
+
+        .assign-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3);
+        }
+
+        .assign-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .remove-btn {
+            background: linear-gradient(45deg, #dc3545, #c82333);
+        }
+
+        .remove-btn:hover:not(:disabled) {
+            box-shadow: 0 8px 25px rgba(220, 53, 69, 0.3);
+        }
+
+        .loading {
+            text-align: center;
+            color: #667eea;
+            font-weight: 600;
+            padding: 40px;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+            padding: 40px 20px;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        .locking-options {
+            background: rgba(40, 167, 69, 0.1);
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            border: 1px solid rgba(40, 167, 69, 0.3);
+        }
+
+        .locking-options h4 {
+            color: #155724;
+            margin-bottom: 10px;
+            font-size: 0.9em;
+        }
+
+        .locking-option {
+            margin: 8px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .locking-option input[type="radio"] {
+            margin: 0;
+        }
+
+        .locking-option label {
+            font-size: 0.85em;
+            color: #333;
+            cursor: pointer;
+        }
+
+        .unit-count {
+            background: #e9ecef;
+            border-radius: 4px;
+            padding: 4px 8px;
+            font-size: 0.8em;
+            color: #495057;
+            margin-left: 8px;
+        }
+
+        /* Unit Management Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: modalSlideIn 0.3s ease-out;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #667eea;
+        }
+
+        .modal-title {
+            font-size: 1.4em;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5em;
+            cursor: pointer;
+            color: #666;
+            padding: 5px;
+            border-radius: 50%;
+            transition: all 0.2s ease;
+        }
+
+        .modal-close:hover {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .unit-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            margin-bottom: 10px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border: 2px solid transparent;
+            transition: all 0.2s ease;
+        }
+
+        .unit-item:hover {
+            border-color: #667eea;
+            transform: translateY(-1px);
+        }
+
+        .unit-info {
+            flex: 1;
+        }
+
+        .unit-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .unit-details {
+            font-size: 0.85em;
+            color: #666;
+        }
+
+        .unit-status {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.8em;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-right: 15px;
+        }
+
+        .unit-unlocked {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .unit-locked {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .unit-toggle-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85em;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .unit-toggle-btn.unlock {
+            background: #28a745;
+            color: white;
+        }
+
+        .unit-toggle-btn.lock {
+            background: #dc3545;
+            color: white;
+        }
+
+        .unit-toggle-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .unit-toggle-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .modal-footer {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #e0e0e0;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                padding: 20px;
+            }
+
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .brand-text {
+                text-align: center;
+                min-width: auto;
+            }
+
+            .coach-info {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .program-actions {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <img src="images/logo.png" alt="Steve Sherman Billiards Logo" class="logo">
+            <div class="brand-text">
+                <h2>Steve Sherman Billiards Training System</h2>
+            </div>
+        </div>
+        <h1 class="page-title">Assign Training Programs</h1>
+
+        <!-- Student Info -->
+        <div class="coach-info">
+            <div class="coach-details">
+                <span>Managing Training Programs for: <strong id="currentStudent">Loading...</strong></span><br>
+                <span>Coach: <strong id="currentCoach">Loading...</strong></span><br>
+                <small>Snapshot-based program assignment with unit locking | Version 3.1</small>
+            </div>
+            <div class="action-buttons">
+                <button class="btn btn-secondary" onclick="window.close()">Close</button>
+            </div>
+        </div>
+
+        <!-- Messages -->
+        <div id="errorMessage" class="error-message" style="display: none;"></div>
+        <div id="successMessage" class="success-message" style="display: none;"></div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Assigned Programs Panel -->
+            <div class="students-panel">
+                <div class="panel-header">
+                    <h3>📚 Currently Assigned Programs</h3>
+                    <span id="assignedCount">0 programs</span>
+                </div>
+                <div id="assignedProgramsContainer">
+                    <div class="loading">Loading assigned programs...</div>
+                </div>
+            </div>
+
+            <!-- Available Programs Panel -->
+            <div class="programs-panel">
+                <div class="panel-header">
+                    <h3>➕ Available Programs to Assign</h3>
+                    <span id="availableCount">0 programs</span>
+                </div>
+                <div id="availableProgramsContainer">
+                    <div class="loading">Loading available programs...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Unit Management Modal -->
+        <div id="unitModal" class="modal-overlay">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title" id="modalTitle">Manage Units</h3>
+                    <button class="modal-close" onclick="closeUnitManager()">&times;</button>
+                </div>
+                <div id="modalBody">
+                    <!-- Units will be loaded here -->
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" onclick="closeUnitManager()">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const API_BASE_URL = 'https://steveshermanbilliards.com/drill-api.php';
+        
+        // Add cache busting and version info
+        const APP_VERSION = '3.1.0-unit-locking-' + Date.now();
+        console.log('🚀 Training Programs Assignment App Version (Unit Locking):', APP_VERSION);
+
+        // State
+        let currentCoach = null;
+        let currentStudent = null;
+        let allPrograms = [];
+        let assignedPrograms = [];
+        let availablePrograms = [];
+        let assignedUnits = {}; // Cache for assigned units by assignment ID
+        let creditsData = {}; // Cache for credit information
+
+        // Enhanced apiRequest function with cache-busting headers
+        async function apiRequest(endpoint, method = 'GET', data = null) {
+            try {
+                const options = {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Cache-Control': 'no-cache, no-store, must-revalidate',
+                        'Pragma': 'no-cache',
+                        'Expires': '0'
+                    }
+                };
+                
+                if (data) {
+                    options.body = JSON.stringify(data);
+                }
+                
+                console.log('🌐 API Request:', method, `${API_BASE_URL}/${endpoint}`, data);
+                
+                let url = `${API_BASE_URL}/${endpoint}`;
+                if (method === 'GET') {
+                    const separator = endpoint.includes('?') ? '&' : '?';
+                    url += `${separator}_nocache=${Date.now()}&_r=${Math.random()}`;
+                }
+                
+                const response = await fetch(url, options);
+                
+                console.log('📡 HTTP Response Status:', response.status);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const result = await response.json();
+                console.log('📄 API Response:', result);
+                
+                if (!result.success) {
+                    throw new Error(result.message || 'API request failed');
+                }
+                
+                return result;
+            } catch (error) {
+                console.error('⚠ API Error:', error);
+                throw error;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('🚀 Coach Program Assignment loaded - Version:', APP_VERSION);
+            console.log('🔒 Unit Locking Feature: ENABLED');
+            
+            try {
+                await initializeSession();
+                await loadCreditsData(); // NEW: Load credits data first
+                await loadData();
+            } catch (error) {
+                console.error('⚠ Error initializing:', error);
+                showError('Failed to initialize: ' + error.message);
+            }
+        });
+
+        function initializeSession() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const contextData = urlParams.get('context');
+            
+            if (!contextData) {
+                throw new Error('No context data provided');
+            }
+            
+            try {
+                const context = JSON.parse(atob(contextData));
+                currentCoach = context.coach;
+                currentStudent = context.student;
+                
+                document.getElementById('currentCoach').textContent = currentCoach.name || 'Unknown Coach';
+                document.getElementById('currentStudent').textContent = currentStudent.display_name || currentStudent.name || 'Unknown Student';
+                
+                console.log('✅ Session initialized:', { coach: currentCoach.name, student: currentStudent.display_name });
+            } catch (error) {
+                throw new Error('Invalid context data format');
+            }
+        }
+
+        // NEW: Load credits data for reference
+        async function loadCreditsData() {
+            try {
+                console.log('💳 Loading credits data...');
+                const creditsResponse = await apiRequest('credits');
+                const credits = creditsResponse.data || [];
+                
+                // Create lookup object for credits by ID
+                credits.forEach(credit => {
+                    creditsData[credit.id] = credit;
+                });
+                
+                console.log('✅ Loaded credits data:', Object.keys(creditsData).length, 'credits');
+            } catch (error) {
+                console.warn('⚠ Could not load credits data:', error.message);
+                // Don't fail the whole process if credits can't be loaded
+            }
+        }
+
+        // Enhanced loadData function with unit loading
+        async function loadData() {
+            try {
+                console.log('📚 Loading data for student:', currentStudent.display_name);
+                
+                // Show loading indicators
+                document.getElementById('assignedProgramsContainer').innerHTML = '<div class="loading">Loading assigned programs...</div>';
+                document.getElementById('availableProgramsContainer').innerHTML = '<div class="loading">Loading available programs...</div>';
+                
+                const cacheBuster = Date.now() + Math.random();
+                console.log('🔄 Using cache buster:', cacheBuster);
+                
+                // Load all programs and assignments in parallel with cache-busting
+                const [programsResponse, assignmentsResponse] = await Promise.all([
+                    apiRequest(`training-programs?_cb=${cacheBuster}&_t=${Date.now()}`),
+                    apiRequest(`training-program-assignments?user_id=${currentStudent.id}&_cb=${cacheBuster}&_t=${Date.now()}`)
+                ]);
+                
+                console.log('📋 RAW Programs API Response:', programsResponse);
+                console.log('📋 RAW Assignments API Response:', assignmentsResponse);
+                
+                allPrograms = programsResponse.data || [];
+                const assignments = assignmentsResponse.data || [];
+                
+                // Normalize data types
+                allPrograms = allPrograms.map(program => ({
+                    ...program,
+                    id: parseInt(program.id),
+                    category_id: parseInt(program.category_id),
+                    skill_id: parseInt(program.skill_id),
+                    estimated_duration_weeks: parseInt(program.estimated_duration_weeks),
+                    unit_count: parseInt(program.unit_count),
+                    created_by: parseInt(program.created_by),
+                    credit_id: program.credit_id ? parseInt(program.credit_id) : null // NEW: Handle credit_id
+                }));
+                
+                console.log('✅ Loaded:', { programs: allPrograms.length, assignments: assignments.length });
+                
+                // Separate assigned and available programs
+                const assignedProgramIds = assignments.map(a => parseInt(a.program_id));
+                console.log('🎯 Assigned program IDs (normalized):', assignedProgramIds);
+                
+                assignedPrograms = assignments.map(assignment => {
+                    const assignmentProgramId = parseInt(assignment.program_id);
+                    const program = allPrograms.find(p => p.id === assignmentProgramId);
+                    
+                    if (program) {
+                        return { ...program, assignment };
+                    }
+                    
+                    return {
+                        id: assignmentProgramId,
+                        name: 'Program Not Found (ID: ' + assignmentProgramId + ')',
+                        description: 'This program exists in assignments but was not returned by the API',
+                        difficulty_level: 'unknown',
+                        category_display: 'Unknown Category',
+                        skill_display: 'Unknown Skill',
+                        estimated_duration_weeks: null,
+                        unit_count: 0,
+                        credit_id: null, // NEW: Default credit_id
+                        assignment
+                    };
+                });
+                
+                assignedPrograms = assignedPrograms.filter(Boolean);
+                availablePrograms = allPrograms.filter(p => !assignedProgramIds.includes(p.id));
+                
+                console.log('📊 Program breakdown AFTER filtering:', {
+                    assigned: assignedPrograms.length,
+                    available: availablePrograms.length,
+                    total: allPrograms.length
+                });
+                
+                // Load units for assigned programs
+                await loadAssignedUnits();
+                
+                // Render UI
+                renderAssignedPrograms();
+                renderAvailablePrograms();
+                
+                console.log('✅ Data loading and rendering completed successfully');
+                
+            } catch (error) {
+                console.error('⚠ Error loading data:', error);
+                
+                document.getElementById('assignedProgramsContainer').innerHTML = 
+                    '<div class="error-message">Failed to load assigned programs: ' + error.message + '</div>';
+                document.getElementById('availableProgramsContainer').innerHTML = 
+                    '<div class="error-message">Failed to load available programs: ' + error.message + '</div>';
+                
+                throw error;
+            }
+        }
+
+        // NEW: Load assigned units for all assignments
+        async function loadAssignedUnits() {
+            try {
+                console.log('🔧 Loading assigned units for all assignments...');
+                
+                for (const program of assignedPrograms) {
+                    if (program.assignment && program.assignment.has_snapshot) {
+                        const assignmentId = program.assignment.id;
+                        console.log(`📦 Loading units for assignment ${assignmentId}`);
+                        
+                        try {
+                            const unitsResponse = await apiRequest(`training-program-units-assigned?assignment_id=${assignmentId}`);
+                            assignedUnits[assignmentId] = unitsResponse.data || [];
+                            console.log(`✅ Loaded ${assignedUnits[assignmentId].length} units for assignment ${assignmentId}`);
+                        } catch (error) {
+                            console.error(`⚠ Failed to load units for assignment ${assignmentId}:`, error);
+                            assignedUnits[assignmentId] = [];
+                        }
+                    }
+                }
+                
+                console.log('🔧 Finished loading assigned units');
+            } catch (error) {
+                console.error('⚠ Error loading assigned units:', error);
+            }
+        }
+
+        // NEW: Function to render credit information
+        function renderCreditInfo(program) {
+            if (!program.credit_id || !creditsData[program.credit_id]) {
+                return '';
+            }
+            
+            const credit = creditsData[program.credit_id];
+            const iconHtml = credit.icon_url ? 
+                `<img src="${credit.icon_url}" alt="${credit.organization_name}" class="credit-icon">` : 
+                `<span class="credit-icon" style="background: #28a745; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold;">©</span>`;
+            
+            const linkHtml = credit.website_url ? 
+                `<a href="${credit.website_url}" target="_blank" class="credit-link">${credit.website_url}</a>` : '';
+            
+            return `
+                <div class="credit-info">
+                    ${iconHtml}
+                    <div class="credit-text">
+                        <div class="credit-org">Credit: ${credit.organization_name}</div>
+                        ${linkHtml}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderAssignedPrograms() {
+            const container = document.getElementById('assignedProgramsContainer');
+            const countElement = document.getElementById('assignedCount');
+            
+            console.log('🎨 renderAssignedPrograms called with:', assignedPrograms.length, 'programs');
+            
+            countElement.textContent = `${assignedPrograms.length} program${assignedPrograms.length !== 1 ? 's' : ''}`;
+            
+            if (assignedPrograms.length === 0) {
+                container.innerHTML = '<div class="empty-state">No training programs currently assigned to this student.</div>';
+                return;
+            }
+            
+            container.innerHTML = assignedPrograms.map((program, index) => {
+                console.log(`🎨 Rendering program ${index + 1}:`, {
+                    id: program.id,
+                    name: program.name,
+                    difficulty: program.difficulty_level,
+                    category: program.category_display,
+                    hasAssignment: !!program.assignment,
+                    creditId: program.credit_id
+                });
+                
+                const assignment = program.assignment;
+                const assignedDate = new Date(assignment.assigned_date).toLocaleDateString();
+                const progress = assignment.progress_percentage || 0;
+                
+                const programName = program.name || 'Unnamed Program';
+                const safeProgramName = programName.replace(/'/g, "\\'");
+                
+                const lockingMode = assignment.locking_mode || 'unknown';
+                const lockingClass = `locking-${lockingMode}`;
+                const lockingLabel = lockingMode.charAt(0).toUpperCase() + lockingMode.slice(1);
+                
+                // NEW: Render credit information
+                const creditInfoHtml = renderCreditInfo(program);
+                
+                return `
+                    <div class="program-item assigned">
+                        <div class="program-name">${programName}</div>
+                        <div class="program-details">
+                            ${program.description ? program.description.substring(0, 100) + (program.description.length > 100 ? '...' : '') : 'No description'}
+                        </div>
+                        <div class="program-meta">
+                            <span class="difficulty-badge difficulty-${program.difficulty_level || 'beginner'}">${program.difficulty_level || 'Unknown'}</span>
+                            ${program.category_display || 'Unknown Category'} • 
+                            ${program.skill_display || 'Unknown Skill'} • 
+                            ${program.estimated_duration_weeks || 'TBD'} weeks
+                            <span class="unit-count">${program.unit_count || 0} units</span>
+                        </div>
+                        ${creditInfoHtml}
+                        <div style="margin: 10px 0;">
+                            <div style="display: flex; justify-content: space-between; font-size: 0.8em; color: #666;">
+                                <span>Progress</span>
+                                <span>${Math.round(progress)}%</span>
+                            </div>
+                            <div style="background: #e9ecef; border-radius: 10px; height: 8px; overflow: hidden; margin-top: 5px;">
+                                <div style="height: 100%; background: linear-gradient(45deg, #28a745, #20c997); width: ${progress}%; transition: width 0.3s ease;"></div>
+                            </div>
+                        </div>
+                        <div class="assignment-info">
+                            <strong>Assignment Type:</strong> Snapshot-based assignment<br>
+                            <strong>Unit Access:</strong> <span class="locking-mode ${lockingClass}">${lockingLabel}</span><br>
+                            <strong>Start Date:</strong> ${assignment.start_date || 'Not set'}<br>
+                            <strong>Status:</strong> ${assignment.status || 'not_started'}
+                        </div>
+                        <div class="assignment-date">
+                            Assigned on ${assignedDate} • ID: ${assignment.id}
+                        </div>
+                        <div class="program-actions">
+                            <button class="program-btn btn-view" onclick="viewAssignedProgramUnits(${assignment.id}, '${safeProgramName}')">👁️ View Units</button>
+                            <button class="program-btn btn-manage" onclick="openUnitManager(${assignment.id}, '${safeProgramName}')">🔧 Manage Units</button>
+                            <button class="program-btn btn-remove" onclick="removeAssignment(${assignment.id}, '${safeProgramName}')">🗑️ Remove</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderAvailablePrograms() {
+            const container = document.getElementById('availableProgramsContainer');
+            const countElement = document.getElementById('availableCount');
+            
+            countElement.textContent = `${availablePrograms.length} program${availablePrograms.length !== 1 ? 's' : ''}`;
+            
+            if (availablePrograms.length === 0) {
+                container.innerHTML = '<div class="empty-state">All available training programs are already assigned to this student.</div>';
+                return;
+            }
+            
+            container.innerHTML = availablePrograms.map(program => {
+                const programName = program.name || 'Unnamed Program';
+                const safeProgramName = programName.replace(/'/g, "\\'");
+                
+                // NEW: Render credit information
+                const creditInfoHtml = renderCreditInfo(program);
+                
+                return `
+                    <div class="program-item available">
+                        <div class="program-name">${programName}</div>
+                        <div class="program-details">
+                            ${program.description ? program.description.substring(0, 100) + (program.description.length > 100 ? '...' : '') : 'No description'}
+                        </div>
+                        <div class="program-meta">
+                            <span class="difficulty-badge difficulty-${program.difficulty_level || 'beginner'}">${program.difficulty_level || 'Unknown'}</span>
+                            ${program.category_display || 'Unknown Category'} • 
+                            ${program.skill_display || 'Unknown Skill'} • 
+                            ${program.estimated_duration_weeks || 'TBD'} weeks
+                            <span class="unit-count">${program.unit_count || 0} units</span>
+                        </div>
+                        ${creditInfoHtml}
+                        
+                        <!-- Unit Locking Options -->
+                        <div class="locking-options" id="lockingOptions_${program.id}">
+                            <h4>🔒 Unit Access Options:</h4>
+                            <div class="locking-option">
+                                <input type="radio" id="unlocked_${program.id}" name="locking_${program.id}" value="unlocked" checked>
+                                <label for="unlocked_${program.id}">All units unlocked (traditional mode)</label>
+                            </div>
+                            <div class="locking-option">
+                                <input type="radio" id="progressive_${program.id}" name="locking_${program.id}" value="progressive">
+                                <label for="progressive_${program.id}">Progressive unlock (first unit only, coach unlocks others)</label>
+                            </div>
+                            <div class="locking-option">
+                                <input type="radio" id="locked_${program.id}" name="locking_${program.id}" value="locked">
+                                <label for="locked_${program.id}">All units locked (coach controls access)</label>
+                            </div>
+                        </div>
+                        
+                        <div class="program-actions">
+                            <button class="program-btn btn-view" onclick="viewProgramUnits(${program.id}, '${safeProgramName}')">👁️ Preview Units</button>
+                            <button class="program-btn btn-assign" onclick="assignProgram(${program.id}, '${safeProgramName}')">➕ Assign</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // NEW: Open unit manager modal
+        async function openUnitManager(assignmentId, programName) {
+            try {
+                console.log('🔧 Opening unit manager for assignment:', assignmentId);
+                
+                const modal = document.getElementById('unitModal');
+                const modalTitle = document.getElementById('modalTitle');
+                const modalBody = document.getElementById('modalBody');
+                
+                // Set title
+                modalTitle.textContent = `Manage Units - ${programName}`;
+                
+                // Show loading state
+                modalBody.innerHTML = '<div class="loading">Loading units...</div>';
+                modal.style.display = 'flex';
+                
+                // Load units for this assignment
+                const unitsResponse = await apiRequest(`training-program-units-assigned?assignment_id=${assignmentId}`);
+                const units = unitsResponse.data || [];
+                
+                console.log('📦 Loaded units for modal:', units.length);
+                
+                if (units.length === 0) {
+                    modalBody.innerHTML = '<div class="empty-state">No units found for this assignment.</div>';
+                    return;
+                }
+                
+                // Render units in modal
+                modalBody.innerHTML = units.map(unit => {
+                    const isLocked = unit.is_locked == 1;
+                    const statusClass = isLocked ? 'unit-locked' : 'unit-unlocked';
+                    const statusText = isLocked ? 'Locked' : 'Unlocked';
+                    const buttonClass = isLocked ? 'unlock' : 'lock';
+                    const buttonText = isLocked ? '🔓 Unlock' : '🔒 Lock';
+                    const action = isLocked ? 'unlockUnitModal' : 'lockUnitModal';
+                    
+                    return `
+                        <div class="unit-item">
+                            <div class="unit-info">
+                                <div class="unit-name">${unit.name}</div>
+                                <div class="unit-details">
+                                    Order: ${unit.unit_order} • 
+                                    ${unit.estimated_duration_days ? unit.estimated_duration_days + ' days' : 'No duration set'}
+                                </div>
+                            </div>
+                            <span class="unit-status ${statusClass}">${statusText}</span>
+                            <button class="unit-toggle-btn ${buttonClass}" 
+                                    onclick="${action}(${unit.id}, '${unit.name.replace(/'/g, "\\'")}', ${assignmentId})"
+                                    id="modalUnitBtn_${unit.id}">
+                                ${buttonText}
+                            </button>
+                        </div>
+                    `;
+                }).join('');
+                
+            } catch (error) {
+                console.error('⚠ Error opening unit manager:', error);
+                const modalBody = document.getElementById('modalBody');
+                modalBody.innerHTML = `<div class="error-message">Failed to load units: ${error.message}</div>`;
+                showError('Failed to load unit manager: ' + error.message);
+            }
+        }
+
+        // NEW: Close unit manager modal
+        function closeUnitManager() {
+            const modal = document.getElementById('unitModal');
+            modal.style.display = 'none';
+        }
+
+        // NEW: Lock unit from modal
+        async function lockUnitModal(unitId, unitName, assignmentId) {
+            await toggleUnitLockModal(unitId, unitName, assignmentId, 1);
+        }
+
+        // NEW: Unlock unit from modal
+        async function unlockUnitModal(unitId, unitName, assignmentId) {
+            await toggleUnitLockModal(unitId, unitName, assignmentId, 0);
+        }
+
+        // NEW: Toggle unit lock from modal
+        async function toggleUnitLockModal(unitId, unitName, assignmentId, isLocked) {
+            try {
+                const action = isLocked ? 'lock' : 'unlock';
+                console.log(`🔒 ${action}ing unit from modal:`, unitName, 'ID:', unitId);
+                
+                // Show loading state
+                const button = document.getElementById(`modalUnitBtn_${unitId}`);
+                const originalText = button.textContent;
+                button.textContent = isLocked ? 'Locking...' : 'Unlocking...';
+                button.disabled = true;
+                
+                const lockData = {
+                    assigned_unit_id: unitId,
+                    is_locked: isLocked,
+                    coach_id: currentCoach.id || currentCoach.userId
+                };
+                
+                console.log('🔧 Lock data being sent:', lockData);
+                
+                const response = await apiRequest('toggle-unit-lock', 'POST', lockData);
+                
+                console.log('✅ Unit lock toggle successful:', response);
+                
+                // Update local cache
+                const units = assignedUnits[assignmentId] || [];
+                const unit = units.find(u => u.id == unitId);
+                if (unit) {
+                    unit.is_locked = isLocked;
+                }
+                
+                // Refresh the modal content
+                await openUnitManager(assignmentId, document.getElementById('modalTitle').textContent.replace('Manage Units - ', ''));
+                
+                // Re-render the main assigned programs to show updated status
+                renderAssignedPrograms();
+                
+                showSuccess(response.message || `Unit "${unitName}" ${action}ed successfully!`);
+                
+            } catch (error) {
+                console.error('⚠ Error toggling unit lock:', error);
+                showError('Failed to ' + (isLocked ? 'lock' : 'unlock') + ' unit: ' + error.message);
+                
+                // Restore button state on error
+                const button = document.getElementById(`modalUnitBtn_${unitId}`);
+                if (button) {
+                    button.textContent = originalText;
+                    button.disabled = false;
+                }
+            }
+        }
+
+        // Enhanced assignProgram function with forced refresh
+        async function assignProgram(programId, programName) {
+            if (!currentStudent || !currentCoach) {
+                showError('Missing student or coach information');
+                return;
+            }
+            
+            // Get the selected locking option
+            const lockingOption = document.querySelector(`input[name="locking_${programId}"]:checked`).value;
+            
+            if (!confirm(`Assign "${programName}" to ${currentStudent.display_name}?\n\nUnit access: ${lockingOption}\n\nThis will create a snapshot-based assignment with individual unit control.`)) {
+                return;
+            }
+            
+            try {
+                console.log('📚 Assigning program with SNAPSHOT MODEL:', programName, 'to student:', currentStudent.display_name);
+                console.log('🔒 Locking option:', lockingOption);
+                
+                // Show loading state
+                const originalButton = event?.target;
+                const originalText = originalButton?.textContent;
+                if (originalButton) {
+                    originalButton.textContent = 'Assigning...';
+                    originalButton.disabled = true;
+                }
+                
+                const assignmentData = {
+                    program_id: programId,
+                    user_id: currentStudent.id,
+                    assigned_by: currentCoach.id || currentCoach.userId,
+                    start_date: new Date().toISOString().split('T')[0],
+                    status: 'not_started',
+                    locking_mode: lockingOption,
+                    create_snapshot: true,
+                    notes: `Snapshot-based assignment with ${lockingOption} unit access mode`
+                };
+                
+                console.log('📤 Assignment data being sent:', assignmentData);
+                
+                const response = await apiRequest('training-program-assignments', 'POST', assignmentData);
+                
+                console.log('📄 Assignment created successfully, forcing data reload...');
+                
+                await new Promise(resolve => setTimeout(resolve, 500));
+                await loadData();
+                
+                if (response.snapshot_created) {
+                    showSuccess(`✅ Successfully assigned "${programName}" to ${currentStudent.display_name}!\n\n📊 Snapshot created: ${response.snapshot_created}\n🔒 Unit access mode: ${lockingOption}\n🆔 Assignment ID: ${response.id}`);
+                } else {
+                    showSuccess(`✅ Successfully assigned "${programName}" to ${currentStudent.display_name}!\n🔒 Unit access mode: ${lockingOption}\n🆔 Assignment ID: ${response.id}`);
+                }
+                
+                if (originalButton) {
+                    originalButton.textContent = originalText;
+                    originalButton.disabled = false;
+                }
+                
+            } catch (error) {
+                console.error('⚠ Error assigning program:', error);
+                showError('Failed to assign program: ' + error.message);
+                
+                if (originalButton) {
+                    originalButton.textContent = originalText;
+                    originalButton.disabled = false;
+                }
+            }
+        }
+
+        // Enhanced removeAssignment function with forced refresh
+        async function removeAssignment(assignmentId, programName) {
+            if (!confirm(`Remove "${programName}" from ${currentStudent.display_name}?\n\nThis will remove the program assignment and all associated snapshot data (units, content, progress).\n\nThis action cannot be undone.`)) {
+                return;
+            }
+            
+            try {
+                console.log('🗑️ Removing program assignment with snapshot cleanup:', assignmentId);
+                
+                const originalButton = event?.target;
+                const originalText = originalButton?.textContent;
+                if (originalButton) {
+                    originalButton.textContent = 'Removing...';
+                    originalButton.disabled = true;
+                }
+                
+                const response = await apiRequest(`training-program-assignments/${assignmentId}`, 'DELETE');
+                
+                console.log('📄 Assignment deleted successfully, forcing data reload...');
+                
+                await new Promise(resolve => setTimeout(resolve, 500));
+                await loadData();
+                
+                showSuccess(`✅ Successfully removed "${programName}" from ${currentStudent.display_name}!\n📊 Snapshot data cleaned up.`);
+                
+                if (originalButton) {
+                    originalButton.textContent = originalText;
+                    originalButton.disabled = false;
+                }
+                
+            } catch (error) {
+                console.error('⚠ Error removing assignment:', error);
+                showError('Failed to remove assignment: ' + error.message);
+                
+                if (originalButton) {
+                    originalButton.textContent = originalText;
+                    originalButton.disabled = false;
+                }
+            }
+        }
+
+        // View assigned program units (views snapshot data)
+        function viewAssignedProgramUnits(assignmentId, programName) {
+            console.log('👁️ Opening assigned program units view (SNAPSHOT DATA) for:', programName);
+            
+            const encodedProgramName = encodeURIComponent(programName);
+            const cacheBuster = Date.now() + Math.random();
+            
+            const url = `training-program-units.html?assignment_id=${assignmentId}&program_name=${encodedProgramName}&mode=assigned&snapshot=true&v=${APP_VERSION}&cb=${cacheBuster}&_r=${Math.random()}`;
+            
+            console.log('🔗 Opening URL:', url);
+            
+            const popup = window.open(url, `assignedUnitsView_${cacheBuster}`, 'width=1400,height=900,scrollbars=yes,resizable=yes');
+            
+            if (!popup) {
+                showError('Popup blocked! Please allow popups for this site and try again.');
+                return;
+            }
+            
+            popup.focus();
+        }
+
+        // View template program units (read-only preview)
+        function viewProgramUnits(programId, programName) {
+            console.log('👁️ Opening program units preview (TEMPLATE DATA) for:', programName);
+            
+            const encodedProgramName = encodeURIComponent(programName);
+            const cacheBuster = Date.now() + Math.random();
+            
+            const url = `training-program-units.html?program_id=${programId}&program_name=${encodedProgramName}&mode=template&readonly=true&preview=true&v=${APP_VERSION}&cb=${cacheBuster}&_r=${Math.random()}`;
+            
+            console.log('🔗 Opening URL:', url);
+            
+            const popup = window.open(url, `templateUnitsPreview_${cacheBuster}`, 'width=1400,height=900,scrollbars=yes,resizable=yes');
+            
+            if (!popup) {
+                showError('Popup blocked! Please allow popups for this site and try again.');
+                return;
+            }
+            
+            popup.focus();
+        }
+
+        // Check assignment status and update UI
+        async function refreshAssignmentStatus() {
+            try {
+                console.log('🔄 Refreshing assignment status...');
+                
+                const assignmentsResponse = await apiRequest(`training-program-assignments?user_id=${currentStudent.id}`);
+                const assignments = assignmentsResponse.data || [];
+                
+                assignedPrograms = assignments.map(assignment => {
+                    const assignmentProgramId = parseInt(assignment.program_id);
+                    const program = allPrograms.find(p => p.id === assignmentProgramId);
+                    
+                    if (program) {
+                        return { ...program, assignment };
+                    }
+                    
+                    return {
+                        id: assignmentProgramId,
+                        name: 'Program Not Found (ID: ' + assignmentProgramId + ')',
+                        description: 'This program exists in assignments but was not returned by the API',
+                        difficulty_level: 'unknown',
+                        category_display: 'Unknown Category',
+                        skill_display: 'Unknown Skill',
+                        estimated_duration_weeks: null,
+                        unit_count: 0,
+                        credit_id: null,
+                        assignment
+                    };
+                });
+                
+                assignedPrograms = assignedPrograms.filter(Boolean);
+                
+                const assignedProgramIds = assignments.map(a => parseInt(a.program_id));
+                availablePrograms = allPrograms.filter(p => !assignedProgramIds.includes(p.id));
+                
+                // Reload assigned units
+                await loadAssignedUnits();
+                
+                renderAssignedPrograms();
+                renderAvailablePrograms();
+                
+                console.log('✅ Assignment status refreshed');
+                
+            } catch (error) {
+                console.error('⚠ Error refreshing assignment status:', error);
+            }
+        }
+
+        // Enhanced error and success messaging
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            const successDiv = document.getElementById('successMessage');
+            
+            successDiv.style.display = 'none';
+            errorDiv.innerHTML = `<strong>Error:</strong> ${message}`;
+            errorDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                errorDiv.style.display = 'none';
+            }, 8000);
+            
+            window.scrollTo(0, 0);
+        }
+
+        function showSuccess(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            const successDiv = document.getElementById('successMessage');
+            
+            errorDiv.style.display = 'none';
+            successDiv.innerHTML = `<strong>Success:</strong> ${message}`;
+            successDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                successDiv.style.display = 'none';
+            }, 5000);
+            
+            window.scrollTo(0, 0);
+        }
+
+        // Window message listener for cross-window communication
+        window.addEventListener('message', function(event) {
+            if (event.origin !== window.location.origin) {
+                return;
+            }
+            
+            console.log('📨 Received message:', event.data);
+            
+            if (event.data.type === 'assignment_updated') {
+                console.log('🔄 Assignment updated, refreshing status...');
+                refreshAssignmentStatus();
+            } else if (event.data.type === 'unit_unlocked') {
+                console.log('🔓 Unit unlocked, showing success message...');
+                showSuccess(`Unit "${event.data.unitName}" has been unlocked for ${currentStudent.display_name}`);
+                refreshAssignmentStatus();
+            } else if (event.data.type === 'unit_locked') {
+                console.log('🔒 Unit locked, showing success message...');
+                showSuccess(`Unit "${event.data.unitName}" has been locked for ${currentStudent.display_name}`);
+                refreshAssignmentStatus();
+            }
+        });
+
+        // Auto-refresh assignments every 30 seconds
+        setInterval(refreshAssignmentStatus, 30000);
+
+        // Close modal when clicking outside
+        window.addEventListener('click', function(event) {
+            const modal = document.getElementById('unitModal');
+            if (event.target === modal) {
+                closeUnitManager();
+            }
+        });
+
+        // Close modal with Escape key
+        window.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeUnitManager();
+            }
+        });
+
+        // Enhanced logging for debugging
+        console.log('📊 System Configuration:');
+        console.log('- API Base URL:', API_BASE_URL);
+        console.log('- App Version:', APP_VERSION);
+        console.log('- Snapshot Model: ENABLED');
+        console.log('- Unit Locking: ENABLED');
+        console.log('- Inline Unit Control: ENABLED');
+        console.log('- Cross-window Communication: ENABLED');
+        console.log('- Auto-refresh: ENABLED (30s)');
+        console.log('- Credit Display: ENABLED');
+    </script>
+</body>
+</html>
