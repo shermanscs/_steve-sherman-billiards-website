@@ -1453,82 +1453,118 @@ private function getCoachName($coach_id) {
     /**
      * DRILLS
      */
-    public function getDrills($params = []) {
-        $where = ["d.is_active = 1"];
-        $bindings = [];
-        $types = "";
-        
-        // Filter by category
-        if (!empty($params['category_id'])) {
-            $where[] = "d.category_id = ?";
-            $bindings[] = $params['category_id'];
-            $types .= "i";
-        }
-        
-        // Filter by skill
-        if (!empty($params['skill_id'])) {
-            $where[] = "d.skill_id = ?";
-            $bindings[] = $params['skill_id'];
-            $types .= "i";
-        }
-        
-        // Filter by user assignments
-        if (!empty($params['user_id']) && !empty($params['assigned_only'])) {
-            $where[] = "EXISTS (SELECT 1 FROM wp_drill_assignments da WHERE da.drill_id = d.id AND da.user_id = ? AND da.is_active = 1)";
-            $bindings[] = $params['user_id'];
-            $types .= "i";
-        }
-        
-        $sql = "SELECT d.*, dc.name as category_name, dc.display_name as category_display,
-                       ds.name as skill_name, ds.display_name as skill_display
-                FROM wp_drills d
-                JOIN wp_drill_categories dc ON d.category_id = dc.id
-                JOIN wp_drill_skills ds ON d.skill_id = ds.id
-                WHERE " . implode(' AND ', $where) . "
-                ORDER BY dc.sort_order, ds.sort_order, d.name";
-        
-        if (!empty($bindings)) {
-            $stmt = $this->db->prepare($sql);
-            $stmt->bind_param($types, ...$bindings);
-            $stmt->execute();
-            $result = $stmt->get_result();
-        } else {
-            $result = $this->db->query($sql);
-        }
-        
-        $drills = [];
-        while ($row = $result->fetch_assoc()) {
-            $drills[] = $row;
-        }
-        
-        $this->sendSuccess($drills);
+
+    /**
+ * ENHANCED getDrills with credit support
+ */
+public function getDrills($params = []) {
+    $where = ["d.is_active = 1"];
+    $bindings = [];
+    $types = "";
+    
+    // Filter by category
+    if (!empty($params['category_id'])) {
+        $where[] = "d.category_id = ?";
+        $bindings[] = $params['category_id'];
+        $types .= "i";
     }
     
-    public function getDrill($id) {
-        $stmt = $this->db->prepare("
-            SELECT d.*, 
-                   dc.display_name as category_display,
-                   ds.display_name as skill_display,
-                   diag.name as diagram_name,
-                   diag.image_url as diagram_image_url,
-                   diag.thumbnail_url as diagram_thumbnail_url
+    // Filter by skill
+    if (!empty($params['skill_id'])) {
+        $where[] = "d.skill_id = ?";
+        $bindings[] = $params['skill_id'];
+        $types .= "i";
+    }
+    
+    // Filter by user assignments
+    if (!empty($params['user_id']) && !empty($params['assigned_only'])) {
+        $where[] = "EXISTS (SELECT 1 FROM wp_drill_assignments da WHERE da.drill_id = d.id AND da.user_id = ? AND da.is_active = 1)";
+        $bindings[] = $params['user_id'];
+        $types .= "i";
+    }
+    
+    // ENHANCED SQL: Added credit information
+    $sql = "SELECT d.*, 
+                   dc.name as category_name, dc.display_name as category_display,
+                   ds.name as skill_name, ds.display_name as skill_display,
+                   
+                   -- Credit information
+                   cr.organization_name as credit_organization_name,
+                   cr.website_url as credit_website_url,
+                   cr.icon_url as credit_icon_url,
+                   cr.description as credit_description
+                   
             FROM wp_drills d
             JOIN wp_drill_categories dc ON d.category_id = dc.id
             JOIN wp_drill_skills ds ON d.skill_id = ds.id
-            LEFT JOIN wp_diagrams diag ON d.diagram_id = diag.id AND diag.is_active = 1
-            WHERE d.id = ? AND d.is_active = 1
-        ");
-        
-        $stmt->bind_param('i', $id);
+            LEFT JOIN wp_credit_to cr ON d.credit_id = cr.id AND cr.is_active = 1
+            WHERE " . implode(' AND ', $where) . "
+            ORDER BY dc.sort_order, ds.sort_order, d.name";
+    
+    if (!empty($bindings)) {
+        $stmt = $this->db->prepare($sql);
+        $stmt->bind_param($types, ...$bindings);
         $stmt->execute();
         $result = $stmt->get_result();
-        
-        if ($drill = $result->fetch_assoc()) {
-            $this->sendSuccess($drill);
-        } else {
-            $this->sendError('Drill not found', 404);
-        }
+    } else {
+        $result = $this->db->query($sql);
     }
+    
+    $drills = [];
+    while ($row = $result->fetch_assoc()) {
+        // Log credit information for debugging
+        if ($row['credit_id']) {
+            error_log("Drill '{$row['name']}' has credit_id: {$row['credit_id']}, organization: {$row['credit_organization_name']}");
+        }
+        
+        $drills[] = $row;
+    }
+    
+    error_log("getDrills returning " . count($drills) . " drills with credit info");
+    $this->sendSuccess($drills);
+}
+    
+/**
+ * ENHANCED getDrill with credit support
+ */
+public function getDrill($id) {
+    $stmt = $this->db->prepare("
+        SELECT d.*, 
+               dc.display_name as category_display,
+               ds.display_name as skill_display,
+               diag.name as diagram_name,
+               diag.image_url as diagram_image_url,
+               diag.thumbnail_url as diagram_thumbnail_url,
+               
+               -- Credit information
+               cr.organization_name as credit_organization_name,
+               cr.website_url as credit_website_url,
+               cr.icon_url as credit_icon_url,
+               cr.description as credit_description
+               
+        FROM wp_drills d
+        JOIN wp_drill_categories dc ON d.category_id = dc.id
+        JOIN wp_drill_skills ds ON d.skill_id = ds.id
+        LEFT JOIN wp_diagrams diag ON d.diagram_id = diag.id AND diag.is_active = 1
+        LEFT JOIN wp_credit_to cr ON d.credit_id = cr.id AND cr.is_active = 1
+        WHERE d.id = ? AND d.is_active = 1
+    ");
+    
+    $stmt->bind_param('i', $id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
+    if ($drill = $result->fetch_assoc()) {
+        // Log credit information for debugging
+        if ($drill['credit_id']) {
+            error_log("Single drill '{$drill['name']}' has credit_id: {$drill['credit_id']}, organization: {$drill['credit_organization_name']}");
+        }
+        
+        $this->sendSuccess($drill);
+    } else {
+        $this->sendError('Drill not found', 404);
+    }
+}
 
 /**
  * NEW METHOD: Add this to your DrillAPI class
@@ -1614,65 +1650,123 @@ public function getDrillStats($params = []) {
     }
 }
     
-    public function createDrill($data) {
-        $name = trim($data['name'] ?? '');
-        $category_id = $data['category_id'] ?? 0;
-        $skill_id = $data['skill_id'] ?? 0;
-        $description = trim($data['description'] ?? '');
-        $instructions = trim($data['instructions'] ?? '');
-        $max_score = $data['max_score'] ?? 10;
-        $image_url = trim($data['image_url'] ?? '');
-        $video_url = trim($data['video_url'] ?? '');
-        $difficulty_rating = $data['difficulty_rating'] ?? 1.0;
-        $estimated_time = $data['estimated_time_minutes'] ?? null;
-        $color_code = trim($data['color_code'] ?? '#667eea');
-        
-        if (empty($name) || !$category_id || !$skill_id) {
-            $this->sendError('Name, category, and skill are required', 400);
-        }
-        
-        $stmt = $this->db->prepare("
-            INSERT INTO wp_drills 
-            (name, category_id, skill_id, description, instructions, max_score, image_url, video_url, difficulty_rating, estimated_time_minutes, color_code) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ");
-        
-        $stmt->bind_param('siisssissis', $name, $category_id, $skill_id, $description, $instructions, $max_score, $image_url, $video_url, $difficulty_rating, $estimated_time, $color_code);
-        
-        if ($stmt->execute()) {
-            $this->sendSuccess(['id' => $this->db->insert_id, 'message' => 'Drill created successfully']);
-        } else {
-            $this->sendError('Failed to create drill: ' . $this->db->error, 500);
+/**
+ * ENHANCED createDrill with credit support
+ */
+public function createDrill($data) {
+    $name = trim($data['name'] ?? '');
+    $category_id = $data['category_id'] ?? 0;
+    $skill_id = $data['skill_id'] ?? 0;
+    $description = trim($data['description'] ?? '');
+    $instructions = trim($data['instructions'] ?? '');
+    $max_score = $data['max_score'] ?? 10;
+    $image_url = trim($data['image_url'] ?? '');
+    $video_url = trim($data['video_url'] ?? '');
+    $difficulty_rating = $data['difficulty_rating'] ?? 1.0;
+    $estimated_time = $data['estimated_time_minutes'] ?? null;
+    $color_code = trim($data['color_code'] ?? '#667eea');
+    $credit_id = !empty($data['credit_id']) ? intval($data['credit_id']) : null;
+    
+    if (empty($name) || !$category_id || !$skill_id) {
+        $this->sendError('Name, category, and skill are required', 400);
+        return;
+    }
+    
+    // Verify credit exists if provided
+    if ($credit_id !== null) {
+        $creditCheck = $this->db->prepare("SELECT id FROM wp_credit_to WHERE id = ? AND is_active = 1");
+        $creditCheck->bind_param('i', $credit_id);
+        $creditCheck->execute();
+        if ($creditCheck->get_result()->num_rows === 0) {
+            $this->sendError('Invalid credit organization selected', 400);
+            return;
         }
     }
     
+    // ENHANCED SQL: Added credit_id field
+    $stmt = $this->db->prepare("
+        INSERT INTO wp_drills 
+        (name, category_id, skill_id, description, instructions, max_score, image_url, video_url, 
+         difficulty_rating, estimated_time_minutes, color_code, credit_id) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ");
+    
+    $stmt->bind_param('siisssissisi', $name, $category_id, $skill_id, $description, $instructions, 
+                     $max_score, $image_url, $video_url, $difficulty_rating, $estimated_time, 
+                     $color_code, $credit_id);
+    
+    if ($stmt->execute()) {
+        $drill_id = $this->db->insert_id;
+        error_log("Drill created successfully with ID: $drill_id, credit_id: " . ($credit_id ?? 'none'));
+        
+        $this->sendSuccess([
+            'id' => $drill_id, 
+            'message' => 'Drill created successfully',
+            'credit_assigned' => !empty($credit_id)
+        ]);
+    } else {
+        $this->sendError('Failed to create drill: ' . $this->db->error, 500);
+    }
+}
+    
 
-    public function updateDrill($id, $data) {
-        $name = trim($data['name'] ?? '');
-        $description = trim($data['description'] ?? '');
-        $category_id = $data['category_id'] ?? 0;
-        $skill_id = $data['skill_id'] ?? 0;
-        $max_score = $data['max_score'] ?? 100;
-        $diagram_id = isset($data['diagram_id']) ? ($data['diagram_id'] ?: null) : null;
-        
-        if (empty($name) || !$category_id || !$skill_id) {
-            $this->sendError('Name, category, and skill are required', 400);
-        }
-        
-        $stmt = $this->db->prepare("
-            UPDATE wp_drills 
-            SET name = ?, description = ?, category_id = ?, skill_id = ?, max_score = ?, diagram_id = ?
-            WHERE id = ?
-        ");
-        $stmt->bind_param('ssiiiii', $name, $description, $category_id, $skill_id, $max_score, $diagram_id, $id);
-        
-        if ($stmt->execute()) {
-            $this->sendSuccess(['message' => 'Drill updated successfully']);
-        } else {
-            $this->sendError('Failed to update drill: ' . $this->db->error, 500);
+/**
+ * ENHANCED updateDrill with credit support
+ */
+public function updateDrill($id, $data) {
+    $name = trim($data['name'] ?? '');
+    $description = trim($data['description'] ?? '');
+    $category_id = $data['category_id'] ?? 0;
+    $skill_id = $data['skill_id'] ?? 0;
+    $max_score = $data['max_score'] ?? 100;
+    $diagram_id = isset($data['diagram_id']) ? ($data['diagram_id'] ?: null) : null;
+    $credit_id = isset($data['credit_id']) ? (!empty($data['credit_id']) ? intval($data['credit_id']) : null) : null;
+    
+    if (empty($name) || !$category_id || !$skill_id) {
+        $this->sendError('Name, category, and skill are required', 400);
+        return;
+    }
+    
+    // Check if drill exists
+    $checkStmt = $this->db->prepare("SELECT id FROM wp_drills WHERE id = ? AND is_active = 1");
+    $checkStmt->bind_param('i', $id);
+    $checkStmt->execute();
+    if ($checkStmt->get_result()->num_rows === 0) {
+        $this->sendError('Drill not found', 404);
+        return;
+    }
+    
+    // Verify credit exists if provided
+    if ($credit_id !== null) {
+        $creditCheck = $this->db->prepare("SELECT id FROM wp_credit_to WHERE id = ? AND is_active = 1");
+        $creditCheck->bind_param('i', $credit_id);
+        $creditCheck->execute();
+        if ($creditCheck->get_result()->num_rows === 0) {
+            $this->sendError('Invalid credit organization selected', 400);
+            return;
         }
     }
-
+    
+    // ENHANCED SQL: Added credit_id field
+    $stmt = $this->db->prepare("
+        UPDATE wp_drills 
+        SET name = ?, description = ?, category_id = ?, skill_id = ?, max_score = ?, 
+            diagram_id = ?, credit_id = ?, updated_at = NOW()
+        WHERE id = ?
+    ");
+    $stmt->bind_param('ssiiiiii', $name, $description, $category_id, $skill_id, $max_score, $diagram_id, $credit_id, $id);
+    
+    if ($stmt->execute()) {
+        error_log("Drill updated successfully - ID: $id, credit_id: " . ($credit_id ?? 'none'));
+        
+        $this->sendSuccess([
+            'message' => 'Drill updated successfully',
+            'credit_assigned' => !empty($credit_id)
+        ]);
+    } else {
+        $this->sendError('Failed to update drill: ' . $this->db->error, 500);
+    }
+}
     
     public function deleteDrill($id) {
         // Ensure ID is an integer

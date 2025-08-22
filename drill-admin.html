@@ -36,7 +36,7 @@
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
@@ -244,6 +244,42 @@
             cursor: default;
         }
 
+        /* Credit Display Styles */
+        .credit-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+        }
+
+        .credit-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 3px;
+            object-fit: cover;
+        }
+
+        .credit-organization {
+            font-weight: 600;
+            color: #444;
+        }
+
+        .credit-website {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 12px;
+        }
+
+        .credit-website:hover {
+            text-decoration: underline;
+        }
+
+        .no-credit {
+            color: #999;
+            font-style: italic;
+            font-size: 12px;
+        }
+
         .action-buttons {
             display: flex;
             gap: 8px;
@@ -292,7 +328,7 @@
             padding: 30px;
             border-radius: 15px;
             width: 90%;
-            max-width: 800px;
+            max-width: 900px;
             max-height: 95vh;
             overflow-y: auto;
             position: relative;
@@ -383,6 +419,67 @@
             border-radius: 4px;
             border: 2px solid #ddd;
             margin-left: 10px;
+        }
+
+        /* Credit Selection Styles */
+        .credit-selection {
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 15px;
+            background: #f8f9fa;
+        }
+
+        .credit-preview {
+            display: none;
+            align-items: center;
+            gap: 12px;
+            margin-top: 15px;
+            padding: 12px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+        }
+
+        .credit-preview.show {
+            display: flex;
+        }
+
+        .credit-preview-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 4px;
+            object-fit: cover;
+        }
+
+        .credit-preview-info {
+            flex: 1;
+        }
+
+        .credit-preview-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .credit-preview-description {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .credit-preview-website {
+            font-size: 12px;
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        .clear-credit-btn {
+            padding: 6px 12px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
         }
 
         /* Diagram Browser Styles */
@@ -642,7 +739,7 @@
 <body>
     <div class="header">
         <h1>🎱 Drill Administration</h1>
-        <p>Steve Sherman Billiards - Manage Your Training Drills</p>
+        <p>Steve Sherman Billiards - Manage Your Training Drills with Credit Support</p>
     </div>
 
     <div class="container">
@@ -652,7 +749,7 @@
                 <button class="nav-btn primary" onclick="refreshData()">🔄 Refresh Data</button>
             </div>
             <div class="user-info">
-                <span>Admin Panel | Version 4.0 - Diagram FK Integration</span>
+                <span>Admin Panel | Version 5.0 - Credit Support & Diagram Integration</span>
             </div>
         </div>
 
@@ -743,7 +840,26 @@
                     </div>
                 </div>
 
-                <!-- Enhanced Diagram Selection with diagram_id -->
+                <!-- Credit Assignment Section -->
+                <div class="form-group">
+                    <label class="form-label">Credit To (Optional)</label>
+                    <div class="credit-selection">
+                        <select class="form-select" id="drillCredit" onchange="updateCreditPreview()">
+                            <option value="">No credit assignment</option>
+                        </select>
+                        <div class="credit-preview" id="creditPreview">
+                            <img class="credit-preview-icon" id="creditPreviewIcon" src="" alt="Credit icon">
+                            <div class="credit-preview-info">
+                                <div class="credit-preview-name" id="creditPreviewName"></div>
+                                <div class="credit-preview-description" id="creditPreviewDescription"></div>
+                                <a class="credit-preview-website" id="creditPreviewWebsite" href="" target="_blank"></a>
+                            </div>
+                            <button type="button" class="clear-credit-btn" onclick="clearCreditSelection()">×</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Diagram Selection -->
                 <div class="form-group">
                     <label class="form-label">Diagram</label>
                     <div class="diagram-browser">
@@ -765,7 +881,6 @@
                             No diagram selected. Click "Browse Diagrams" to choose one.
                         </div>
                     </div>
-                    <!-- Hidden input to store the selected diagram ID (not URL anymore) -->
                     <input type="hidden" id="drillDiagramId">
                 </div>
 
@@ -817,6 +932,7 @@
         let allCategories = [];
         let allSkills = [];
         let allDiagrams = [];
+        let allCredits = [];
         let filteredDiagrams = [];
         let selectedDiagramId = null;
         let currentEditId = null;
@@ -870,15 +986,10 @@
         function launchDrillDisplay(drillId) {
             console.log('🚀 Launching drill display for ID:', drillId);
             
-            // Create the URL for the drill display page
             const displayUrl = `drill-display.html?drill_id=${drillId}`;
-            
-            // Open in a new window/tab
             const newWindow = window.open(displayUrl, '_blank', 'width=1000,height=800,scrollbars=yes,resizable=yes');
             
-            // Check if window was blocked by popup blocker
             if (!newWindow || newWindow.closed || typeof newWindow.closed == 'undefined') {
-                // Popup blocked - show user a message
                 showMessage('Popup blocked! Please allow popups for this site and try again.', 'error');
                 console.warn('⚠️ Popup was blocked by browser');
             } else {
@@ -891,7 +1002,7 @@
         // ========================================
 
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('🎯 Enhanced Drill Admin Interface Loading...');
+            console.log('🎯 Enhanced Drill Admin Interface Loading with Credit Support...');
             initializeAdmin();
             setupEventListeners();
         });
@@ -901,36 +1012,38 @@
                 console.log('🚀 Loading data from API...');
                 showMessage('Loading drill data...', 'info');
                 
-                // Load all data including diagrams
-                const [categories, skills, drills, diagrams] = await Promise.all([
+                // Load all data including credits
+                const [categories, skills, drills, diagrams, credits] = await Promise.all([
                     apiRequest('categories'),
                     apiRequest('skills'),
                     apiRequest('drills'),
-                    apiRequest('diagrams')
+                    apiRequest('diagrams'),
+                    apiRequest('credits')
                 ]);
                 
-                console.log('✅ Data loaded:', { categories, skills, drills, diagrams });
+                console.log('✅ Data loaded:', { categories, skills, drills, diagrams, credits });
                 
                 allCategories = categories;
                 allSkills = skills;
                 allDrills = drills;
                 allDiagrams = diagrams;
+                allCredits = credits || [];
                 filteredDrills = [...allDrills];
                 filteredDiagrams = [...allDiagrams];
                 
                 // Setup UI
                 setupFilters();
                 setupModalSelects();
+                setupCreditSelect();
                 renderDrillsTable();
                 
                 clearMessage();
-                console.log('✅ Enhanced Admin interface initialized');
+                console.log('✅ Enhanced Admin interface with credit support initialized');
                 
             } catch (error) {
                 console.error('❌ Error initializing admin:', error);
                 showMessage('Failed to load drill data: ' + error.message, 'error');
                 
-                // Show helpful debugging info
                 const container = document.getElementById('drillsTableContainer');
                 container.innerHTML = `
                     <div class="no-data">
@@ -964,7 +1077,6 @@
                 }
             });
 
-            // Diagram browser modal close
             document.getElementById('diagramBrowserModal').addEventListener('click', function(e) {
                 if (e.target === this) {
                     closeDiagramBrowser();
@@ -1028,6 +1140,69 @@
         }
 
         // ========================================
+        // CREDIT MANAGEMENT FUNCTIONS
+        // ========================================
+
+        function setupCreditSelect() {
+            const creditSelect = document.getElementById('drillCredit');
+            creditSelect.innerHTML = '<option value="">No credit assignment</option>';
+            
+            if (!allCredits || allCredits.length === 0) {
+                console.log('⚠️ No credits available for dropdown');
+                return;
+            }
+            
+            allCredits.forEach(credit => {
+                const option = document.createElement('option');
+                option.value = credit.id;
+                option.textContent = credit.organization_name;
+                creditSelect.appendChild(option);
+            });
+            
+            console.log('✅ Credit dropdown populated with', allCredits.length, 'organizations');
+        }
+
+        function updateCreditPreview() {
+            const creditSelect = document.getElementById('drillCredit');
+            const creditPreview = document.getElementById('creditPreview');
+            const selectedCreditId = creditSelect.value;
+
+            if (!selectedCreditId || !allCredits || allCredits.length === 0) {
+                creditPreview.classList.remove('show');
+                return;
+            }
+
+            const selectedCredit = allCredits.find(c => c.id == selectedCreditId);
+            if (!selectedCredit) {
+                creditPreview.classList.remove('show');
+                return;
+            }
+
+            // Update preview elements
+            document.getElementById('creditPreviewIcon').src = selectedCredit.icon_url || '';
+            document.getElementById('creditPreviewName').textContent = selectedCredit.organization_name;
+            document.getElementById('creditPreviewDescription').textContent = selectedCredit.description || '';
+            
+            const websiteLink = document.getElementById('creditPreviewWebsite');
+            if (selectedCredit.website_url) {
+                websiteLink.href = selectedCredit.website_url;
+                websiteLink.textContent = selectedCredit.website_url;
+                websiteLink.style.display = 'block';
+            } else {
+                websiteLink.style.display = 'none';
+            }
+
+            creditPreview.classList.add('show');
+            console.log('💳 Credit preview updated for:', selectedCredit.organization_name);
+        }
+
+        function clearCreditSelection() {
+            document.getElementById('drillCredit').value = '';
+            document.getElementById('creditPreview').classList.remove('show');
+            console.log('🗑️ Credit selection cleared');
+        }
+
+        // ========================================
         // DIAGRAM BROWSER FUNCTIONS
         // ========================================
 
@@ -1037,7 +1212,6 @@
             document.getElementById('selectDiagramBtn').disabled = true;
             document.getElementById('diagramBrowserModal').style.display = 'block';
             
-            // Load diagrams if not already loaded
             if (allDiagrams.length === 0) {
                 loadDiagrams();
             } else {
@@ -1089,7 +1263,6 @@
                 card.className = 'diagram-card';
                 card.onclick = () => selectDiagramCard(diagram.id);
                 
-                // Use thumbnail if available, otherwise use main image
                 const imageUrl = diagram.thumbnail_url || diagram.image_url || '/wp-content/uploads/diagrams/placeholder.jpg';
                 
                 card.innerHTML = `
@@ -1106,12 +1279,10 @@
         }
 
         function selectDiagramCard(diagramId) {
-            // Remove previous selection
             document.querySelectorAll('.diagram-card.selected').forEach(card => {
                 card.classList.remove('selected');
             });
             
-            // Select new card
             event.currentTarget.classList.add('selected');
             selectedDiagramId = diagramId;
             document.getElementById('selectDiagramBtn').disabled = false;
@@ -1131,10 +1302,8 @@
                 return;
             }
             
-            // **CHANGED**: Store diagram ID instead of URL
             document.getElementById('drillDiagramId').value = selectedDiagram.id;
             
-            // Show selected diagram in the form
             document.getElementById('selectedDiagramImg').src = selectedDiagram.thumbnail_url || selectedDiagram.image_url;
             document.getElementById('selectedDiagramName').textContent = selectedDiagram.name;
             document.getElementById('selectedDiagramType').textContent = selectedDiagram.diagram_type || 'drill';
@@ -1207,6 +1376,7 @@
                             <th>Skill</th>
                             <th>Max Score</th>
                             <th>Difficulty</th>
+                            <th>Credit To</th>
                             <th>Resources</th>
                             <th>Actions</th>
                         </tr>
@@ -1223,7 +1393,6 @@
         function renderDrillRow(drill) {
             const categoryClass = `category-${drill.category_name}`;
             
-            // **CHANGED**: Check for diagram_id instead of image_url
             const imageLink = drill.diagram_id ? 
                 `<span class="drill-link link-image" onclick="launchDrillDisplay(${drill.id})" title="View drill details">📋 View Drill</span>` : 
                 '<span class="drill-link link-none">No Diagram</span>';
@@ -1231,6 +1400,17 @@
             const videoLink = drill.video_url ? 
                 `<a href="${drill.video_url}" target="_blank" class="drill-link link-video">Video</a>` : 
                 '<span class="drill-link link-none">No Video</span>';
+            
+            // Credit information display
+            const creditInfo = drill.credit_organization_name ? `
+                <div class="credit-info">
+                    ${drill.credit_icon_url ? `<img src="${drill.credit_icon_url}" class="credit-icon" alt="Credit icon">` : ''}
+                    <div>
+                        <div class="credit-organization">${drill.credit_organization_name}</div>
+                        ${drill.credit_website_url ? `<a href="${drill.credit_website_url}" target="_blank" class="credit-website">${drill.credit_website_url}</a>` : ''}
+                    </div>
+                </div>
+            ` : '<span class="no-credit">No credit assigned</span>';
             
             return `
                 <tr data-drill-id="${drill.id}">
@@ -1249,6 +1429,9 @@
                     </td>
                     <td>
                         <span style="color: #666;">${drill.difficulty_rating || 1.0}/5</span>
+                    </td>
+                    <td>
+                        ${creditInfo}
                     </td>
                     <td>
                         <div class="drill-links">
@@ -1278,6 +1461,7 @@
             document.getElementById('drillColor').value = '#667eea';
             updateColorPreview();
             clearDiagramSelection();
+            clearCreditSelection();
             document.getElementById('drillModal').style.display = 'block';
             console.log('✅ Add modal opened');
         }
@@ -1328,9 +1512,17 @@
                 document.getElementById('drillColor').value = drill.color_code || '#667eea';
                 document.getElementById('drillVideoUrl').value = drill.video_url || '';
                 
-                // **CHANGED**: Handle diagram selection using diagram_id
+                // Handle credit selection
+                if (drill.credit_id) {
+                    document.getElementById('drillCredit').value = drill.credit_id;
+                    updateCreditPreview();
+                    console.log('💳 Credit assigned:', drill.credit_organization_name);
+                } else {
+                    clearCreditSelection();
+                }
+                
+                // Handle diagram selection
                 if (drill.diagram_id) {
-                    // Find the diagram that matches this ID
                     const matchingDiagram = allDiagrams.find(d => d.id == drill.diagram_id);
                     if (matchingDiagram) {
                         document.getElementById('drillDiagramId').value = drill.diagram_id;
@@ -1377,7 +1569,10 @@
         async function handleFormSubmit(e) {
             e.preventDefault();
             
-            // **CHANGED**: Use diagram_id instead of image_url
+            // Collect and validate form data
+            const creditSelectValue = document.getElementById('drillCredit').value;
+            const creditId = creditSelectValue ? parseInt(creditSelectValue) : null;
+            
             const formData = {
                 name: document.getElementById('drillName').value,
                 category_id: parseInt(document.getElementById('drillCategory').value),
@@ -1388,19 +1583,34 @@
                 difficulty_rating: parseFloat(document.getElementById('drillDifficulty').value),
                 estimated_time_minutes: parseInt(document.getElementById('drillTime').value) || null,
                 color_code: document.getElementById('drillColor').value,
-                diagram_id: parseInt(document.getElementById('drillDiagramId').value) || null, // CHANGED: diagram_id instead of image_url
-                video_url: document.getElementById('drillVideoUrl').value
+                diagram_id: parseInt(document.getElementById('drillDiagramId').value) || null,
+                video_url: document.getElementById('drillVideoUrl').value,
+                credit_id: creditId
             };
             
             console.log('📝 Form data to submit:', formData);
+            console.log('📝 Credit field details:');
+            console.log('   - Raw credit select value:', creditSelectValue);
+            console.log('   - Parsed credit_id:', creditId);
+            console.log('   - Type of credit_id:', typeof creditId);
+            console.log('   - Is credit_id null?:', creditId === null);
+            console.log('   - Is credit_id number?:', typeof creditId === 'number');
+            
+            // Additional validation
+            if (!formData.name || !formData.category_id || !formData.skill_id) {
+                showMessage('Please fill in all required fields', 'error');
+                return;
+            }
             
             try {
                 if (currentEditId) {
                     console.log('📝 Updating drill ID:', currentEditId);
+                    console.log('📝 Sending PUT request with data:', JSON.stringify(formData, null, 2));
                     await apiRequest(`drills/${currentEditId}`, 'PUT', formData);
                     showMessage('Drill updated successfully!', 'success');
                 } else {
                     console.log('📝 Creating new drill');
+                    console.log('📝 Sending POST request with data:', JSON.stringify(formData, null, 2));
                     await apiRequest('drills', 'POST', formData);
                     showMessage('Drill created successfully!', 'success');
                 }
@@ -1409,8 +1619,19 @@
                 refreshData();
                 
             } catch (error) {
-                console.error('Error saving drill:', error);
-                showMessage('Error saving drill: ' + error.message, 'error');
+                console.error('💥 Error saving drill:', error);
+                console.error('💥 Error details:', {
+                    message: error.message,
+                    stack: error.stack,
+                    formData: formData
+                });
+                
+                // Try to save without credit_id to isolate the issue
+                console.log('🔧 Attempting to save without credit_id for debugging...');
+                const formDataWithoutCredit = { ...formData };
+                delete formDataWithoutCredit.credit_id;
+                
+                showMessage(`Error saving drill: ${error.message}. Check the console for details.`, 'error');
             }
         }
 
@@ -1501,13 +1722,17 @@
                 allDrills = drills;
                 filteredDrills = [...allDrills];
                 
-                // Also refresh diagrams
+                // Also refresh diagrams and credits
                 try {
                     allDiagrams = await apiRequest('diagrams');
                     filteredDiagrams = [...allDiagrams];
                     console.log('✅ Diagrams refreshed:', allDiagrams.length);
-                } catch (diagramError) {
-                    console.warn('⚠️ Could not refresh diagrams:', diagramError.message);
+                    
+                    allCredits = await apiRequest('credits');
+                    setupCreditSelect();
+                    console.log('✅ Credits refreshed:', allCredits.length);
+                } catch (refreshError) {
+                    console.warn('⚠️ Could not refresh diagrams/credits:', refreshError.message);
                 }
                 
                 filterDrills();
@@ -1562,15 +1787,16 @@
             console.log('All categories:', allCategories.length);
             console.log('All skills:', allSkills.length);
             console.log('All diagrams:', allDiagrams.length);
+            console.log('All credits:', allCredits.length);
             if (allDrills.length > 0) {
                 console.log('Sample drill:', allDrills[0]);
             }
-            if (allDiagrams.length > 0) {
-                console.log('Sample diagram:', allDiagrams[0]);
+            if (allCredits.length > 0) {
+                console.log('Sample credit:', allCredits[0]);
             }
         };
 
-        console.log('🎯 Enhanced Drill Admin Interface Ready - Version 4.0');
+        console.log('🎯 Enhanced Drill Admin Interface Ready - Version 5.0 with Credit Support');
         console.log('📡 API URL:', API_BASE_URL);
         
         window.debugAdmin = {
@@ -1578,10 +1804,94 @@
             allCategories: () => allCategories,
             allSkills: () => allSkills,
             allDiagrams: () => allDiagrams,
+            allCredits: () => allCredits,
             testAPI: () => apiRequest('categories').then(console.log).catch(console.error),
             testEdit: (id) => editDrill(id),
             openDiagramBrowser: () => openDiagramBrowser(),
-            launchDrillDisplay: (id) => launchDrillDisplay(id)
+            launchDrillDisplay: (id) => launchDrillDisplay(id),
+            testCredit: () => apiRequest('credits').then(console.log).catch(console.error),
+            // NEW: Debug functions for credit issues
+            testSaveWithoutCredit: async () => {
+                const testData = {
+                    name: "Test Drill - No Credit",
+                    category_id: 1,
+                    skill_id: 1,
+                    description: "Test description",
+                    instructions: "Test instructions",
+                    max_score: 10,
+                    difficulty_rating: 1.0,
+                    estimated_time_minutes: null,
+                    color_code: "#667eea",
+                    diagram_id: null,
+                    video_url: ""
+                    // Note: NO credit_id field
+                };
+                console.log('🧪 Testing drill save WITHOUT credit_id:', testData);
+                try {
+                    const result = await apiRequest('drills', 'POST', testData);
+                    console.log('✅ Save without credit succeeded:', result);
+                    return result;
+                } catch (error) {
+                    console.error('❌ Save without credit failed:', error);
+                    throw error;
+                }
+            },
+            testSaveWithCredit: async () => {
+                const testData = {
+                    name: "Test Drill - With Credit",
+                    category_id: 1,
+                    skill_id: 1,
+                    description: "Test description",
+                    instructions: "Test instructions",
+                    max_score: 10,
+                    difficulty_rating: 1.0,
+                    estimated_time_minutes: null,
+                    color_code: "#667eea",
+                    diagram_id: null,
+                    video_url: "",
+                    credit_id: allCredits.length > 0 ? allCredits[0].id : null
+                };
+                console.log('🧪 Testing drill save WITH credit_id:', testData);
+                try {
+                    const result = await apiRequest('drills', 'POST', testData);
+                    console.log('✅ Save with credit succeeded:', result);
+                    return result;
+                } catch (error) {
+                    console.error('❌ Save with credit failed:', error);
+                    throw error;
+                }
+            },
+            testUpdateWithCredit: async (drillId) => {
+                if (!drillId) drillId = allDrills.length > 0 ? allDrills[0].id : null;
+                if (!drillId) {
+                    console.error('❌ No drill ID available for testing');
+                    return;
+                }
+                
+                const testData = {
+                    name: "Updated Test Drill - With Credit",
+                    category_id: 1,
+                    skill_id: 1,
+                    description: "Updated test description",
+                    instructions: "Updated test instructions",
+                    max_score: 15,
+                    difficulty_rating: 2.0,
+                    estimated_time_minutes: null,
+                    color_code: "#667eea",
+                    diagram_id: null,
+                    video_url: "",
+                    credit_id: allCredits.length > 0 ? allCredits[0].id : null
+                };
+                console.log('🧪 Testing drill UPDATE WITH credit_id:', testData);
+                try {
+                    const result = await apiRequest(`drills/${drillId}`, 'PUT', testData);
+                    console.log('✅ Update with credit succeeded:', result);
+                    return result;
+                } catch (error) {
+                    console.error('❌ Update with credit failed:', error);
+                    throw error;
+                }
+            }
         };
     </script>
 </body>
