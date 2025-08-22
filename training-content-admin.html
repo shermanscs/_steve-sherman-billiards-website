@@ -493,6 +493,168 @@
             flex: 1;
         }
 
+        /* Credit Management Styles */
+        .credit-section {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .credit-section h3 {
+            margin-bottom: 15px;
+            color: #333;
+            font-size: 1.1em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .credit-selection {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+        }
+
+        .credit-selection .form-col {
+            flex: 2;
+        }
+
+        .btn-manage-credits {
+            padding: 10px 16px;
+            background: #6f42c1;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .btn-manage-credits:hover {
+            background: #5a2d91;
+            transform: translateY(-1px);
+        }
+
+        .quick-add-credit {
+            margin-top: 15px;
+            padding: 15px;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            display: none;
+        }
+
+        .quick-add-credit.active {
+            display: block;
+        }
+
+        .quick-add-credit h4 {
+            margin-bottom: 10px;
+            color: #333;
+            font-size: 0.95em;
+        }
+
+        .quick-add-row {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+        }
+
+        .quick-add-input {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .btn-quick-add {
+            padding: 8px 12px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+
+        .btn-quick-add:hover {
+            background: #218838;
+        }
+
+        .btn-cancel-quick {
+            padding: 8px 12px;
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .btn-cancel-quick:hover {
+            background: #5a6268;
+        }
+
+        .current-credit-display {
+            margin-top: 10px;
+            padding: 10px;
+            background: #e3f2fd;
+            border-radius: 6px;
+            border-left: 4px solid #2196f3;
+            display: none;
+        }
+
+        .current-credit-display.active {
+            display: block;
+        }
+
+        .current-credit-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .current-credit-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .current-credit-text {
+            flex: 1;
+        }
+
+        .current-credit-name {
+            font-weight: 600;
+            color: #1565c0;
+        }
+
+        .current-credit-url {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .btn-remove-credit {
+            padding: 4px 8px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .btn-remove-credit:hover {
+            background: #c82333;
+        }
+
         /* Upload Method Toggle */
         .upload-method-toggle {
             display: flex;
@@ -829,6 +991,15 @@
             .credit-image {
                 margin-bottom: 5px;
             }
+
+            .credit-selection {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .quick-add-row {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
@@ -844,10 +1015,11 @@
                 <a href="drill-admin-portal.html" class="nav-btn secondary">← Back to Admin Portal</a>
                 <button class="nav-btn primary" onclick="refreshData()">🔄 Refresh Data</button>
                 <button class="nav-btn secondary" onclick="debugStorage()">🔧 Debug Storage</button>
+                <button class="nav-btn secondary" onclick="debugApiResponse()">🧪 Test API</button>
             </div>
             <div class="user-info">
                 <span id="currentUserDisplay">Training Content Admin</span>
-                <br><small>Admin Panel | Version 3.0 - Credit Info Fixed</small>
+                <br><small>Admin Panel | Version 3.3 - Form Validation Fix</small>
             </div>
         </div>
 
@@ -948,6 +1120,51 @@
                     <textarea id="contentDescription" class="form-textarea" placeholder="Describe this training material and how it should be used..."></textarea>
                 </div>
 
+                <!-- Credit Management Section -->
+                <div class="credit-section">
+                    <h3>🏷️ Credit Attribution</h3>
+                    <p style="margin-bottom: 15px; color: #666; font-size: 14px;">
+                        Assign credit to the organization or person who created this content.
+                    </p>
+                    
+                    <div class="credit-selection">
+                        <div class="form-col">
+                            <label class="form-label">Credit To</label>
+                            <select id="contentCredit" class="form-select" onchange="updateCreditDisplay()">
+                                <option value="">No credit assigned</option>
+                            </select>
+                        </div>
+                        <button type="button" class="btn-manage-credits" onclick="toggleQuickAddCredit()">
+                            + Quick Add
+                        </button>
+                    </div>
+
+                    <!-- Current Credit Display -->
+                    <div id="currentCreditDisplay" class="current-credit-display">
+                        <div class="current-credit-info">
+                            <img id="currentCreditIcon" class="current-credit-icon" src="" alt="">
+                            <div class="current-credit-text">
+                                <div class="current-credit-name" id="currentCreditName"></div>
+                                <div class="current-credit-url" id="currentCreditUrl"></div>
+                            </div>
+                            <button type="button" class="btn-remove-credit" onclick="removeCreditAssignment()">
+                                Remove
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Quick Add Credit Form -->
+                    <div id="quickAddCredit" class="quick-add-credit">
+                        <h4>Quick Add New Credit</h4>
+                        <div class="quick-add-row">
+                            <input type="text" id="quickCreditName" class="quick-add-input" placeholder="Organization name *">
+                            <input type="url" id="quickCreditUrl" class="quick-add-input" placeholder="Website URL (optional)">
+                            <button type="button" class="btn-quick-add" onclick="saveQuickCredit()">Add</button>
+                            <button type="button" class="btn-cancel-quick" onclick="cancelQuickAddCredit()">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Upload Method Toggle -->
                 <div class="form-group">
                     <label class="form-label">Content Type *</label>
@@ -1020,6 +1237,7 @@
         let currentUser = null;
         let categories = [];
         let skills = [];
+        let credits = []; // NEW: Store available credits
         let searchTimeout = null;
         let currentUploadMethod = 'file'; // 'file' or 'url'
 
@@ -1029,7 +1247,7 @@
             checkAuthAndLoadUser();
         });
 
-        // API helper with AGGRESSIVE cache busting
+        // API helper with AGGRESSIVE cache busting and better error handling
         async function apiRequest(endpoint, method = 'GET', data = null) {
             try {
                 console.log(`🌐 API Request: ${method} ${API_BASE_URL}/${endpoint}`);
@@ -1065,16 +1283,31 @@
                 
                 console.log(`📊 Response status: ${response.status}`);
                 
+                // Get response text first to handle both JSON and HTML responses
+                const responseText = await response.text();
+                console.log('📄 Raw response:', responseText.substring(0, 500) + (responseText.length > 500 ? '...' : ''));
+                
                 if (!response.ok) {
-                    const errorText = await response.text();
-                    console.error('❌ API Error Response:', errorText);
-                    throw new Error(`HTTP ${response.status}: ${errorText}`);
+                    console.error('❌ API Error Response:', responseText);
+                    throw new Error(`HTTP ${response.status}: ${responseText.substring(0, 200)}`);
                 }
                 
-                const result = await response.json();
-                console.log(`✅ API Success:`, result);
-                
-                return result;
+                // Try to parse as JSON
+                try {
+                    const result = JSON.parse(responseText);
+                    console.log(`✅ API Success:`, result);
+                    return result;
+                } catch (parseError) {
+                    console.error('💥 JSON Parse Error:', parseError);
+                    console.error('📄 Response was not valid JSON:', responseText);
+                    
+                    // Check if response looks like PHP error HTML
+                    if (responseText.includes('<br />') || responseText.includes('<b>')) {
+                        throw new Error('Server returned PHP error instead of JSON. Check server logs for details.');
+                    } else {
+                        throw new Error('Server returned invalid JSON response: ' + responseText.substring(0, 100));
+                    }
+                }
                 
             } catch (error) {
                 console.error('💥 API Request failed:', error);
@@ -1105,10 +1338,11 @@
             console.log('🔥 Loading initial data...');
             
             try {
-                // Load categories and skills in parallel
-                const [categoriesResult, skillsResult] = await Promise.all([
+                // Load categories, skills, and credits in parallel
+                const [categoriesResult, skillsResult, creditsResult] = await Promise.all([
                     apiRequest('categories'),
-                    apiRequest('skills')
+                    apiRequest('skills'),
+                    apiRequest('credits') // NEW: Load credits
                 ]);
                 
                 if (categoriesResult.success) {
@@ -1128,6 +1362,17 @@
                 } else {
                     throw new Error('Failed to load skills');
                 }
+
+                // NEW: Load credits
+                if (creditsResult.success) {
+                    credits = creditsResult.data || [];
+                    populateCreditOptions();
+                    console.log('✅ Credits loaded:', credits.length);
+                } else {
+                    console.warn('⚠️ Failed to load credits:', creditsResult.message);
+                    credits = [];
+                    populateCreditOptions(); // Still populate with empty array
+                }
                 
                 // Load training content
                 await loadContent();
@@ -1146,6 +1391,28 @@
                     </div>
                 `;
             }
+        }
+
+        // NEW: Populate credit options
+        function populateCreditOptions() {
+            const select = document.getElementById('contentCredit');
+            if (!select) {
+                console.warn('⚠️ Credit select element not found');
+                return;
+            }
+            
+            // Keep the "No credit assigned" option
+            select.innerHTML = '<option value="">No credit assigned</option>';
+            
+            credits.forEach(credit => {
+                const option = document.createElement('option');
+                option.value = credit.id;
+                option.textContent = credit.organization_name;
+                option.dataset.creditData = JSON.stringify(credit);
+                select.appendChild(option);
+            });
+            
+            console.log(`✅ Populated credit options with ${credits.length} credits`);
         }
 
         // Load training content
@@ -1174,6 +1441,7 @@
                         console.log(`   - credit_to: ${item.credit_to}`);
                         console.log(`   - credit_url: ${item.credit_url}`);
                         console.log(`   - credit_image_url: ${item.credit_image_url}`);
+                        console.log(`   - credit_id: ${item.credit_id}`); // NEW
                         console.log(`   - all fields:`, Object.keys(item));
                         console.log(`   - full item data:`, item);
                     });
@@ -1615,6 +1883,144 @@
             
             // Reset upload method to file
             switchUploadMethod('file');
+            
+            // NEW: Reset credit form
+            resetCreditForm();
+        }
+
+        // NEW: Credit management functions
+        function resetCreditForm() {
+            document.getElementById('contentCredit').value = '';
+            updateCreditDisplay();
+            cancelQuickAddCredit();
+            
+            // Ensure quick credit form is properly reset
+            const nameInput = document.getElementById('quickCreditName');
+            nameInput.required = false;
+        }
+
+        function updateCreditDisplay() {
+            const creditSelect = document.getElementById('contentCredit');
+            const display = document.getElementById('currentCreditDisplay');
+            const creditId = creditSelect.value;
+            
+            if (creditId) {
+                const option = creditSelect.querySelector(`option[value="${creditId}"]`);
+                if (option && option.dataset.creditData) {
+                    const credit = JSON.parse(option.dataset.creditData);
+                    
+                    // Update display elements
+                    document.getElementById('currentCreditName').textContent = credit.organization_name;
+                    document.getElementById('currentCreditUrl').textContent = credit.website_url || 'No website';
+                    
+                    const iconEl = document.getElementById('currentCreditIcon');
+                    if (credit.icon_url) {
+                        iconEl.src = credit.icon_url;
+                        iconEl.style.display = 'block';
+                    } else {
+                        iconEl.style.display = 'none';
+                    }
+                    
+                    display.classList.add('active');
+                }
+            } else {
+                display.classList.remove('active');
+            }
+        }
+
+        function removeCreditAssignment() {
+            document.getElementById('contentCredit').value = '';
+            updateCreditDisplay();
+        }
+
+        function toggleQuickAddCredit() {
+            const quickAdd = document.getElementById('quickAddCredit');
+            const nameInput = document.getElementById('quickCreditName');
+            
+            if (quickAdd.classList.contains('active')) {
+                cancelQuickAddCredit();
+            } else {
+                quickAdd.classList.add('active');
+                // Enable required validation when showing
+                nameInput.required = true;
+                nameInput.focus();
+            }
+        }
+
+        function cancelQuickAddCredit() {
+            const quickAdd = document.getElementById('quickAddCredit');
+            const nameInput = document.getElementById('quickCreditName');
+            
+            quickAdd.classList.remove('active');
+            nameInput.value = '';
+            document.getElementById('quickCreditUrl').value = '';
+            
+            // Disable required validation when hiding
+            nameInput.required = false;
+        }
+
+        async function saveQuickCredit() {
+            const nameInput = document.getElementById('quickCreditName');
+            const name = nameInput.value.trim();
+            const url = document.getElementById('quickCreditUrl').value.trim();
+            
+            if (!name) {
+                showMessage('Organization name is required', 'error');
+                nameInput.focus();
+                return;
+            }
+            
+            const saveBtn = document.querySelector('.btn-quick-add');
+            const originalText = saveBtn.textContent;
+            
+            try {
+                saveBtn.disabled = true;
+                saveBtn.textContent = 'Saving...';
+                
+                const creditData = {
+                    organization_name: name,
+                    website_url: url || null,
+                    created_by: currentUser.id
+                };
+                
+                console.log('💾 Creating quick credit:', creditData);
+                
+                const result = await apiRequest('credits', 'POST', creditData);
+                
+                if (result.success) {
+                    showMessage('Credit added successfully!', 'success');
+                    
+                    // Add to local credits array
+                    const newCredit = {
+                        id: result.data.id,
+                        organization_name: name,
+                        website_url: url,
+                        icon_url: null,
+                        created_by: currentUser.id
+                    };
+                    credits.push(newCredit);
+                    
+                    // Update credit dropdown
+                    populateCreditOptions();
+                    
+                    // Select the new credit
+                    document.getElementById('contentCredit').value = newCredit.id;
+                    updateCreditDisplay();
+                    
+                    // Close quick add form
+                    cancelQuickAddCredit();
+                    
+                } else {
+                    throw new Error(result.message || 'Failed to create credit');
+                }
+                
+            } catch (error) {
+                console.error('💥 Failed to create credit:', error);
+                showMessage('Failed to create credit: ' + error.message, 'error');
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.textContent = originalText;
+            }
         }
 
         // Upload method switching
@@ -1748,7 +2154,7 @@
             }
         });
 
-        // Collect form data
+        // Collect form data - UPDATED with credit support
         function collectFormData() {
             const name = document.getElementById('contentName').value.trim();
             const description = document.getElementById('contentDescription').value.trim();
@@ -1756,6 +2162,7 @@
             const skillId = document.getElementById('contentSkill').value;
             const difficulty = document.getElementById('contentDifficulty').value;
             const visibility = document.getElementById('contentVisibility').value;
+            const creditId = document.getElementById('contentCredit').value; // NEW
             
             if (!name || !categoryId || !skillId) {
                 throw new Error('Please fill in all required fields');
@@ -1776,7 +2183,8 @@
                     visibility,
                     content_type: 'link',
                     external_url: url,
-                    created_by: currentUser.id
+                    created_by: currentUser.id,
+                    credit_id: creditId ? parseInt(creditId) : null // NEW
                 };
             } else {
                 if (!selectedFile && !editingId) {
@@ -1791,6 +2199,11 @@
                 formData.append('difficulty_level', difficulty);
                 formData.append('visibility', visibility);
                 formData.append('created_by', currentUser.id);
+                
+                // NEW: Add credit ID
+                if (creditId) {
+                    formData.append('credit_id', creditId);
+                }
                 
                 if (selectedFile) {
                     formData.append('file', selectedFile);
@@ -1830,7 +2243,7 @@
             }
         }
 
-        // Edit content
+        // Edit content - UPDATED with credit support
         async function editContent(id) {
             console.log('✏️ Editing content:', id);
             
@@ -1848,6 +2261,14 @@
                     document.getElementById('contentSkill').value = content.skill_id;
                     document.getElementById('contentDifficulty').value = content.difficulty_level;
                     document.getElementById('contentVisibility').value = content.visibility;
+                    
+                    // NEW: Set credit selection
+                    if (content.credit_id) {
+                        document.getElementById('contentCredit').value = content.credit_id;
+                    } else {
+                        document.getElementById('contentCredit').value = '';
+                    }
+                    updateCreditDisplay();
                     
                     // Set upload method based on content type
                     if (content.content_type === 'link') {
@@ -1993,6 +2414,39 @@
             } catch (error) {
                 console.error('💥 Debug failed:', error);
                 alert('Debug failed: ' + error.message);
+            }
+        }
+
+        // NEW: Debug API response function
+        async function debugApiResponse() {
+            console.log('🔧 Testing API response...');
+            
+            try {
+                // Test a simple endpoint first
+                console.log('🧪 Testing categories endpoint...');
+                const categoriesResult = await apiRequest('categories');
+                console.log('✅ Categories test passed:', categoriesResult);
+                
+                // Test training content list
+                console.log('🧪 Testing training-content list...');
+                const contentListResult = await apiRequest('training-content');
+                console.log('✅ Content list test passed:', contentListResult);
+                
+                // Test specific training content if available
+                if (contentListResult.success && contentListResult.data.length > 0) {
+                    const firstContentId = contentListResult.data[0].id;
+                    console.log(`🧪 Testing specific content ID: ${firstContentId}`);
+                    const specificContentResult = await apiRequest(`training-content/${firstContentId}`);
+                    console.log('✅ Specific content test passed:', specificContentResult);
+                } else {
+                    console.log('⚠️ No content available to test specific content endpoint');
+                }
+                
+                showMessage('API response test completed successfully! Check console for details.', 'success');
+                
+            } catch (error) {
+                console.error('💥 API response test failed:', error);
+                showMessage('API response test failed: ' + error.message, 'error');
             }
         }
 

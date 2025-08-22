@@ -5107,9 +5107,9 @@ public function getTrainingContent($id) {
                    
                    -- FIXED: Return credit information with the field names the frontend expects
                    cr.organization_name as credit_to,
-                   cr.website_url as credit_image_url,
+                   cr.website_url as credit_url,
                    cr.description as credit_description,
-                   cr.icon_url as credit_icon_url
+                   cr.icon_url as credit_image_url
                    
             FROM wp_training_content tc
             JOIN wp_drill_categories dc ON tc.category_id = dc.id
