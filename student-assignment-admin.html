@@ -1,0 +1,1745 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Assignment Admin - Steve Sherman Billiards</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            min-height: calc(100vh - 40px);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .version-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(220, 53, 69, 0.9);
+            color: white;
+            padding: 6px 10px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+
+        .header-top {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .logo {
+            width: 50px;
+            height: 50px;
+            margin-right: 15px;
+        }
+
+        .brand-text h2 {
+            font-size: 1.1em;
+            margin: 0;
+            color: #333;
+            font-weight: 600;
+            line-height: 1.2;
+        }
+
+        .header h1 {
+            font-size: 2.2em;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .back-button {
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .back-button:hover {
+            background: #5a6268;
+            transform: translateY(-50%) translateY(-2px);
+        }
+
+        .main-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .student-info {
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            border: 2px solid rgba(102, 126, 234, 0.3);
+        }
+
+        .student-info h3 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.3em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .student-details {
+            color: #666;
+            font-size: 1em;
+        }
+
+        .assignments-panel {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 15px;
+        }
+
+        .panel-header h3 {
+            color: #333;
+            font-size: 1.3em;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-success {
+            background: linear-gradient(45deg, #28a745, #20c997);
+            color: white;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .assignments-container {
+            display: grid;
+            gap: 30px;
+        }
+
+        .assignment-section {
+            border-radius: 12px;
+            padding: 20px;
+            border: 2px solid #e0e0e0;
+            transition: all 0.3s ease;
+        }
+
+        .assignment-section.drills {
+            border-color: rgba(102, 126, 234, 0.3);
+            background: rgba(102, 126, 234, 0.02);
+        }
+
+        .assignment-section.content {
+            border-color: rgba(40, 167, 69, 0.3);
+            background: rgba(40, 167, 69, 0.02);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .section-title {
+            color: #333;
+            font-size: 1.2em;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .assignment-count {
+            background: #667eea;
+            color: white;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .content .assignment-count {
+            background: #28a745;
+        }
+
+        .assignment-list {
+            display: grid;
+            gap: 15px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .assignment-card {
+            background: white;
+            border: 2px solid rgba(0, 0, 0, 0.05);
+            border-radius: 12px;
+            padding: 15px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .assignment-card:hover {
+            border-color: rgba(102, 126, 234, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .assignment-name {
+            font-weight: 600;
+            color: #333;
+            font-size: 1.1em;
+            margin-bottom: 8px;
+        }
+
+        .assignment-details {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+
+        .detail-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            font-weight: 500;
+        }
+
+        .category-badge {
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+        }
+
+        .skill-badge {
+            background: rgba(255, 193, 7, 0.2);
+            color: #856404;
+        }
+
+        .type-badge {
+            background: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+        }
+
+        .score-badge {
+            background: rgba(23, 162, 184, 0.1);
+            color: #17a2b8;
+        }
+
+        .assignment-meta {
+            font-size: 0.85em;
+            color: #888;
+            margin-bottom: 10px;
+        }
+
+        .assignment-comments {
+            background: rgba(255, 193, 7, 0.1);
+            border: 1px solid rgba(255, 193, 7, 0.3);
+            border-radius: 6px;
+            padding: 8px;
+            margin: 10px 0;
+            font-size: 0.85em;
+            color: #856404;
+            display: none;
+        }
+
+        .assignment-comments.has-comments {
+            display: block;
+        }
+
+        .assignment-comments-label {
+            font-weight: 600;
+            margin-bottom: 3px;
+        }
+
+        .assignment-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 0.85em;
+            border-radius: 6px;
+        }
+
+        .btn-view {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .btn-view:hover {
+            background: #138496;
+            transform: translateY(-1px);
+        }
+
+        .btn-edit {
+            background: #ffc107;
+            color: #212529;
+        }
+
+        .btn-edit:hover {
+            background: #e0a800;
+            transform: translateY(-1px);
+        }
+
+        .btn-remove {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-remove:hover {
+            background: #c82333;
+            transform: translateY(-1px);
+        }
+
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-completed {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .empty-assignments {
+            text-align: center;
+            color: #666;
+            padding: 40px 20px;
+            font-style: italic;
+        }
+
+        .empty-assignments .icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+            opacity: 0.3;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 700px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            animation: modalSlideIn 0.3s ease-out;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 15px;
+        }
+
+        .modal-header h3 {
+            color: #333;
+            font-size: 1.4em;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5em;
+            cursor: pointer;
+            color: #666;
+            transition: color 0.3s ease;
+        }
+
+        .close-btn:hover {
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 600;
+            font-size: 1em;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+            font-family: inherit;
+            resize: vertical;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            margin-bottom: 20px;
+            transition: border-color 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .filters {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .filter-select {
+            flex: 1;
+            padding: 8px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .items-grid {
+            display: grid;
+            gap: 12px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .item-option {
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .item-option:hover {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .item-option.selected {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .item-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .item-meta {
+            font-size: 0.85em;
+            color: #666;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .item-description {
+            font-size: 0.9em;
+            color: #555;
+            margin-top: 5px;
+            max-height: 40px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            display: none;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                height: auto;
+            }
+            
+            .panel-header {
+                flex-direction: column;
+                gap: 15px;
+                align-items: stretch;
+            }
+            
+            .action-buttons {
+                justify-content: center;
+            }
+            
+            .filters {
+                flex-direction: column;
+            }
+            
+            .assignment-details {
+                flex-direction: column;
+                gap: 5px;
+            }
+            
+            .modal-content {
+                margin: 10% auto;
+                width: 95%;
+            }
+
+            .section-header {
+                flex-direction: column;
+                gap: 10px;
+                align-items: stretch;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="version-badge">v1.0-COMBINED</div>
+            <button class="back-button" onclick="goBack()">← Back to Coach Portal</button>
+            <div class="header-top">
+                <img src="images/logo.png" alt="Steve Sherman Billiards Logo" class="logo">
+                <div class="brand-text">
+                    <h2>Steve Sherman Billiards Training System</h2>
+                </div>
+            </div>
+            <h1>Student Assignments</h1>
+        </div>
+
+        <div id="errorMessage" class="error-message"></div>
+        <div id="successMessage" class="success-message"></div>
+
+        <div class="main-content">
+            <!-- Selected Student Info -->
+            <div class="student-info">
+                <h3>🎯 Managing Assignments for Student</h3>
+                <div class="student-details">
+                    <strong id="selectedStudentName">Loading student information...</strong><br>
+                    <span id="selectedStudentEmail"></span>
+                </div>
+            </div>
+
+            <!-- Assignments Management Panel -->
+            <div class="assignments-panel">
+                <div class="panel-header">
+                    <h3>All Assignments</h3>
+                    <div class="action-buttons">
+                        <button class="btn btn-primary" onclick="openDrillModal()">
+                            🎯 Add Drill Assignment
+                        </button>
+                        <button class="btn btn-success" onclick="openContentModal()">
+                            📚 Add Content Assignment
+                        </button>
+                        <button class="btn btn-secondary" onclick="refreshAll()">
+                            🔄 Refresh
+                        </button>
+                    </div>
+                </div>
+
+                <div class="assignments-container">
+                    <!-- Drill Assignments Section -->
+                    <div class="assignment-section drills">
+                        <div class="section-header">
+                            <div class="section-title">
+                                🎯 Drill Assignments
+                                <span class="assignment-count" id="drillCount">0</span>
+                            </div>
+                        </div>
+
+                        <div id="drillsLoading" class="loading" style="display: none;">Loading drill assignments...</div>
+                        
+                        <div id="drillAssignmentsList" class="assignment-list">
+                            <div class="empty-assignments">
+                                <div class="icon">🎯</div>
+                                <p>No drill assignments yet.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Training Content Assignments Section -->
+                    <div class="assignment-section content">
+                        <div class="section-header">
+                            <div class="section-title">
+                                📚 Training Content Assignments
+                                <span class="assignment-count" id="contentCount">0</span>
+                            </div>
+                        </div>
+
+                        <div id="contentLoading" class="loading" style="display: none;">Loading content assignments...</div>
+                        
+                        <div id="contentAssignmentsList" class="assignment-list">
+                            <div class="empty-assignments">
+                                <div class="icon">📚</div>
+                                <p>No training content assignments yet.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Drill Assignment Modal -->
+    <div id="addDrillModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add Drill Assignment</h3>
+                <button class="close-btn" onclick="closeDrillModal()">&times;</button>
+            </div>
+
+            <input type="text" id="drillSearch" class="search-input" placeholder="Search drills by name...">
+            
+            <div class="filters">
+                <select id="drillCategoryFilter" class="filter-select">
+                    <option value="">All Categories</option>
+                </select>
+                <select id="drillSkillFilter" class="filter-select">
+                    <option value="">All Skills</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="drillComments" class="form-label">Coach Comments (Optional):</label>
+                <textarea id="drillComments" class="form-input" rows="3" 
+                          placeholder="Add any special instructions or focus areas for this drill..."></textarea>
+            </div>
+
+            <div id="drillLoading" class="loading">Loading drills...</div>
+            <div id="drillGrid" class="items-grid" style="display: none;"></div>
+
+            <div class="modal-actions">
+                <button class="modal-btn btn-secondary" onclick="closeDrillModal()">Cancel</button>
+                <button class="modal-btn btn-primary" id="assignDrillBtn" onclick="assignSelectedDrill()" disabled>
+                    Assign Drill
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Content Assignment Modal -->
+    <div id="addContentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add Training Content Assignment</h3>
+                <button class="close-btn" onclick="closeContentModal()">&times;</button>
+            </div>
+
+            <input type="text" id="contentSearch" class="search-input" placeholder="Search training content by name...">
+            
+            <div class="filters">
+                <select id="contentCategoryFilter" class="filter-select">
+                    <option value="">All Categories</option>
+                </select>
+                <select id="contentSkillFilter" class="filter-select">
+                    <option value="">All Skills</option>
+                </select>
+                <select id="contentTypeFilter" class="filter-select">
+                    <option value="">All Types</option>
+                    <option value="image">Image</option>
+                    <option value="pdf">PDF</option>
+                    <option value="document">Document</option>
+                    <option value="video">Video</option>
+                    <option value="link">Link</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="contentComments" class="form-label">Coach Comments (Optional):</label>
+                <textarea id="contentComments" class="form-input" rows="3" 
+                          placeholder="Add any special instructions or focus areas for this training content..."></textarea>
+            </div>
+
+            <div id="contentItemsLoading" class="loading">Loading training content...</div>
+            <div id="contentGrid" class="items-grid" style="display: none;"></div>
+
+            <div class="modal-actions">
+                <button class="modal-btn btn-secondary" onclick="closeContentModal()">Cancel</button>
+                <button class="modal-btn btn-primary" id="assignContentBtn" onclick="assignSelectedContent()" disabled>
+                    Assign Content
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Comments Modal -->
+    <div id="editCommentsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit Coach Comments</h3>
+                <button class="close-btn" onclick="closeEditCommentsModal()">&times;</button>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Assignment:</label>
+                <div id="editCommentsAssignmentInfo" style="padding: 10px; background: #f8f9fa; border-radius: 6px; margin-bottom: 15px; font-weight: 600;"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="editCoachComments" class="form-label">Coach Comments:</label>
+                <textarea id="editCoachComments" class="form-input" rows="4" 
+                          placeholder="Add any special instructions or focus areas..."></textarea>
+            </div>
+
+            <div class="modal-actions">
+                <button class="modal-btn btn-secondary" onclick="closeEditCommentsModal()">Cancel</button>
+                <button class="modal-btn btn-primary" id="saveCommentsBtn" onclick="saveCoachComments()">
+                    Save Comments
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== CONFIGURATION =====
+        const API_BASE_URL = 'https://steveshermanbilliards.com/drill-api.php';
+        
+        // ===== GLOBAL VARIABLES =====
+        let contextData = null;
+        let currentCoach = null;
+        let selectedStudent = null;
+        let drillAssignments = [];
+        let contentAssignments = [];
+        let drills = [];
+        let trainingContent = [];
+        let categories = [];
+        let skills = [];
+        let selectedDrill = null;
+        let selectedContent = null;
+        let filteredDrills = [];
+        let filteredContent = [];
+        let currentEditingAssignment = null;
+        let currentEditingType = null; // 'drill' or 'content'
+
+        // ===== UTILITY FUNCTIONS =====
+        
+        async function apiRequest(endpoint, method = 'GET', data = null) {
+            try {
+                const options = {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Cache-Control': 'no-cache, no-store, must-revalidate',
+                        'Pragma': 'no-cache',
+                        'Expires': '0'
+                    }
+                };
+                
+                if (data) {
+                    options.body = JSON.stringify(data);
+                }
+                
+                console.log('🌐 API Request:', method, `${API_BASE_URL}/${endpoint}`, data);
+                
+                const response = await fetch(`${API_BASE_URL}/${endpoint}`, options);
+                
+                console.log('📡 HTTP Response Status:', response.status);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const result = await response.json();
+                console.log('📄 API Response:', result);
+                
+                if (!result.success) {
+                    throw new Error(result.message || 'API request failed');
+                }
+                
+                return result;
+            } catch (error) {
+                console.error('❌ API Error:', error);
+                throw error;
+            }
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            
+            document.getElementById('successMessage').style.display = 'none';
+            
+            setTimeout(() => {
+                errorDiv.style.display = 'none';
+            }, 5000);
+            
+            window.scrollTo(0, 0);
+        }
+
+        function showSuccess(message) {
+            const successDiv = document.getElementById('successMessage');
+            successDiv.textContent = message;
+            successDiv.style.display = 'block';
+            
+            document.getElementById('errorMessage').style.display = 'none';
+            
+            setTimeout(() => {
+                successDiv.style.display = 'none';
+            }, 3000);
+            
+            window.scrollTo(0, 0);
+        }
+
+        function goBack() {
+            window.close();
+            window.history.back();
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+        }
+
+        // ===== CONTEXT MANAGEMENT =====
+        
+        function loadContext() {
+            try {
+                const urlParams = new URLSearchParams(window.location.search);
+                const contextParam = urlParams.get('context');
+                
+                if (!contextParam) {
+                    throw new Error('No context provided. Please access this page from the Coach Student Portal.');
+                }
+                
+                contextData = JSON.parse(atob(contextParam));
+                console.log('📋 Context loaded:', contextData);
+                
+                // Validate context
+                if (!contextData.coach || !contextData.student) {
+                    throw new Error('Invalid context data. Missing coach or student information.');
+                }
+                
+                currentCoach = contextData.coach;
+                selectedStudent = contextData.student;
+                
+                // Update UI with student info
+                document.getElementById('selectedStudentName').textContent = selectedStudent.name || selectedStudent.display_name;
+                document.getElementById('selectedStudentEmail').textContent = selectedStudent.email || '';
+                
+                console.log('✅ Coach:', currentCoach.name, 'managing assignments for student:', selectedStudent.name || selectedStudent.display_name);
+                
+                return true;
+                
+            } catch (error) {
+                console.error('❌ Failed to load context:', error);
+                showError(error.message);
+                return false;
+            }
+        }
+
+        // ===== ASSIGNMENT MANAGEMENT =====
+        
+        async function loadAllAssignments() {
+            if (!selectedStudent) {
+                showError('No student selected');
+                return;
+            }
+            
+            try {
+                await Promise.all([
+                    loadDrillAssignments(),
+                    loadContentAssignments()
+                ]);
+                
+            } catch (error) {
+                console.error('❌ Failed to load assignments:', error);
+                showError('Failed to load assignments: ' + error.message);
+            }
+        }
+
+        async function loadDrillAssignments() {
+            const studentId = selectedStudent.id;
+            console.log('🎯 Loading drill assignments for student:', studentId);
+            
+            document.getElementById('drillsLoading').style.display = 'block';
+            
+            try {
+                const cacheBuster = `&_t=${Date.now()}&_r=${Math.random()}`;
+                const response = await apiRequest(`assignments?user_id=${studentId}${cacheBuster}`);
+                drillAssignments = response.data || [];
+                
+                console.log('🎯 Drill assignments loaded:', drillAssignments.length);
+                
+                drillAssignments = drillAssignments.filter(assignment => {
+                    const isActive = assignment.is_active !== 0;
+                    if (!isActive) {
+                        console.log('🗑️ Filtering out inactive drill assignment:', assignment.id, assignment.drill_name);
+                    }
+                    return isActive;
+                });
+                
+                console.log('🎯 Active drill assignments after filtering:', drillAssignments.length);
+                renderDrillAssignments();
+                
+            } catch (error) {
+                console.error('❌ Failed to load drill assignments:', error);
+                drillAssignments = [];
+                renderDrillAssignments();
+            } finally {
+                document.getElementById('drillsLoading').style.display = 'none';
+            }
+        }
+
+        async function loadContentAssignments() {
+            const studentId = selectedStudent.id;
+            console.log('📚 Loading content assignments for student:', studentId);
+            
+            document.getElementById('contentLoading').style.display = 'block';
+            
+            try {
+                const cacheBuster = `&_t=${Date.now()}&_r=${Math.random()}`;
+                const response = await apiRequest(`content-assignments?user_id=${studentId}${cacheBuster}`);
+                contentAssignments = response.data || [];
+                
+                console.log('📚 Content assignments loaded:', contentAssignments.length);
+                
+                contentAssignments = contentAssignments.filter(assignment => {
+                    const isActive = assignment.is_active !== 0;
+                    if (!isActive) {
+                        console.log('🗑️ Filtering out inactive content assignment:', assignment.id, assignment.content_name);
+                    }
+                    return isActive;
+                });
+                
+                console.log('📚 Active content assignments after filtering:', contentAssignments.length);
+                renderContentAssignments();
+                
+            } catch (error) {
+                console.error('❌ Failed to load content assignments:', error);
+                contentAssignments = [];
+                renderContentAssignments();
+            } finally {
+                document.getElementById('contentLoading').style.display = 'none';
+            }
+        }
+
+        function renderDrillAssignments() {
+            const drillList = document.getElementById('drillAssignmentsList');
+            const drillCount = document.getElementById('drillCount');
+            
+            drillCount.textContent = drillAssignments.length;
+            
+            if (drillAssignments.length === 0) {
+                drillList.innerHTML = `
+                    <div class="empty-assignments">
+                        <div class="icon">🎯</div>
+                        <p>No drill assignments yet.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            drillList.innerHTML = drillAssignments.map(assignment => {
+                const hasComments = assignment.coach_comments && assignment.coach_comments.trim().length > 0;
+                
+                return `
+                    <div class="assignment-card">
+                        <div class="assignment-name">${escapeHtml(assignment.drill_name)}</div>
+                        <div class="assignment-details">
+                            <span class="detail-badge category-badge">${escapeHtml(assignment.category_display)}</span>
+                            <span class="detail-badge skill-badge">${escapeHtml(assignment.skill_display)}</span>
+                            <span class="detail-badge score-badge">Max Score: ${assignment.max_score}</span>
+                        </div>
+                        <div class="assignment-meta">
+                            Assigned: ${new Date(assignment.assigned_date).toLocaleDateString()} by ${escapeHtml(assignment.assigned_by_name)}
+                            ${assignment.due_date ? `• Due: ${new Date(assignment.due_date).toLocaleDateString()}` : ''}
+                        </div>
+                        <div class="assignment-comments ${hasComments ? 'has-comments' : ''}">
+                            <div class="assignment-comments-label">Coach Comments:</div>
+                            <div>${hasComments ? escapeHtml(assignment.coach_comments) : 'No comments yet'}</div>
+                        </div>
+                        <div class="assignment-actions">
+                            <span class="status-badge ${assignment.is_completed ? 'status-completed' : 'status-pending'}">
+                                ${assignment.is_completed ? 'Completed' : 'Pending'}
+                            </span>
+                            <button class="btn btn-sm btn-view" onclick="viewDrill(${assignment.drill_id})">
+                                👁️ View
+                            </button>
+                            <button class="btn btn-sm btn-edit" onclick="openEditCommentsModal(${assignment.id}, 'drill', '${escapeHtml(assignment.drill_name)}', \`${escapeHtml(assignment.coach_comments || '')}\`)">
+                                ${hasComments ? '✏️ Edit' : '💬 Add'} Comments
+                            </button>
+                            <button class="btn btn-sm btn-remove" onclick="removeAssignment(${assignment.id}, 'drill', '${escapeHtml(assignment.drill_name)}')">
+                                🗑️ Remove
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderContentAssignments() {
+            const contentList = document.getElementById('contentAssignmentsList');
+            const contentCount = document.getElementById('contentCount');
+            
+            contentCount.textContent = contentAssignments.length;
+            
+            if (contentAssignments.length === 0) {
+                contentList.innerHTML = `
+                    <div class="empty-assignments">
+                        <div class="icon">📚</div>
+                        <p>No training content assignments yet.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            contentList.innerHTML = contentAssignments.map(assignment => {
+                const hasComments = assignment.coach_comments && assignment.coach_comments.trim().length > 0;
+                
+                // Determine content access method
+                let viewButton = '';
+                if (assignment.file_url) {
+                    viewButton = `<a href="${assignment.file_url}" target="_blank" class="btn btn-sm btn-view">👁️ View</a>`;
+                } else if (assignment.external_url) {
+                    viewButton = `<a href="${assignment.external_url}" target="_blank" class="btn btn-sm btn-view">🔗 Open</a>`;
+                } else {
+                    viewButton = `<button class="btn btn-sm btn-view" onclick="viewContent(${assignment.content_id})">👁️ View</button>`;
+                }
+                
+                return `
+                    <div class="assignment-card">
+                        <div class="assignment-name">${escapeHtml(assignment.content_name)}</div>
+                        <div class="assignment-details">
+                            <span class="detail-badge category-badge">${escapeHtml(assignment.category_display)}</span>
+                            <span class="detail-badge skill-badge">${escapeHtml(assignment.skill_display)}</span>
+                            <span class="detail-badge type-badge">${escapeHtml(assignment.content_type).toUpperCase()}</span>
+                        </div>
+                        <div class="assignment-meta">
+                            Assigned: ${new Date(assignment.assigned_date).toLocaleDateString()} by ${escapeHtml(assignment.assigned_by_name)}
+                            ${assignment.due_date ? `• Due: ${new Date(assignment.due_date).toLocaleDateString()}` : ''}
+                            ${assignment.difficulty_level ? `• Level: ${assignment.difficulty_level}` : ''}
+                        </div>
+                        <div class="assignment-comments ${hasComments ? 'has-comments' : ''}">
+                            <div class="assignment-comments-label">Coach Comments:</div>
+                            <div>${hasComments ? escapeHtml(assignment.coach_comments) : 'No comments yet'}</div>
+                        </div>
+                        <div class="assignment-actions">
+                            <span class="status-badge ${assignment.is_completed ? 'status-completed' : 'status-pending'}">
+                                ${assignment.is_completed ? 'Completed' : 'Pending'}
+                            </span>
+                            ${viewButton}
+                            <button class="btn btn-sm btn-edit" onclick="openEditCommentsModal(${assignment.id}, 'content', '${escapeHtml(assignment.content_name)}', \`${escapeHtml(assignment.coach_comments || '')}\`)">
+                                ${hasComments ? '✏️ Edit' : '💬 Add'} Comments
+                            </button>
+                            <button class="btn btn-sm btn-remove" onclick="removeAssignment(${assignment.id}, 'content', '${escapeHtml(assignment.content_name)}')">
+                                🗑️ Remove
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function removeAssignment(assignmentId, type, itemName) {
+            if (!confirm(`Are you sure you want to remove the assignment for "${itemName}"?`)) {
+                return;
+            }
+            
+            try {
+                console.log('🗑️ Removing assignment:', assignmentId, 'type:', type);
+                
+                if (!assignmentId || assignmentId <= 0) {
+                    throw new Error('Invalid assignment ID: ' + assignmentId);
+                }
+                
+                const endpoint = type === 'drill' ? `assignments/${assignmentId}` : `content-assignments/${assignmentId}`;
+                
+                let response;
+                try {
+                    console.log('📄 Trying DELETE method...');
+                    response = await apiRequest(endpoint, 'DELETE');
+                    console.log('✅ DELETE method succeeded');
+                } catch (deleteError) {
+                    console.log('❌ DELETE failed, trying POST with _method...');
+                    try {
+                        response = await apiRequest(endpoint, 'POST', {
+                            _method: 'DELETE'
+                        });
+                        console.log('✅ POST _method succeeded');
+                    } catch (postMethodError) {
+                        console.log('❌ POST _method failed, trying PUT with is_active...');
+                        response = await apiRequest(endpoint, 'PUT', {
+                            is_active: 0
+                        });
+                        console.log('✅ PUT is_active succeeded');
+                    }
+                }
+                
+                showSuccess(`Assignment for "${itemName}" removed successfully`);
+                
+                // Reload the appropriate assignments
+                if (type === 'drill') {
+                    await loadDrillAssignments();
+                } else {
+                    await loadContentAssignments();
+                }
+                
+            } catch (error) {
+                console.error('❌ Failed to remove assignment:', error);
+                showError('Failed to remove assignment: ' + error.message);
+            }
+        }
+
+        // ===== MODAL MANAGEMENT =====
+        
+        function openDrillModal() {
+            if (!selectedStudent) {
+                showError('Please select a student first');
+                return;
+            }
+            
+            selectedDrill = null;
+            document.getElementById('assignDrillBtn').disabled = true;
+            document.getElementById('drillSearch').value = '';
+            document.getElementById('drillCategoryFilter').value = '';
+            document.getElementById('drillSkillFilter').value = '';
+            document.getElementById('drillComments').value = '';
+            
+            renderDrillGrid();
+            document.getElementById('addDrillModal').style.display = 'block';
+        }
+
+        function closeDrillModal() {
+            document.getElementById('addDrillModal').style.display = 'none';
+            selectedDrill = null;
+        }
+
+        function openContentModal() {
+            if (!selectedStudent) {
+                showError('Please select a student first');
+                return;
+            }
+            
+            selectedContent = null;
+            document.getElementById('assignContentBtn').disabled = true;
+            document.getElementById('contentSearch').value = '';
+            document.getElementById('contentCategoryFilter').value = '';
+            document.getElementById('contentSkillFilter').value = '';
+            document.getElementById('contentTypeFilter').value = '';
+            document.getElementById('contentComments').value = '';
+            
+            renderContentGrid();
+            document.getElementById('addContentModal').style.display = 'block';
+        }
+
+        function closeContentModal() {
+            document.getElementById('addContentModal').style.display = 'none';
+            selectedContent = null;
+        }
+
+        function openEditCommentsModal(assignmentId, type, itemName, currentComments) {
+            currentEditingAssignment = assignmentId;
+            currentEditingType = type;
+            document.getElementById('editCommentsAssignmentInfo').textContent = `${selectedStudent.display_name || selectedStudent.name} - ${itemName}`;
+            document.getElementById('editCoachComments').value = currentComments || '';
+            document.getElementById('editCommentsModal').style.display = 'block';
+        }
+
+        function closeEditCommentsModal() {
+            document.getElementById('editCommentsModal').style.display = 'none';
+            currentEditingAssignment = null;
+            currentEditingType = null;
+        }
+
+        async function saveCoachComments() {
+            if (!currentEditingAssignment || !currentEditingType) {
+                showError('No assignment selected for editing');
+                return;
+            }
+
+            const comments = document.getElementById('editCoachComments').value.trim();
+            
+            try {
+                console.log('💬 Saving coach comments for assignment:', currentEditingAssignment, 'type:', currentEditingType);
+                
+                document.getElementById('saveCommentsBtn').disabled = true;
+                document.getElementById('saveCommentsBtn').textContent = 'Saving...';
+                
+                const endpoint = currentEditingType === 'drill' ? 
+                    `assignments/${currentEditingAssignment}` : 
+                    `content-assignments/${currentEditingAssignment}`;
+                
+                const response = await apiRequest(endpoint, 'PUT', {
+                    coach_comments: comments
+                });
+                
+                showSuccess('Coach comments saved successfully');
+                closeEditCommentsModal();
+                
+                // Reload the appropriate assignments
+                if (currentEditingType === 'drill') {
+                    await loadDrillAssignments();
+                } else {
+                    await loadContentAssignments();
+                }
+                
+            } catch (error) {
+                console.error('❌ Failed to save coach comments:', error);
+                showError('Failed to save coach comments: ' + error.message);
+            } finally {
+                document.getElementById('saveCommentsBtn').disabled = false;
+                document.getElementById('saveCommentsBtn').textContent = 'Save Comments';
+            }
+        }
+
+        // ===== CONTENT SELECTION =====
+        
+        async function loadCategories() {
+            try {
+                const response = await apiRequest('categories');
+                categories = response.data || [];
+                
+                const drillCategoryFilter = document.getElementById('drillCategoryFilter');
+                const contentCategoryFilter = document.getElementById('contentCategoryFilter');
+                
+                const categoryOptions = '<option value="">All Categories</option>' +
+                    categories.map(cat => `<option value="${cat.id}">${escapeHtml(cat.display_name)}</option>`).join('');
+                
+                drillCategoryFilter.innerHTML = categoryOptions;
+                contentCategoryFilter.innerHTML = categoryOptions;
+                    
+            } catch (error) {
+                console.error('❌ Failed to load categories:', error);
+            }
+        }
+
+        async function loadSkills() {
+            try {
+                const response = await apiRequest('skills');
+                skills = response.data || [];
+                
+                const drillSkillFilter = document.getElementById('drillSkillFilter');
+                const contentSkillFilter = document.getElementById('contentSkillFilter');
+                
+                const skillOptions = '<option value="">All Skills</option>' +
+                    skills.map(skill => `<option value="${skill.id}">${escapeHtml(skill.display_name)}</option>`).join('');
+                
+                drillSkillFilter.innerHTML = skillOptions;
+                contentSkillFilter.innerHTML = skillOptions;
+                    
+            } catch (error) {
+                console.error('❌ Failed to load skills:', error);
+            }
+        }
+
+        async function loadDrills() {
+            try {
+                const response = await apiRequest('drills');
+                drills = response.data || [];
+                filteredDrills = [...drills];
+                
+                console.log('🎯 Drills loaded:', drills.length);
+                
+            } catch (error) {
+                console.error('❌ Failed to load drills:', error);
+            }
+        }
+
+        async function loadTrainingContent() {
+            try {
+                const response = await apiRequest('training-content');
+                trainingContent = response.data || [];
+                filteredContent = [...trainingContent];
+                
+                console.log('📚 Training content loaded:', trainingContent.length);
+                
+            } catch (error) {
+                console.error('❌ Failed to load training content:', error);
+            }
+        }
+
+        function renderDrillGrid() {
+            const drillGrid = document.getElementById('drillGrid');
+            const drillLoading = document.getElementById('drillLoading');
+            
+            drillLoading.style.display = 'none';
+            drillGrid.style.display = 'block';
+            
+            if (filteredDrills.length === 0) {
+                drillGrid.innerHTML = '<div class="empty-assignments"><div class="icon">🎯</div><p>No drills found</p></div>';
+                return;
+            }
+            
+            drillGrid.innerHTML = filteredDrills.map(drill => `
+                <div class="item-option" onclick="selectDrill(${drill.id})" data-drill-id="${drill.id}">
+                    <div class="item-name">${escapeHtml(drill.name)}</div>
+                    <div class="item-meta">
+                        <span>Category: ${escapeHtml(drill.category_display)}</span>
+                        <span>Skill: ${escapeHtml(drill.skill_display)}</span>
+                        <span>Max Score: ${drill.max_score}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderContentGrid() {
+            const contentGrid = document.getElementById('contentGrid');
+            const contentLoading = document.getElementById('contentItemsLoading');
+            
+            contentLoading.style.display = 'none';
+            contentGrid.style.display = 'block';
+            
+            if (filteredContent.length === 0) {
+                contentGrid.innerHTML = '<div class="empty-assignments"><div class="icon">📚</div><p>No training content found</p></div>';
+                return;
+            }
+            
+            contentGrid.innerHTML = filteredContent.map(content => `
+                <div class="item-option" onclick="selectContent(${content.id})" data-content-id="${content.id}">
+                    <div class="item-name">${escapeHtml(content.name)}</div>
+                    <div class="item-meta">
+                        <span>Category: ${escapeHtml(content.category_display)}</span>
+                        <span>Skill: ${escapeHtml(content.skill_display)}</span>
+                        <span>Type: ${escapeHtml(content.content_type)}</span>
+                        <span>Level: ${escapeHtml(content.difficulty_level)}</span>
+                    </div>
+                    ${content.description ? `<div class="item-description">${escapeHtml(content.description)}</div>` : ''}
+                </div>
+            `).join('');
+        }
+
+        function selectDrill(drillId) {
+            document.querySelectorAll('#drillGrid .item-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            
+            const selectedOption = document.querySelector(`#drillGrid [data-drill-id="${drillId}"]`);
+            if (selectedOption) {
+                selectedOption.classList.add('selected');
+            }
+            
+            selectedDrill = drills.find(d => d.id == drillId);
+            document.getElementById('assignDrillBtn').disabled = false;
+        }
+
+        function selectContent(contentId) {
+            document.querySelectorAll('#contentGrid .item-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            
+            const selectedOption = document.querySelector(`#contentGrid [data-content-id="${contentId}"]`);
+            if (selectedOption) {
+                selectedOption.classList.add('selected');
+            }
+            
+            selectedContent = trainingContent.find(c => c.id == contentId);
+            document.getElementById('assignContentBtn').disabled = false;
+        }
+
+        async function assignSelectedDrill() {
+            if (!selectedStudent || !selectedDrill) {
+                showError('Please select both a student and a drill');
+                return;
+            }
+            
+            try {
+                console.log('🎯 Assigning drill:', selectedDrill.id, 'to student:', selectedStudent.id);
+                
+                document.getElementById('assignDrillBtn').disabled = true;
+                document.getElementById('assignDrillBtn').textContent = 'Assigning...';
+                
+                const coachComments = document.getElementById('drillComments').value.trim();
+                
+                const response = await apiRequest('assignments', 'POST', {
+                    user_id: selectedStudent.id,
+                    drill_id: selectedDrill.id,
+                    assigned_by: currentCoach.id || currentCoach.userId || 1,
+                    due_date: null,
+                    coach_comments: coachComments
+                });
+                
+                showSuccess(`Drill "${selectedDrill.name}" assigned successfully`);
+                closeDrillModal();
+                
+                await loadDrillAssignments();
+                
+            } catch (error) {
+                console.error('❌ Failed to assign drill:', error);
+                showError('Failed to assign drill: ' + error.message);
+            } finally {
+                document.getElementById('assignDrillBtn').disabled = false;
+                document.getElementById('assignDrillBtn').textContent = 'Assign Drill';
+            }
+        }
+
+        async function assignSelectedContent() {
+            if (!selectedStudent || !selectedContent) {
+                showError('Please select both a student and training content');
+                return;
+            }
+            
+            try {
+                console.log('📚 Assigning content:', selectedContent.id, 'to student:', selectedStudent.id);
+                
+                document.getElementById('assignContentBtn').disabled = true;
+                document.getElementById('assignContentBtn').textContent = 'Assigning...';
+                
+                const coachComments = document.getElementById('contentComments').value.trim();
+                
+                const response = await apiRequest('content-assignments', 'POST', {
+                    user_id: selectedStudent.id,
+                    content_id: selectedContent.id,
+                    assigned_by: currentCoach.id || currentCoach.userId || 1,
+                    due_date: null,
+                    coach_comments: coachComments
+                });
+                
+                showSuccess(`Training content "${selectedContent.name}" assigned successfully`);
+                closeContentModal();
+                
+                await loadContentAssignments();
+                
+            } catch (error) {
+                console.error('❌ Failed to assign training content:', error);
+                showError('Failed to assign training content: ' + error.message);
+            } finally {
+                document.getElementById('assignContentBtn').disabled = false;
+                document.getElementById('assignContentBtn').textContent = 'Assign Content';
+            }
+        }
+
+        // ===== FILTERING AND SEARCH =====
+        
+        function filterDrills() {
+            const searchTerm = document.getElementById('drillSearch').value.toLowerCase();
+            const categoryId = document.getElementById('drillCategoryFilter').value;
+            const skillId = document.getElementById('drillSkillFilter').value;
+            
+            filteredDrills = drills.filter(drill => {
+                const matchesSearch = !searchTerm || drill.name.toLowerCase().includes(searchTerm);
+                const matchesCategory = !categoryId || drill.category_id == categoryId;
+                const matchesSkill = !skillId || drill.skill_id == skillId;
+                
+                return matchesSearch && matchesCategory && matchesSkill;
+            });
+            
+            renderDrillGrid();
+        }
+
+        function filterContent() {
+            const searchTerm = document.getElementById('contentSearch').value.toLowerCase();
+            const categoryId = document.getElementById('contentCategoryFilter').value;
+            const skillId = document.getElementById('contentSkillFilter').value;
+            const contentType = document.getElementById('contentTypeFilter').value;
+            
+            filteredContent = trainingContent.filter(content => {
+                const matchesSearch = !searchTerm || content.name.toLowerCase().includes(searchTerm) ||
+                                    (content.description && content.description.toLowerCase().includes(searchTerm));
+                const matchesCategory = !categoryId || content.category_id == categoryId;
+                const matchesSkill = !skillId || content.skill_id == skillId;
+                const matchesType = !contentType || content.content_type == contentType;
+                
+                return matchesSearch && matchesCategory && matchesSkill && matchesType;
+            });
+            
+            renderContentGrid();
+        }
+
+        // ===== VIEW FUNCTIONS =====
+        
+        function viewDrill(drillId) {
+            console.log('👁️ Opening drill view for drill ID:', drillId);
+            const drillDisplayUrl = `drill-display.html?drill_id=${drillId}`;
+            const popup = window.open(drillDisplayUrl, `drillView_${drillId}`, 'width=1000,height=800,scrollbars=yes,resizable=yes');
+            
+            if (!popup) {
+                showError('Popup blocked! Please allow popups for this site and try again.');
+                return;
+            }
+            
+            popup.focus();
+        }
+
+        function viewContent(contentId) {
+            console.log('👁️ Opening content view for content ID:', contentId);
+            const contentDisplayUrl = `training-content-display.html?content_id=${contentId}`;
+            const popup = window.open(contentDisplayUrl, `contentView_${contentId}`, 'width=1000,height=800,scrollbars=yes,resizable=yes');
+            
+            if (!popup) {
+                showError('Popup blocked! Please allow popups for this site and try again.');
+                return;
+            }
+            
+            popup.focus();
+        }
+
+        async function refreshAll() {
+            try {
+                showSuccess('Refreshing all assignments...');
+                await loadAllAssignments();
+                showSuccess('All assignments refreshed successfully!');
+                
+            } catch (error) {
+                console.error('❌ Error refreshing assignments:', error);
+                showError('Failed to refresh assignments: ' + error.message);
+            }
+        }
+
+        // ===== EVENT LISTENERS =====
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('drillSearch').addEventListener('input', filterDrills);
+            document.getElementById('drillCategoryFilter').addEventListener('change', filterDrills);
+            document.getElementById('drillSkillFilter').addEventListener('change', filterDrills);
+            
+            document.getElementById('contentSearch').addEventListener('input', filterContent);
+            document.getElementById('contentCategoryFilter').addEventListener('change', filterContent);
+            document.getElementById('contentSkillFilter').addEventListener('change', filterContent);
+            document.getElementById('contentTypeFilter').addEventListener('change', filterContent);
+        });
+
+        window.addEventListener('click', function(event) {
+            const drillModal = document.getElementById('addDrillModal');
+            const contentModal = document.getElementById('addContentModal');
+            const editModal = document.getElementById('editCommentsModal');
+            
+            if (event.target === drillModal) {
+                closeDrillModal();
+            }
+            if (event.target === contentModal) {
+                closeContentModal();
+            }
+            if (event.target === editModal) {
+                closeEditCommentsModal();
+            }
+        });
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeDrillModal();
+                closeContentModal();
+                closeEditCommentsModal();
+            }
+        });
+
+        // ===== INITIALIZATION =====
+        
+        async function initializeApp() {
+            console.log('📄 Initializing combined assignment application...');
+            try {
+                console.log('📋 Step 1: Loading context...');
+                if (!loadContext()) {
+                    return; // Context loading failed, error already shown
+                }
+                
+                console.log('📂 Step 2: Loading categories...');
+                await loadCategories();
+                
+                console.log('🎯 Step 3: Loading skills...');
+                await loadSkills();
+                
+                console.log('🎲 Step 4: Loading drills...');
+                await loadDrills();
+                
+                console.log('📚 Step 5: Loading training content...');
+                await loadTrainingContent();
+                
+                console.log('📋 Step 6: Loading assignments...');
+                await loadAllAssignments();
+                
+                console.log('✅ Combined assignment application initialized successfully');
+            } catch (error) {
+                console.error('❌ Failed to initialize application:', error);
+                showError('Failed to initialize application: ' + error.message);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🎯 Combined Student Assignment Admin Loaded - Version 1.0-COMBINED');
+            console.log('📡 API URL:', API_BASE_URL);
+            
+            setTimeout(() => {
+                initializeApp();
+            }, 100);
+        });
+    </script>
+</body>
+</html>
