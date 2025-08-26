@@ -1,0 +1,1428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Assignments - Steve Sherman Billiards</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            min-height: calc(100vh - 40px);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .version-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(40, 167, 69, 0.9);
+            color: white;
+            padding: 6px 10px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+
+        .header-top {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .logo {
+            width: 50px;
+            height: 50px;
+            margin-right: 15px;
+        }
+
+        .brand-text h2 {
+            font-size: 1.1em;
+            margin: 0;
+            color: #333;
+            font-weight: 600;
+            line-height: 1.2;
+        }
+
+        .header h1 {
+            font-size: 2.2em;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .back-button {
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .back-button:hover {
+            background: #5a6268;
+            transform: translateY(-50%) translateY(-2px);
+        }
+
+        .main-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .student-info {
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            border: 2px solid rgba(102, 126, 234, 0.3);
+        }
+
+        .student-info h3 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.3em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .student-details {
+            color: #666;
+            font-size: 1em;
+        }
+
+        .summary-stats {
+            background: rgba(40, 167, 69, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
+            border: 2px solid rgba(40, 167, 69, 0.3);
+        }
+
+        .summary-title {
+            color: #155724;
+            font-size: 1.2em;
+            font-weight: 600;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 15px;
+            text-align: center;
+        }
+
+        .stat-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-value {
+            font-size: 1.8em;
+            font-weight: 600;
+            color: #28a745;
+            margin-bottom: 5px;
+        }
+
+        .stat-value.score-excellent { color: #28a745; }
+        .stat-value.score-good { color: #ffc107; }
+        .stat-value.score-needs-work { color: #dc3545; }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .assignments-panel {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 15px;
+        }
+
+        .panel-header h3 {
+            color: #333;
+            font-size: 1.3em;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+
+        .btn-info {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .btn-info:hover {
+            background: #138496;
+            transform: translateY(-2px);
+        }
+
+        .assignments-container {
+            display: grid;
+            gap: 30px;
+        }
+
+        .assignment-section {
+            border-radius: 12px;
+            padding: 20px;
+            border: 2px solid #e0e0e0;
+            transition: all 0.3s ease;
+        }
+
+        .assignment-section.drills {
+            border-color: rgba(102, 126, 234, 0.3);
+            background: rgba(102, 126, 234, 0.02);
+        }
+
+        .assignment-section.content {
+            border-color: rgba(40, 167, 69, 0.3);
+            background: rgba(40, 167, 69, 0.02);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .section-title {
+            color: #333;
+            font-size: 1.2em;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .assignment-count {
+            background: #667eea;
+            color: white;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .content .assignment-count {
+            background: #28a745;
+        }
+
+        .assignment-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .assignment-card {
+            background: white;
+            border: 2px solid rgba(0, 0, 0, 0.05);
+            border-radius: 12px;
+            padding: 0;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .assignment-card:hover {
+            border-color: rgba(102, 126, 234, 0.3);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .item-thumbnail {
+            position: relative;
+            width: 100%;
+            height: 180px;
+            background: linear-gradient(45deg, #2d5a27 0%, #1e3d1a 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-bottom: 1px solid #ddd;
+            overflow: hidden;
+        }
+
+        .item-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .item-thumbnail.no-image {
+            background: linear-gradient(135deg, #2d5a27 0%, #1a3d1a 50%, #2d5a27 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 8s ease infinite;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 3em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            position: relative;
+        }
+
+        .item-thumbnail.no-image::before {
+            content: '🎱';
+            display: block;
+            animation: float 3s ease-in-out infinite;
+            z-index: 2;
+            position: relative;
+        }
+
+        .item-thumbnail.no-image.content::before {
+            content: '📚';
+        }
+
+        .item-thumbnail.no-image::after {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, rgba(255,255,255,0.1) 0%, transparent 50%, rgba(255,255,255,0.1) 100%);
+            background-size: 200% 200%;
+            animation: shimmer 3s ease-in-out infinite;
+            z-index: 1;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        @keyframes shimmer {
+            0%, 100% { background-position: -200% 0; }
+            50% { background-position: 200% 0; }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .item-content {
+            padding: 15px;
+        }
+
+        .item-name {
+            font-weight: 600;
+            color: #333;
+            font-size: 1em;
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+
+        .item-tags {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+
+        .item-tag {
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 2px 6px;
+            border-radius: 10px;
+        }
+
+        .tag-category {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .tag-skill {
+            background: #f3e5f5;
+            color: #7b1fa2;
+        }
+
+        .tag-score {
+            background: #e0f2f1;
+            color: #00695c;
+        }
+
+        /* Remove unused styles - now using drill app layout */
+
+        .empty-assignments {
+            text-align: center;
+            color: #666;
+            padding: 40px 20px;
+            font-style: italic;
+        }
+
+        .empty-assignments .icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+            opacity: 0.3;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        /* Remove unused progress styles - using drill app layout now */
+
+        @media (max-width: 768px) {
+            .main-content {
+                height: auto;
+            }
+            
+            .panel-header {
+                flex-direction: column;
+                gap: 15px;
+                align-items: stretch;
+            }
+            
+            .action-buttons {
+                justify-content: center;
+            }
+
+            .section-header {
+                flex-direction: column;
+                gap: 10px;
+                align-items: stretch;
+            }
+
+            .assignment-list {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="version-badge">v3.0-STUDENT</div>
+            <button class="back-button" onclick="goBackToPortal()">← Back to Portal</button>
+            <div class="header-top">
+                <img src="images/logo.png" alt="Steve Sherman Billiards Logo" class="logo">
+                <div class="brand-text">
+                    <h2>Steve Sherman Billiards Training System</h2>
+                </div>
+            </div>
+            <h1>My Assignments</h1>
+        </div>
+
+        <!-- Loading State -->
+        <div id="loadingState" class="loading">
+            <div class="loading-spinner"></div>
+            <p>Loading your assignments...</p>
+        </div>
+
+        <!-- Error State -->
+        <div id="errorMessage" class="error-message" style="display: none;"></div>
+        <div id="successMessage" class="success-message" style="display: none;"></div>
+
+        <div id="mainContent" class="main-content" style="display: none;">
+            <!-- Student Info -->
+            <div class="student-info">
+                <h3>📚 Assignment Dashboard</h3>
+                <div class="student-details">
+                    <strong id="selectedStudentName">Loading...</strong><br>
+                    <span id="currentDateTime"></span>
+                </div>
+            </div>
+
+            <!-- Summary Stats -->
+            <div class="summary-stats">
+                <h3 class="summary-title">Your Progress Summary</h3>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-value" id="totalAssignments">0</div>
+                        <div class="stat-label">Total Assigned</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="completedAssignments">0</div>
+                        <div class="stat-label">Completed</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="totalAttempts">0</div>
+                        <div class="stat-label">Total Attempts</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="overallAverage">--%</div>
+                        <div class="stat-label">Average Score</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Assignments Management Panel -->
+            <div class="assignments-panel">
+                <div class="panel-header">
+                    <h3>All My Assignments</h3>
+                    <div class="action-buttons">
+                        <button class="btn btn-info" onclick="refreshAll()">
+                            🔄 Refresh
+                        </button>
+                        <button class="btn btn-secondary" onclick="goBackToPortal()">
+                            ← Back to Portal
+                        </button>
+                    </div>
+                </div>
+
+                <div class="assignments-container">
+                    <!-- Drill Assignments Section -->
+                    <div class="assignment-section drills">
+                        <div class="section-header">
+                            <div class="section-title">
+                                🎯 Drill Assignments
+                                <span class="assignment-count" id="drillCount">0</span>
+                            </div>
+                        </div>
+
+                        <div id="drillsLoading" class="loading" style="display: none;">Loading drill assignments...</div>
+                        
+                        <div id="drillAssignmentsList" class="assignment-list">
+                            <div class="empty-assignments">
+                                <div class="icon">🎯</div>
+                                <p>No drill assignments yet.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Training Content Assignments Section -->
+                    <div class="assignment-section content">
+                        <div class="section-header">
+                            <div class="section-title">
+                                📚 Training Content Assignments
+                                <span class="assignment-count" id="contentCount">0</span>
+                            </div>
+                        </div>
+
+                        <div id="contentLoading" class="loading" style="display: none;">Loading content assignments...</div>
+                        
+                        <div id="contentAssignmentsList" class="assignment-list">
+                            <div class="empty-assignments">
+                                <div class="icon">📚</div>
+                                <p>No training content assignments yet.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const API_BASE_URL = 'https://steveshermanbilliards.com/drill-api.php';
+        
+        // Global variables
+        let currentSession = null;
+        let drillAssignments = [];
+        let contentAssignments = [];
+        let drills = [];
+        let scores = [];
+
+        // ===== UTILITY FUNCTIONS =====
+        
+        async function apiRequest(endpoint, method = 'GET', data = null) {
+            try {
+                const options = {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Cache-Control': 'no-cache, no-store, must-revalidate',
+                        'Pragma': 'no-cache',
+                        'Expires': '0'
+                    }
+                };
+                
+                if (data) {
+                    options.body = JSON.stringify(data);
+                }
+                
+                // Add cache busting
+                let url = `${API_BASE_URL}/${endpoint}`;
+                const separator = url.includes('?') ? '&' : '?';
+                url += `${separator}_t=${Date.now()}&_r=${Math.random()}`;
+                
+                console.log('🌐 API Request:', method, url, data);
+                
+                const response = await fetch(url, options);
+                
+                console.log('📡 HTTP Response Status:', response.status);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const result = await response.json();
+                console.log('📄 API Response:', result);
+                
+                if (!result.success) {
+                    throw new Error(result.message || 'API request failed');
+                }
+                
+                return result;
+            } catch (error) {
+                console.error('❌ API Error:', error);
+                throw error;
+            }
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            
+            document.getElementById('successMessage').style.display = 'none';
+            
+            setTimeout(() => {
+                errorDiv.style.display = 'none';
+            }, 5000);
+            
+            window.scrollTo(0, 0);
+        }
+
+        function showSuccess(message) {
+            const successDiv = document.getElementById('successMessage');
+            successDiv.textContent = message;
+            successDiv.style.display = 'block';
+            
+            document.getElementById('errorMessage').style.display = 'none';
+            
+            setTimeout(() => {
+                successDiv.style.display = 'none';
+            }, 3000);
+            
+            window.scrollTo(0, 0);
+        }
+
+        function goBackToPortal() {
+            if (confirm('Return to student portal?')) {
+                window.close();
+                setTimeout(() => {
+                    window.location.href = 'student-portal.html';
+                }, 100);
+            }
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+        }
+
+        function updateDateTime() {
+            const now = new Date();
+            const formatted = now.toLocaleString('en-US', {
+                weekday: 'short',
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            document.getElementById('currentDateTime').textContent = formatted;
+        }
+
+        // ===== SESSION MANAGEMENT =====
+        
+        function loadSession() {
+            try {
+                const urlParams = new URLSearchParams(window.location.search);
+                const userParam = urlParams.get('user');
+                
+                if (userParam) {
+                    try {
+                        const userData = JSON.parse(atob(userParam));
+                        currentSession = {
+                            userId: userData.id,
+                            name: userData.name,
+                            email: userData.email,
+                            type: userData.type,
+                            fromUrl: true
+                        };
+                        console.log('📦 Session loaded from URL:', currentSession);
+                    } catch (e) {
+                        console.error('❌ Failed to parse URL user data:', e);
+                    }
+                }
+                
+                if (!currentSession) {
+                    const savedSession = sessionStorage.getItem('studentSession');
+                    if (savedSession) {
+                        currentSession = JSON.parse(savedSession);
+                        console.log('📦 Session loaded from storage:', currentSession);
+                    }
+                }
+
+                if (currentSession && currentSession.userId) {
+                    document.getElementById('selectedStudentName').textContent = currentSession.name || 'Student';
+                    console.log('✅ Session loaded for:', currentSession.name);
+                    return true;
+                } else {
+                    throw new Error('No user session found. Please return to the student portal and login again.');
+                }
+                
+            } catch (error) {
+                console.error('❌ Failed to load session:', error);
+                showError(error.message);
+                return false;
+            }
+        }
+
+        // ===== ASSIGNMENT LOADING =====
+        
+        async function loadAllAssignments() {
+            if (!currentSession) {
+                showError('No user session found');
+                return;
+            }
+            
+            try {
+                // Load drills data FIRST to ensure images are available
+                console.log('📋 Step 1: Loading drills data with images...');
+                await loadDrillsData();
+                
+                console.log('📋 Step 2: Loading user scores...');
+                await loadUserScores();
+                
+                console.log('📋 Step 3: Loading assignments...');
+                await Promise.all([
+                    loadDrillAssignments(),
+                    loadContentAssignments()
+                ]);
+                
+                console.log('📋 Step 4: Calculating stats...');
+                calculateAndDisplayStats();
+                
+            } catch (error) {
+                console.error('❌ Failed to load assignments:', error);
+                showError('Failed to load assignments: ' + error.message);
+            }
+        }
+
+        async function loadDrillAssignments() {
+            const studentId = currentSession.userId;
+            console.log('🎯 Loading drill assignments for student:', studentId);
+            
+            document.getElementById('drillsLoading').style.display = 'block';
+            
+            try {
+                const response = await apiRequest(`assignments?user_id=${studentId}`);
+                drillAssignments = response.data || [];
+                
+                drillAssignments = drillAssignments.filter(assignment => assignment.is_active !== 0);
+                
+                console.log('🎯 Active drill assignments:', drillAssignments.length);
+                renderDrillAssignments();
+                
+            } catch (error) {
+                console.error('❌ Failed to load drill assignments:', error);
+                drillAssignments = [];
+                renderDrillAssignments();
+            } finally {
+                document.getElementById('drillsLoading').style.display = 'none';
+            }
+        }
+
+        async function loadContentAssignments() {
+            const studentId = currentSession.userId;
+            console.log('📚 Loading content assignments for student:', studentId);
+            
+            document.getElementById('contentLoading').style.display = 'block';
+            
+            try {
+                const response = await apiRequest(`content-assignments?user_id=${studentId}`);
+                contentAssignments = response.data || [];
+                
+                contentAssignments = contentAssignments.filter(assignment => assignment.is_active !== 0);
+                
+                console.log('📚 Active content assignments:', contentAssignments.length);
+                renderContentAssignments();
+                
+            } catch (error) {
+                console.error('❌ Failed to load content assignments:', error);
+                contentAssignments = [];
+                renderContentAssignments();
+            } finally {
+                document.getElementById('contentLoading').style.display = 'none';
+            }
+        }
+
+        async function loadUserScores() {
+            try {
+                const response = await apiRequest(`scores?user_id=${currentSession.userId}&limit=1000`);
+                scores = response.data || [];
+                
+                scores = scores.filter(score => 
+                    score.user_id == currentSession.userId || 
+                    score.userId == currentSession.userId ||
+                    score.student_id == currentSession.userId
+                );
+                
+                console.log('📊 Loaded user scores:', scores.length);
+                
+            } catch (error) {
+                console.error('❌ Failed to load user scores:', error);
+                scores = [];
+            }
+        }
+
+        async function loadDrillsData() {
+            try {
+                console.log('🎯 Loading drills data...');
+                const response = await apiRequest('drills');
+                drills = response.data || [];
+                console.log('🎯 Loaded', drills.length, 'drills');
+                
+                // Try to load diagrams for image support
+                try {
+                    console.log('📷 Loading diagrams for images...');
+                    const diagramResponse = await apiRequest('diagrams');
+                    console.log('📷 Raw diagram response:', diagramResponse);
+                    
+                    // Handle different response structures
+                    let diagrams = null;
+                    if (diagramResponse && diagramResponse.data) {
+                        diagrams = diagramResponse.data;
+                    } else if (diagramResponse && Array.isArray(diagramResponse)) {
+                        diagrams = diagramResponse;
+                    } else if (diagramResponse) {
+                        diagrams = diagramResponse;
+                    }
+                    
+                    console.log('📷 Processed diagrams:', diagrams ? diagrams.length : 'none');
+                    
+                    if (diagrams && Array.isArray(diagrams) && diagrams.length > 0) {
+                        console.log('📷 Sample diagram structure:', diagrams[0]);
+                        
+                        let imagesLinked = 0;
+                        drills = drills.map(drill => {
+                            if (drill.diagram_id) {
+                                const diagram = diagrams.find(d => d.id == drill.diagram_id);
+                                if (diagram) {
+                                    drill.image_url = diagram.image_url || diagram.thumbnail_url;
+                                    if (drill.image_url) {
+                                        imagesLinked++;
+                                        console.log(`📷 Linked image for "${drill.name}": ${drill.image_url}`);
+                                    }
+                                }
+                            }
+                            return drill;
+                        });
+                        
+                        console.log(`📷 Successfully linked ${imagesLinked} drill images`);
+                    } else {
+                        console.log('⚠️ No valid diagrams array found - drills will show placeholder images');
+                    }
+                } catch (diagramError) {
+                    console.warn('⚠️ Could not load diagrams:', diagramError.message);
+                    console.log('⚠️ Drills will display with placeholder images');
+                }
+                
+                console.log('✅ Drills data loading complete. Sample drill:', drills[0] ? {
+                    name: drills[0].name,
+                    id: drills[0].id,
+                    diagram_id: drills[0].diagram_id,
+                    image_url: drills[0].image_url
+                } : 'No drills available');
+                
+            } catch (error) {
+                console.error('❌ Failed to load drills data:', error);
+                drills = [];
+            }
+        }
+
+        // ===== RENDERING FUNCTIONS =====
+        
+        function renderDrillAssignments() {
+            const drillList = document.getElementById('drillAssignmentsList');
+            const drillCount = document.getElementById('drillCount');
+            
+            drillCount.textContent = drillAssignments.length;
+            
+            if (drillAssignments.length === 0) {
+                drillList.innerHTML = `
+                    <div class="empty-assignments">
+                        <div class="icon">🎯</div>
+                        <p>No drill assignments yet.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            console.log('🎨 Rendering', drillAssignments.length, 'drill assignments');
+            console.log('🎯 Available drills data:', drills.length, 'drills loaded');
+            
+            drillList.innerHTML = drillAssignments.map(assignment => {
+                const drillData = drills.find(d => d.id == assignment.drill_id);
+                console.log(`🎨 Rendering assignment for drill ${assignment.drill_id} "${assignment.drill_name}":`, {
+                    drillDataFound: !!drillData,
+                    hasImageUrl: !!(drillData && drillData.image_url),
+                    imageUrl: drillData ? drillData.image_url : 'N/A'
+                });
+                
+                const assignmentScores = getScoresForAssignment(assignment);
+                const attemptCount = assignmentScores.length;
+                
+                let avgScore = 0;
+                let bestScore = 0;
+                
+                if (attemptCount > 0) {
+                    const totalPercentage = assignmentScores.reduce((sum, score) => {
+                        const percentage = parseFloat(score.percentage || 0);
+                        if (percentage > bestScore) {
+                            bestScore = percentage;
+                        }
+                        return sum + percentage;
+                    }, 0);
+                    avgScore = Math.round(totalPercentage / attemptCount);
+                }
+                
+                // Determine status
+                let statusInfo = '';
+                let statusClass = '';
+                
+                if (assignment.is_completed) {
+                    statusClass = 'completed';
+                    statusInfo = `<div class="assignment-status-info completed">✅ Completed • Assigned: ${new Date(assignment.assigned_date).toLocaleDateString()}</div>`;
+                } else if (assignment.due_date) {
+                    const dueDate = new Date(assignment.due_date);
+                    const now = new Date();
+                    const timeDiff = dueDate.getTime() - now.getTime();
+                    const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
+                    
+                    if (daysDiff < 0) {
+                        statusClass = 'overdue';
+                        statusInfo = `<div class="assignment-status-info overdue">⚠️ Overdue by ${Math.abs(daysDiff)} days • Due: ${dueDate.toLocaleDateString()}</div>`;
+                    } else if (daysDiff <= 3) {
+                        statusClass = 'due-soon';
+                        statusInfo = `<div class="assignment-status-info due-soon">⏰ Due in ${daysDiff} days • Due: ${dueDate.toLocaleDateString()}</div>`;
+                    } else {
+                        statusInfo = `<div class="assignment-status-info">📋 Assigned: ${new Date(assignment.assigned_date).toLocaleDateString()} • Due: ${dueDate.toLocaleDateString()}</div>`;
+                    }
+                } else {
+                    statusInfo = `<div class="assignment-status-info">📋 Assigned: ${new Date(assignment.assigned_date).toLocaleDateString()} • No due date</div>`;
+                }
+                
+                // Create thumbnail with proper image handling (matching drill-app.html)
+                let thumbnailContent = '';
+                if (drillData && drillData.image_url) {
+                    console.log(`✅ Using real image for "${assignment.drill_name}": ${drillData.image_url}`);
+                    thumbnailContent = `
+                        <div class="item-thumbnail">
+                            <img src="${drillData.image_url}" alt="${escapeHtml(assignment.drill_name)}" 
+                                 onload="console.log('✅ Image loaded successfully: ${assignment.drill_name}')"
+                                 onerror="console.log('❌ Image failed to load: ${assignment.drill_name} - ${drillData.image_url}'); this.parentElement.classList.add('no-image'); this.style.display='none';">
+                        </div>
+                    `;
+                } else {
+                    console.log(`⚠️ No image available for "${assignment.drill_name}" (drill_id: ${assignment.drill_id}) - using placeholder`);
+                    thumbnailContent = `<div class="item-thumbnail no-image" title="No image available for this drill"></div>`;
+                }
+                
+                // Create coach comments section
+                const coachComments = assignment.coach_comments ? 
+                    `<div class="drill-description"><strong>Coach Notes:</strong> ${escapeHtml(assignment.coach_comments)}</div>` : 
+                    `<div class="drill-description">${assignment.drill_description || 'Practice this assigned drill to improve your billiards skills.'}</div>`;
+                
+                return `
+                    <div class="assignment-card" onclick="openDrillDetailPage(${assignment.drill_id})">
+                        ${thumbnailContent}
+                        <div class="item-content">
+                            <div class="item-name">${escapeHtml(assignment.drill_name)}</div>
+                            <div class="item-tags">
+                                <span class="item-tag tag-category">${escapeHtml(assignment.category_display)}</span>
+                                <span class="item-tag tag-skill">${escapeHtml(assignment.skill_display)}</span>
+                                <span class="item-tag tag-assigned">ASSIGNED</span>
+                            </div>
+                            ${coachComments}
+                            <div class="drill-meta">
+                                Max Score: ${assignment.max_score} | Attempts: ${attemptCount}
+                                ${attemptCount > 0 ? ` | Your Best: ${Math.round(bestScore)}%` : ' | No attempts yet'}
+                            </div>
+                            ${statusInfo}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            console.log('✅ Drill assignments rendering complete');
+        }
+
+        function renderContentAssignments() {
+            const contentList = document.getElementById('contentAssignmentsList');
+            const contentCount = document.getElementById('contentCount');
+            
+            contentCount.textContent = contentAssignments.length;
+            
+            if (contentAssignments.length === 0) {
+                contentList.innerHTML = `
+                    <div class="empty-assignments">
+                        <div class="icon">📚</div>
+                        <p>No training content assignments yet.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            contentList.innerHTML = contentAssignments.map(assignment => {
+                // Determine status
+                let statusInfo = '';
+                let statusClass = '';
+                
+                if (assignment.is_completed) {
+                    statusClass = 'completed';
+                    statusInfo = `<div class="assignment-status-info completed">✅ Completed • Assigned: ${new Date(assignment.assigned_date).toLocaleDateString()}</div>`;
+                } else if (assignment.due_date) {
+                    const dueDate = new Date(assignment.due_date);
+                    const now = new Date();
+                    const timeDiff = dueDate.getTime() - now.getTime();
+                    const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
+                    
+                    if (daysDiff < 0) {
+                        statusClass = 'overdue';
+                        statusInfo = `<div class="assignment-status-info overdue">⚠️ Overdue by ${Math.abs(daysDiff)} days • Due: ${dueDate.toLocaleDateString()}</div>`;
+                    } else if (daysDiff <= 3) {
+                        statusClass = 'due-soon';
+                        statusInfo = `<div class="assignment-status-info due-soon">⏰ Due in ${daysDiff} days • Due: ${dueDate.toLocaleDateString()}</div>`;
+                    } else {
+                        statusInfo = `<div class="assignment-status-info">📋 Assigned: ${new Date(assignment.assigned_date).toLocaleDateString()} • Due: ${dueDate.toLocaleDateString()}</div>`;
+                    }
+                } else {
+                    statusInfo = `<div class="assignment-status-info">📋 Assigned: ${new Date(assignment.assigned_date).toLocaleDateString()} • No due date</div>`;
+                }
+                
+                // Create coach comments or description
+                const contentDescription = assignment.coach_comments ? 
+                    `<div class="drill-description"><strong>Coach Notes:</strong> ${escapeHtml(assignment.coach_comments)}</div>` : 
+                    `<div class="drill-description">${assignment.content_description || 'Review this training content to enhance your billiards knowledge.'}</div>`;
+                
+                return `
+                    <div class="assignment-card" onclick="viewContentAssignment(${assignment.content_id}, '${escapeHtml(assignment.content_name)}', '${assignment.file_url || assignment.external_url || ''}')">
+                        <div class="item-thumbnail no-image content" title="Training content"></div>
+                        <div class="item-content">
+                            <div class="item-name">${escapeHtml(assignment.content_name)}</div>
+                            <div class="item-tags">
+                                <span class="item-tag tag-category">${escapeHtml(assignment.category_display)}</span>
+                                <span class="item-tag tag-skill">${escapeHtml(assignment.skill_display)}</span>
+                                <span class="item-tag tag-assigned">ASSIGNED</span>
+                            </div>
+                            ${contentDescription}
+                            <div class="drill-meta">
+                                Type: ${escapeHtml(assignment.content_type).toUpperCase()}
+                                ${assignment.difficulty_level ? ` | Level: ${assignment.difficulty_level}` : ''}
+                                ${assignment.file_size ? ` | Size: ${assignment.file_size}` : ''}
+                            </div>
+                            ${statusInfo}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function getScoresForAssignment(assignment) {
+            if (!assignment.assigned_date) return [];
+            
+            const assignmentDate = new Date(assignment.assigned_date);
+            assignmentDate.setHours(0, 0, 0, 0);
+            
+            return scores.filter(score => {
+                const scoreUserId = score.user_id || score.userId || score.student_id;
+                const isCorrectUser = scoreUserId == currentSession.userId;
+                
+                if (!isCorrectUser) return false;
+                
+                const isCorrectDrill = score.drill_id == assignment.drill_id;
+                if (!isCorrectDrill) return false;
+                
+                const scoreDateStr = score.submitted_at || score.practice_date;
+                if (!scoreDateStr) return false;
+                
+                const scoreDate = new Date(scoreDateStr);
+                scoreDate.setHours(0, 0, 0, 0);
+                
+                return scoreDate >= assignmentDate;
+            });
+        }
+
+        function calculateAndDisplayStats() {
+            const totalAssignments = drillAssignments.length + contentAssignments.length;
+            const completedAssignments = drillAssignments.filter(a => a.is_completed).length + 
+                                        contentAssignments.filter(a => a.is_completed).length;
+            
+            let totalAttempts = 0;
+            let totalScore = 0;
+            let scoreCount = 0;
+            
+            drillAssignments.forEach(assignment => {
+                const assignmentScores = getScoresForAssignment(assignment);
+                totalAttempts += assignmentScores.length;
+                
+                assignmentScores.forEach(score => {
+                    const percentage = parseFloat(score.percentage || 0);
+                    totalScore += percentage;
+                    scoreCount++;
+                });
+            });
+            
+            const overallAverage = scoreCount > 0 ? Math.round(totalScore / scoreCount) : 0;
+            
+            // Update UI
+            document.getElementById('totalAssignments').textContent = totalAssignments;
+            document.getElementById('completedAssignments').textContent = completedAssignments;
+            document.getElementById('totalAttempts').textContent = totalAttempts;
+            document.getElementById('overallAverage').textContent = overallAverage + '%';
+            
+            // Apply color classes to average
+            const avgElement = document.getElementById('overallAverage');
+            avgElement.className = 'stat-value';
+            if (overallAverage >= 80) {
+                avgElement.classList.add('score-excellent');
+            } else if (overallAverage >= 60) {
+                avgElement.classList.add('score-good');
+            } else if (overallAverage > 0) {
+                avgElement.classList.add('score-needs-work');
+            }
+        }
+
+        // ===== ACTION FUNCTIONS =====
+        
+        function openDrillDetailPage(drillId) {
+            console.log('🎯 Opening drill detail page for ID:', drillId);
+            
+            // Build URL with user parameters for seamless experience (matching drill-app.html)
+            const urlParams = new URLSearchParams(window.location.search);
+            const userParam = urlParams.get('user');
+            const portalParam = 'student'; // We know this is from student assignments
+            
+            let detailUrl = `drill-detail.html?drill_id=${drillId}`;
+            
+            if (portalParam) {
+                detailUrl += `&portal=${portalParam}`;
+            }
+            if (userParam) {
+                detailUrl += `&user=${userParam}`;
+            }
+            
+            // Add assignment context if available
+            const assignment = drillAssignments.find(a => a.drill_id == drillId);
+            if (assignment) {
+                detailUrl += `&assignment_id=${assignment.id}`;
+            }
+            
+            console.log('🔗 Navigating to drill detail:', detailUrl);
+            
+            // Navigate to the drill detail page (same as drill app)
+            window.location.href = detailUrl;
+        }
+
+        function viewContentAssignment(contentId, contentName, url) {
+            console.log('📚 Viewing content assignment:', contentId, contentName, url);
+            
+            if (url && url.trim() !== '') {
+                // Direct URL - open in new tab
+                console.log('🔗 Opening direct URL:', url);
+                window.open(url, '_blank');
+            } else {
+                // Use content display page
+                console.log('👁️ Opening content display page for content ID:', contentId);
+                const contentDisplayUrl = `training-content-display.html?content_id=${contentId}`;
+                const popup = window.open(contentDisplayUrl, `contentView_${contentId}`, 'width=1000,height=800,scrollbars=yes,resizable=yes');
+                
+                if (!popup) {
+                    alert('Popup blocked! Please allow popups for this site and try again.');
+                    return;
+                }
+                
+                popup.focus();
+            }
+            
+            // Mark as viewed/completed
+            setTimeout(() => {
+                markContentComplete(contentId);
+            }, 2000); // Auto-mark complete after 2 seconds of viewing
+        }
+
+        async function markContentComplete(assignmentId) {
+            try {
+                console.log('✅ Marking content assignment as complete:', assignmentId);
+                
+                await apiRequest(`content-assignments/${assignmentId}`, 'PUT', {
+                    is_completed: 1,
+                    completion_date: new Date().toISOString()
+                });
+                
+                showSuccess('Content assignment marked as complete!');
+                await loadContentAssignments();
+                calculateAndDisplayStats();
+                
+            } catch (error) {
+                console.error('❌ Failed to mark content complete:', error);
+                showError('Failed to mark content as complete: ' + error.message);
+            }
+        }
+
+        async function refreshAll() {
+            try {
+                document.getElementById('loadingState').style.display = 'block';
+                document.getElementById('mainContent').style.display = 'none';
+                
+                await loadAllAssignments();
+                
+                document.getElementById('loadingState').style.display = 'none';
+                document.getElementById('mainContent').style.display = 'block';
+                
+                showSuccess('All assignments refreshed successfully!');
+                
+            } catch (error) {
+                console.error('❌ Error refreshing assignments:', error);
+                showError('Failed to refresh assignments: ' + error.message);
+                
+                document.getElementById('loadingState').style.display = 'none';
+                document.getElementById('mainContent').style.display = 'block';
+            }
+        }
+
+        // ===== INITIALIZATION =====
+        
+        // Debug function to check drill and diagram loading
+        function debugDrillImages() {
+            console.log('🔍 === STUDENT ASSIGNMENTS - DRILL IMAGE DEBUG ===');
+            console.log('Total drills loaded:', drills.length);
+            console.log('Drills with diagram_id:', drills.filter(d => d.diagram_id).length);
+            console.log('Drills with image_url:', drills.filter(d => d.image_url).length);
+            console.log('Total drill assignments:', drillAssignments.length);
+            
+            // Show sample drill data
+            if (drills.length > 0) {
+                console.log('Sample drill:', {
+                    name: drills[0].name,
+                    id: drills[0].id,
+                    diagram_id: drills[0].diagram_id,
+                    image_url: drills[0].image_url
+                });
+            }
+            
+            // Show drills with images
+            const drillsWithImages = drills.filter(d => d.image_url);
+            if (drillsWithImages.length > 0) {
+                console.log('Sample drill with image:', {
+                    name: drillsWithImages[0].name,
+                    id: drillsWithImages[0].id,
+                    image_url: drillsWithImages[0].image_url
+                });
+            }
+            
+            // Check assignment-drill mapping
+            if (drillAssignments.length > 0) {
+                const firstAssignment = drillAssignments[0];
+                const matchingDrill = drills.find(d => d.id == firstAssignment.drill_id);
+                console.log('First assignment drill mapping:', {
+                    assignmentDrillId: firstAssignment.drill_id,
+                    assignmentDrillName: firstAssignment.drill_name,
+                    matchingDrillFound: !!matchingDrill,
+                    matchingDrillHasImage: !!(matchingDrill && matchingDrill.image_url),
+                    imageUrl: matchingDrill ? matchingDrill.image_url : 'N/A'
+                });
+            }
+            
+            return {
+                totalDrills: drills.length,
+                drillsWithDiagrams: drills.filter(d => d.diagram_id).length,
+                drillsWithImages: drills.filter(d => d.image_url).length,
+                totalAssignments: drillAssignments.length,
+                sampleDrill: drills[0] || null,
+                sampleAssignment: drillAssignments[0] || null
+            };
+        }
+        
+        // Make debug function globally available
+        window.debugDrillImages = debugDrillImages;
+        
+        async function initializeApp() {
+            console.log('📄 Initializing student assignments application...');
+            try {
+                console.log('📋 Step 1: Loading session...');
+                if (!loadSession()) {
+                    return;
+                }
+                
+                console.log('📋 Step 2: Loading all assignment data (in sequence)...');
+                await loadAllAssignments();
+                
+                console.log('✅ Student assignments application initialized successfully');
+                console.log('🔍 Debug: Run debugDrillImages() in console to check image loading');
+                
+                // Show main content
+                document.getElementById('loadingState').style.display = 'none';
+                document.getElementById('mainContent').style.display = 'block';
+                
+                // Run debug function automatically in development
+                if (window.location.hostname === 'localhost' || window.location.hostname.includes('dev')) {
+                    setTimeout(() => {
+                        debugDrillImages();
+                    }, 1000);
+                }
+                
+            } catch (error) {
+                console.error('❌ Failed to initialize application:', error);
+                showError('Failed to initialize application: ' + error.message);
+                
+                document.getElementById('loadingState').style.display = 'none';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🎯 Student Assignments Loaded - Version 3.1 - Drill App Style');
+            console.log('📡 API URL:', API_BASE_URL);
+            console.log('🎱 Click any assignment tile to practice!');
+            
+            // Update current date/time
+            updateDateTime();
+            setInterval(updateDateTime, 30000);
+            
+            setTimeout(() => {
+                initializeApp();
+            }, 100);
+        });
+
+        // Auto-refresh when window gains focus
+        window.addEventListener('focus', function() {
+            if (currentSession) {
+                console.log('🔄 Window gained focus - scheduling refresh...');
+                setTimeout(() => {
+                    refreshAll();
+                }, 500);
+            }
+        });
+    </script>
+</body>
+</html>

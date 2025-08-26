@@ -610,7 +610,7 @@
             <div class="login-info">
                 <strong>Student Access</strong><br>
                 Use your registered email address to access your training dashboard
-                <br><small style="color: #999; margin-top: 10px; display: block;">Version 3.2 - Training Programs Integration</small>
+                <br><small style="color: #999; margin-top: 10px; display: block;">Version 3.2 - Enhanced Assignments</small>
             </div>
         </div>
 
@@ -680,20 +680,8 @@
                 <div class="dashboard-card training-programs-card" onclick="openMyTrainingPrograms()">
                     <span class="card-icon">📚</span>
                     <h3 class="card-title">My Training Programs</h3>
-                    <p class="card-description">View your assigned training programs and track your progress through structured learning paths</p>
+                    <p class="card-description">View your assigned training programs</p>
                     <div class="new-feature-badge">NEW</div>
-                    
-                    <!-- Progress Summary (optional) -->
-                    <div class="progress-summary" id="programsProgress" style="display: none;">
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-                            <span>Overall Progress</span>
-                            <span id="overallProgressText">0%</span>
-                        </div>
-                        <div class="progress-bar">
-                            <div class="progress-fill" id="overallProgressBar" style="width: 0%"></div>
-                        </div>
-                        <small id="programsSummary">No programs assigned yet</small>
-                    </div>
                 </div>
 
                 <!-- Training Journal Button -->
@@ -717,11 +705,11 @@
                     <p class="card-description" style="color: white;">View your personalized training schedule</p>
                 </div>
 
-                <!-- Assignments Card -->
+                <!-- UPDATED: Assignments Card -->
                 <div id="assignmentsCard" class="dashboard-card" onclick="openAssignments()" style="background: linear-gradient(135deg, #fd7e14 0%, #ff6b6b 100%); color: white;">
                     <span class="card-icon">📋</span>
                     <h3 class="card-title" style="color: white;">My Assignments</h3>
-                    <p class="card-description" style="color: white;">View drills assigned by your coach</p>
+                    <p class="card-description" style="color: white;">View drills and content assigned by your coach</p>
                 </div>
 
                 <!-- Live Coaching Card -->
@@ -980,29 +968,42 @@
                     score.student_id == currentSession.userId
                 );
                 
-                // Load user's assignments with explicit user filtering
-                const assignmentsResponse = await apiRequest(`assignments?user_id=${currentSession.userId}`);
-                let assignments = assignmentsResponse.data || assignmentsResponse || [];
+                // Load user's drill assignments with explicit user filtering
+                const drillAssignmentsResponse = await apiRequest(`assignments?user_id=${currentSession.userId}`);
+                let drillAssignments = drillAssignmentsResponse.data || drillAssignmentsResponse || [];
                 
-                // Additional client-side filtering for assignments
-                assignments = assignments.filter(assignment => 
+                // Load user's content assignments with explicit user filtering
+                const contentAssignmentsResponse = await apiRequest(`content-assignments?user_id=${currentSession.userId}`);
+                let contentAssignments = contentAssignmentsResponse.data || contentAssignmentsResponse || [];
+                
+                // Additional client-side filtering for both types of assignments
+                drillAssignments = drillAssignments.filter(assignment => 
+                    assignment.user_id == currentSession.userId || 
+                    assignment.userId == currentSession.userId ||
+                    assignment.student_id == currentSession.userId
+                );
+                
+                contentAssignments = contentAssignments.filter(assignment => 
                     assignment.user_id == currentSession.userId || 
                     assignment.userId == currentSession.userId ||
                     assignment.student_id == currentSession.userId
                 );
                 
                 // Filter for active assignments only
-                const activeAssignments = assignments.filter(assignment => assignment.is_active == 1);
+                const activeDrillAssignments = drillAssignments.filter(assignment => assignment.is_active == 1);
+                const activeContentAssignments = contentAssignments.filter(assignment => assignment.is_active == 1);
+                const totalActiveAssignments = activeDrillAssignments.length + activeContentAssignments.length;
                 
                 console.log('📊 Filtered scores for user:', scores.length);
-                console.log('📊 Filtered assignments for user:', assignments.length);
-                console.log('📊 Active assignments for user:', activeAssignments.length);
+                console.log('📊 Filtered drill assignments for user:', drillAssignments.length);
+                console.log('📊 Filtered content assignments for user:', contentAssignments.length);
+                console.log('📊 Total active assignments for user:', totalActiveAssignments);
                 
                 // Calculate stats - only for this user's data
                 const totalScores = scores.length;
                 const avgScore = scores.length > 0 ? 
                     Math.round(scores.reduce((sum, score) => sum + parseFloat(score.percentage || score.score || 0), 0) / scores.length) : 0;
-                const assignedDrillsCount = assignments.length;
+                const assignedDrillsCount = drillAssignments.length + contentAssignments.length;
                 
                 // Count recent activity (last week) - only this user's scores
                 const oneWeekAgo = new Date();
@@ -1019,14 +1020,14 @@
                 document.getElementById('recentActivity').textContent = recentScores;
                 
                 // Update assignments card based on active assignments
-                updateAssignmentsCard(activeAssignments.length);
+                updateAssignmentsCard(totalActiveAssignments);
                 
                 console.log('📊 User-specific stats loaded:', { 
                     userId: currentSession.userId,
                     totalScores, 
                     avgScore, 
                     assignedDrillsCount, 
-                    activeAssignments: activeAssignments.length,
+                    activeAssignments: totalActiveAssignments,
                     recentScores 
                 });
                 
@@ -1372,9 +1373,9 @@
             }, 100);
         }
 
-        // ASSIGNMENTS FUNCTION
+        // UPDATED: ASSIGNMENTS FUNCTION
         function openAssignments() {
-            console.log('📋 Opening assignments...');
+            console.log('📋 Opening enhanced assignments...');
             
             if (!currentSession) {
                 alert('Please login first to access your assignments.');
@@ -1396,9 +1397,9 @@
                 type: currentSession.type
             }));
             
-            // Open assignments page with user data
-            const assignmentsUrl = `student-drill-assignments.html?user=${userData}&t=${Date.now()}`;
-            console.log('🌐 Opening assignments page');
+            // Open enhanced assignments page with user data
+            const assignmentsUrl = `student-assignments.html?user=${userData}&t=${Date.now()}`;
+            console.log('🌐 Opening enhanced assignments page');
             
             // Small delay to ensure session is available
             setTimeout(() => {
@@ -1456,7 +1457,7 @@
 
         // Check for existing session on page load
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('🚀 Student Portal DOM Loaded - Version 3.2');
+            console.log('🚀 Student Portal DOM Loaded - Version 3.2 Enhanced Assignments');
             
             try {
                 const savedSession = sessionStorage.getItem('studentSession');
@@ -1509,7 +1510,7 @@
             document.addEventListener(event, resetInactivityTimer, true);
         });
 
-        console.log('🎱 Student Portal v3.2 - Training Programs Integration');
+        console.log('🎱 Student Portal v3.2 - Enhanced Assignments');
         console.log('📡 API URL:', API_BASE_URL);
     </script>
 </body>
