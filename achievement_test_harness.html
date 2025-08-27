@@ -1,0 +1,1187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Achievement API Test Harness</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .config-section {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .config-section h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        input[type="text"], input[type="url"], input[type="number"], input[type="color"], textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+            font-family: inherit;
+        }
+
+        input[type="text"]:focus, input[type="url"]:focus, input[type="number"]:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        input[type="color"] {
+            height: 50px;
+            padding: 5px;
+            cursor: pointer;
+        }
+
+        .test-section {
+            margin-bottom: 40px;
+            border: 2px solid #e9ecef;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+        .test-header {
+            background: linear-gradient(135deg, #343a40, #495057);
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .test-header h3 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 0;
+        }
+
+        .test-content {
+            padding: 25px;
+        }
+
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .test-item {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 10px;
+            padding: 20px;
+            transition: all 0.3s;
+        }
+
+        .test-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .test-item h4 {
+            color: #495057;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #28a745, #20c997);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #dc3545, #e83e8c);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #ffc107, #fd7e14);
+        }
+
+        .btn-info {
+            background: linear-gradient(135deg, #17a2b8, #6f42c1);
+        }
+
+        .btn-small {
+            padding: 8px 15px;
+            font-size: 14px;
+        }
+
+        .btn-large {
+            font-size: 18px;
+            padding: 15px 30px;
+        }
+
+        .result-box {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 14px;
+            white-space: pre-wrap;
+            max-height: 350px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            transition: all 0.3s;
+        }
+
+        .result-success {
+            background: #d4edda;
+            color: #155724;
+            border-color: #c3e6cb;
+        }
+
+        .result-error {
+            background: #f8d7da;
+            color: #721c24;
+            border-color: #f5c6cb;
+        }
+
+        .result-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border-color: #bee5eb;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+            transition: all 0.3s;
+        }
+
+        .status-pending {
+            background: #ffc107;
+            box-shadow: 0 0 10px rgba(255, 193, 7, 0.5);
+        }
+
+        .status-success {
+            background: #28a745;
+            box-shadow: 0 0 10px rgba(40, 167, 69, 0.5);
+        }
+
+        .status-error {
+            background: #dc3545;
+            box-shadow: 0 0 10px rgba(220, 53, 69, 0.5);
+        }
+
+        .test-all-btn {
+            background: linear-gradient(135deg, #17a2b8, #6610f2);
+            font-size: 18px;
+            padding: 15px 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        .form-section {
+            background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+            border: 2px solid #ffeaa7;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+
+        .form-section h4 {
+            color: #856404;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .level-input {
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+        }
+
+        .level-input:hover {
+            border-color: #667eea;
+        }
+
+        .level-input input {
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        .level-input input:last-of-type {
+            margin-bottom: 15px;
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .connection-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-left: 15px;
+            font-weight: 600;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .endpoint-url {
+            background: #f1f3f4;
+            padding: 8px 12px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 13px;
+            color: #666;
+            margin-top: 5px;
+            border-left: 3px solid #667eea;
+        }
+
+        .quick-links {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .data-display {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .data-display h5 {
+            margin-bottom: 10px;
+            color: #495057;
+        }
+
+        .data-item {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 8px;
+        }
+
+        .data-item:last-child {
+            margin-bottom: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏆 Achievement API Test Harness</h1>
+            <p>Complete testing suite for your newly integrated achievement endpoints</p>
+        </div>
+
+        <div class="content">
+            <!-- Configuration Section -->
+            <div class="config-section">
+                <h3>⚙️ Configuration</h3>
+                <div class="form-group">
+                    <label for="apiBase">API Base URL:</label>
+                    <input type="url" id="apiBase" value="drill-api.php" placeholder="e.g., https://yoursite.com/drill-api.php">
+                </div>
+                <div class="quick-links">
+                    <button class="btn btn-info" onclick="testConnection()">🔗 Test Connection</button>
+                    <button class="btn btn-success" onclick="runQuickTests()">⚡ Quick Test</button>
+                    <button class="btn test-all-btn" onclick="runAllTests()">🚀 Run All Tests</button>
+                </div>
+                <div id="connectionResult"></div>
+            </div>
+
+            <!-- Achievement Types Tests -->
+            <div class="test-section">
+                <div class="test-header">
+                    <h3>📊 Achievement Types API</h3>
+                    <span class="status-indicator status-pending" id="achievement-types-status"></span>
+                </div>
+                <div class="test-content">
+                    <div class="test-grid">
+                        <div class="test-item">
+                            <h4>🗂️ Get All Achievement Types</h4>
+                            <div class="endpoint-url">GET /achievement-types</div>
+                            <button class="btn btn-small" onclick="testGetAchievementTypes()">Test Endpoint</button>
+                            <div class="result-box" id="achievement-types-result" style="display: none;"></div>
+                        </div>
+                        <div class="test-item">
+                            <h4>🔍 Get Specific Achievement Type</h4>
+                            <div class="endpoint-url">GET /achievement-types/{id}</div>
+                            <input type="number" id="achievementTypeId" placeholder="Achievement Type ID" value="3">
+                            <button class="btn btn-small" onclick="testGetAchievementType()">Test Endpoint</button>
+                            <div class="result-box" id="achievement-type-result" style="display: none;"></div>
+                        </div>
+                    </div>
+                    <div id="achievementTypesDisplay" class="data-display" style="display: none;">
+                        <h5>Available Achievement Types:</h5>
+                        <div id="achievementTypesList"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Level Names Tests -->
+            <div class="test-section">
+                <div class="test-header">
+                    <h3>🎯 Level Names & Themes API</h3>
+                    <span class="status-indicator status-pending" id="level-names-status"></span>
+                </div>
+                <div class="test-content">
+                    <div class="test-grid">
+                        <div class="test-item">
+                            <h4>📚 Get All Themes</h4>
+                            <div class="endpoint-url">GET /level-names/themes</div>
+                            <button class="btn btn-small" onclick="testGetThemes()">Test Endpoint</button>
+                            <div class="result-box" id="themes-result" style="display: none;"></div>
+                        </div>
+                        <div class="test-item">
+                            <h4>📖 Get Theme Levels</h4>
+                            <div class="endpoint-url">GET /level-names/themes/{name}</div>
+                            <input type="text" id="themeName" placeholder="Theme name" value="martial_arts">
+                            <button class="btn btn-small" onclick="testGetThemeLevels()">Test Endpoint</button>
+                            <div class="result-box" id="theme-levels-result" style="display: none;"></div>
+                        </div>
+                        <div class="test-item">
+                            <h4>✏️ Update Level</h4>
+                            <div class="endpoint-url">PUT /level-names/{id}</div>
+                            <input type="number" id="updateLevelId" placeholder="Level ID" value="1">
+                            <input type="text" id="updateLevelName" placeholder="New name" value="Updated Level">
+                            <button class="btn btn-warning btn-small" onclick="testUpdateLevel()">Test Update</button>
+                            <div class="result-box" id="update-level-result" style="display: none;"></div>
+                        </div>
+                    </div>
+
+                    <div id="themesDisplay" class="data-display" style="display: none;">
+                        <h5>Available Themes:</h5>
+                        <div id="themesList"></div>
+                    </div>
+
+                    <!-- Create New Theme Form -->
+                    <div class="form-section">
+                        <h4>➕ Create New Theme</h4>
+                        <div class="endpoint-url">POST /level-names/themes</div>
+                        
+                        <div class="form-row">
+                            <div>
+                                <label>Theme Name:</label>
+                                <input type="text" id="newThemeName" placeholder="e.g., military_ranks" value="test_theme_" style="width: 100%;">
+                            </div>
+                        </div>
+                        
+                        <label>Levels:</label>
+                        <div id="levelsContainer">
+                            <div class="level-input">
+                                <input type="number" placeholder="Level Number" value="1">
+                                <input type="text" placeholder="Level Name" value="Recruit">
+                                <input type="color" value="#ffffff" title="Display Color">
+                                <input type="text" placeholder="Description (optional)" value="Starting level">
+                            </div>
+                            <div class="level-input">
+                                <input type="number" placeholder="Level Number" value="2">
+                                <input type="text" placeholder="Level Name" value="Private">
+                                <input type="color" value="#ffff00" title="Display Color">
+                                <input type="text" placeholder="Description (optional)" value="Basic training completed">
+                            </div>
+                            <div class="level-input">
+                                <input type="number" placeholder="Level Number" value="3">
+                                <input type="text" placeholder="Level Name" value="Corporal">
+                                <input type="color" value="#00ff00" title="Display Color">
+                                <input type="text" placeholder="Description (optional)" value="Junior leader">
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 20px;">
+                            <button class="btn btn-info" onclick="addLevelInput()">+ Add Level</button>
+                            <button class="btn btn-warning" onclick="generateRandomTheme()">🎲 Random Theme</button>
+                            <button class="btn btn-success" onclick="testCreateTheme()">Create Theme</button>
+                        </div>
+                        <div class="result-box" id="create-theme-result" style="display: none;"></div>
+                    </div>
+
+                    <!-- Danger Zone -->
+                    <div class="form-section" style="background: linear-gradient(135deg, #f8d7da, #f5c6cb); border-color: #f1b2b7;">
+                        <h4 style="color: #721c24;">⚠️ Danger Zone - Destructive Operations</h4>
+                        <div class="test-item">
+                            <h4 style="color: #721c24;">🗑️ Delete Level</h4>
+                            <div class="endpoint-url">DELETE /level-names/{id}</div>
+                            <input type="number" id="deleteLevelId" placeholder="Level ID to delete">
+                            <button class="btn btn-danger btn-small" onclick="testDeleteLevel()">DELETE Level</button>
+                            <div class="result-box" id="delete-level-result" style="display: none;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Raw API Testing -->
+            <div class="test-section">
+                <div class="test-header">
+                    <h3>🔧 Raw API Testing</h3>
+                </div>
+                <div class="test-content">
+                    <div class="form-row">
+                        <div>
+                            <label>Endpoint:</label>
+                            <input type="text" id="customEndpoint" placeholder="e.g., achievement-types" value="achievement-types">
+                        </div>
+                        <div>
+                            <label>Method:</label>
+                            <select id="customMethod" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px;">
+                                <option value="GET">GET</option>
+                                <option value="POST">POST</option>
+                                <option value="PUT">PUT</option>
+                                <option value="DELETE">DELETE</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Request Body (JSON, leave empty for GET):</label>
+                        <textarea id="customBody" placeholder='{"key": "value"}'></textarea>
+                    </div>
+                    
+                    <button class="btn btn-info" onclick="testCustomEndpoint()">🧪 Test Custom Request</button>
+                    <div class="result-box" id="custom-result" style="display: none;"></div>
+                </div>
+            </div>
+
+            <!-- Test Results Summary -->
+            <div class="test-section">
+                <div class="test-header">
+                    <h3>📋 Test Results Summary</h3>
+                </div>
+                <div class="test-content">
+                    <div id="testSummary">
+                        <p style="color: #666; font-style: italic;">Run tests to see results summary</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let testResults = {};
+        let achievementTypesData = [];
+        let themesData = [];
+        
+        function getApiBase() {
+            return document.getElementById('apiBase').value.trim();
+        }
+
+        function showResult(elementId, data, isSuccess = true) {
+            const element = document.getElementById(elementId);
+            element.style.display = 'block';
+            element.className = `result-box ${isSuccess ? 'result-success' : 'result-error'}`;
+            element.textContent = typeof data === 'object' ? JSON.stringify(data, null, 2) : data;
+        }
+
+        function showInfo(elementId, data) {
+            const element = document.getElementById(elementId);
+            element.style.display = 'block';
+            element.className = 'result-box result-info';
+            element.textContent = typeof data === 'object' ? JSON.stringify(data, null, 2) : data;
+        }
+
+        function updateStatus(testName, success) {
+            const statusEl = document.getElementById(testName + '-status');
+            if (statusEl) {
+                statusEl.className = `status-indicator ${success ? 'status-success' : 'status-error'}`;
+            }
+            testResults[testName] = success;
+            updateTestSummary();
+        }
+
+        async function makeApiCall(endpoint, method = 'GET', data = null) {
+            const url = `${getApiBase()}/${endpoint}`;
+            const options = {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            };
+
+            if (data && method !== 'GET') {
+                options.body = JSON.stringify(data);
+            }
+
+            console.log(`Making ${method} request to: ${url}`);
+            if (data) console.log('Request data:', data);
+
+            try {
+                const response = await fetch(url, options);
+                const result = await response.json();
+                
+                console.log(`Response (${response.status}):`, result);
+                
+                return {
+                    success: response.ok,
+                    status: response.status,
+                    data: result
+                };
+            } catch (error) {
+                console.error('API call failed:', error);
+                return {
+                    success: false,
+                    status: 0,
+                    data: { message: 'Network error: ' + error.message }
+                };
+            }
+        }
+
+        // Test Connection
+        async function testConnection() {
+            showInfo('connectionResult', '🔗 Testing API connection...');
+            
+            const response = await makeApiCall('version');
+            
+            if (response.success) {
+                showResult('connectionResult', {
+                    status: '✅ Connected successfully!',
+                    version: response.data.data?.version || 'Unknown',
+                    api_status: response.data.data?.status || 'Unknown',
+                    available_features: Object.keys(response.data.data?.features || {}).length
+                }, true);
+            } else {
+                showResult('connectionResult', {
+                    status: '❌ Connection failed',
+                    error: response.data.message || 'Unknown error',
+                    http_status: response.status,
+                    suggestion: 'Check your API URL and ensure drill-api.php is accessible'
+                }, false);
+            }
+        }
+
+        // Achievement Types Tests
+        async function testGetAchievementTypes() {
+            showInfo('achievement-types-result', '📊 Fetching achievement types...');
+            
+            const response = await makeApiCall('achievement-types');
+            
+            if (response.success) {
+                updateStatus('achievement-types', true);
+                achievementTypesData = response.data.data || [];
+                
+                showResult('achievement-types-result', {
+                    status: '✅ SUCCESS',
+                    endpoint: 'GET /achievement-types',
+                    count: achievementTypesData.length,
+                    data: achievementTypesData
+                }, true);
+                
+                // Update display
+                displayAchievementTypes(achievementTypesData);
+            } else {
+                updateStatus('achievement-types', false);
+                showResult('achievement-types-result', {
+                    status: '❌ ERROR',
+                    endpoint: 'GET /achievement-types',
+                    message: response.data.message,
+                    http_status: response.status,
+                    suggestion: 'Check if wp_drill_achievement_types table exists and has data'
+                }, false);
+            }
+        }
+
+        async function testGetAchievementType() {
+            const typeId = document.getElementById('achievementTypeId').value;
+            if (!typeId) {
+                showResult('achievement-type-result', '⚠️ Please enter an achievement type ID', false);
+                return;
+            }
+
+            showInfo('achievement-type-result', `🔍 Fetching achievement type ${typeId}...`);
+            
+            const response = await makeApiCall(`achievement-types/${typeId}`);
+            
+            if (response.success) {
+                showResult('achievement-type-result', {
+                    status: '✅ SUCCESS',
+                    endpoint: `GET /achievement-types/${typeId}`,
+                    data: response.data.data || {}
+                }, true);
+            } else {
+                showResult('achievement-type-result', {
+                    status: '❌ ERROR',
+                    endpoint: `GET /achievement-types/${typeId}`,
+                    message: response.data.message,
+                    http_status: response.status
+                }, false);
+            }
+        }
+
+        // Level Names Tests
+        async function testGetThemes() {
+            showInfo('themes-result', '📚 Fetching themes...');
+            
+            const response = await makeApiCall('level-names/themes');
+            
+            if (response.success) {
+                updateStatus('level-names', true);
+                themesData = response.data.data || [];
+                
+                showResult('themes-result', {
+                    status: '✅ SUCCESS',
+                    endpoint: 'GET /level-names/themes',
+                    count: themesData.length,
+                    themes: themesData
+                }, true);
+                
+                // Update display
+                displayThemes(themesData);
+            } else {
+                updateStatus('level-names', false);
+                showResult('themes-result', {
+                    status: '❌ ERROR',
+                    endpoint: 'GET /level-names/themes',
+                    message: response.data.message,
+                    http_status: response.status,
+                    suggestion: 'Check if wp_achievement_level_names table exists and has data'
+                }, false);
+            }
+        }
+
+        async function testGetThemeLevels() {
+            const themeName = document.getElementById('themeName').value;
+            if (!themeName) {
+                showResult('theme-levels-result', '⚠️ Please enter a theme name', false);
+                return;
+            }
+
+            showInfo('theme-levels-result', `📖 Fetching levels for theme: ${themeName}...`);
+            
+            const response = await makeApiCall(`level-names/themes/${encodeURIComponent(themeName)}`);
+            
+            if (response.success) {
+                showResult('theme-levels-result', {
+                    status: '✅ SUCCESS',
+                    endpoint: `GET /level-names/themes/${themeName}`,
+                    theme: themeName,
+                    count: response.data.data?.length || 0,
+                    levels: response.data.data || []
+                }, true);
+            } else {
+                showResult('theme-levels-result', {
+                    status: '❌ ERROR',
+                    endpoint: `GET /level-names/themes/${themeName}`,
+                    message: response.data.message,
+                    http_status: response.status,
+                    suggestion: `Theme "${themeName}" may not exist. Try "martial_arts" if you loaded sample data.`
+                }, false);
+            }
+        }
+
+        async function testCreateTheme() {
+            const themeName = document.getElementById('newThemeName').value;
+            if (!themeName) {
+                showResult('create-theme-result', '⚠️ Please enter a theme name', false);
+                return;
+            }
+
+            // Collect level data
+            const levelInputs = document.querySelectorAll('#levelsContainer .level-input');
+            const levels = [];
+
+            levelInputs.forEach(levelInput => {
+                const inputs = levelInput.querySelectorAll('input');
+                const levelNumber = parseInt(inputs[0].value);
+                const levelName = inputs[1].value;
+                const displayColor = inputs[2].value;
+                const description = inputs[3].value;
+
+                if (levelNumber && levelName) {
+                    levels.push({
+                        level_number: levelNumber,
+                        level_name: levelName,
+                        display_color: displayColor || null,
+                        description: description || null,
+                        sort_order: levelNumber
+                    });
+                }
+            });
+
+            if (levels.length === 0) {
+                showResult('create-theme-result', '⚠️ Please add at least one valid level', false);
+                return;
+            }
+
+            showInfo('create-theme-result', `➕ Creating theme "${themeName}" with ${levels.length} levels...`);
+
+            const response = await makeApiCall('level-names/themes', 'POST', {
+                theme_name: themeName,
+                levels: levels
+            });
+
+            if (response.success) {
+                showResult('create-theme-result', {
+                    status: '✅ SUCCESS',
+                    endpoint: 'POST /level-names/themes',
+                    message: response.data.message,
+                    theme_name: themeName,
+                    levels_created: levels.length,
+                    created_levels: levels
+                }, true);
+                
+                // Refresh themes list
+                setTimeout(testGetThemes, 1000);
+            } else {
+                showResult('create-theme-result', {
+                    status: '❌ ERROR',
+                    endpoint: 'POST /level-names/themes',
+                    message: response.data.message,
+                    http_status: response.status,
+                    sent_data: { theme_name: themeName, levels: levels }
+                }, false);
+            }
+        }
+
+        async function testUpdateLevel() {
+            const levelId = document.getElementById('updateLevelId').value;
+            const levelName = document.getElementById('updateLevelName').value;
+            
+            if (!levelId || !levelName) {
+                showResult('update-level-result', '⚠️ Please enter both level ID and new name', false);
+                return;
+            }
+
+            showInfo('update-level-result', `✏️ Updating level ${levelId}...`);
+
+            const response = await makeApiCall(`level-names/${levelId}`, 'PUT', {
+                level_name: levelName,
+                display_color: '#00ff00',
+                description: `Updated via test harness at ${new Date().toLocaleString()}`
+            });
+
+            if (response.success) {
+                showResult('update-level-result', {
+                    status: '✅ SUCCESS',
+                    endpoint: `PUT /level-names/${levelId}`,
+                    message: response.data.message,
+                    level_id: parseInt(levelId),
+                    new_name: levelName
+                }, true);
+            } else {
+                showResult('update-level-result', {
+                    status: '❌ ERROR',
+                    endpoint: `PUT /level-names/${levelId}`,
+                    message: response.data.message,
+                    http_status: response.status
+                }, false);
+            }
+        }
+
+        async function testDeleteLevel() {
+            const levelId = document.getElementById('deleteLevelId').value;
+            
+            if (!levelId) {
+                showResult('delete-level-result', '⚠️ Please enter a level ID', false);
+                return;
+            }
+
+            if (!confirm(`⚠️ Are you sure you want to delete level ${levelId}?\n\nThis will set is_active = 0 (soft delete).`)) {
+                return;
+            }
+
+            showInfo('delete-level-result', `🗑️ Deleting level ${levelId}...`);
+
+            const response = await makeApiCall(`level-names/${levelId}`, 'DELETE');
+
+            if (response.success) {
+                showResult('delete-level-result', {
+                    status: '✅ SUCCESS',
+                    endpoint: `DELETE /level-names/${levelId}`,
+                    message: response.data.message,
+                    level_id: parseInt(levelId)
+                }, true);
+            } else {
+                showResult('delete-level-result', {
+                    status: '❌ ERROR',
+                    endpoint: `DELETE /level-names/${levelId}`,
+                    message: response.data.message,
+                    http_status: response.status
+                }, false);
+            }
+        }
+
+        // Custom API Testing
+        async function testCustomEndpoint() {
+            const endpoint = document.getElementById('customEndpoint').value.trim();
+            const method = document.getElementById('customMethod').value;
+            const bodyText = document.getElementById('customBody').value.trim();
+            
+            if (!endpoint) {
+                showResult('custom-result', '⚠️ Please enter an endpoint', false);
+                return;
+            }
+
+            let requestData = null;
+            if (bodyText && method !== 'GET') {
+                try {
+                    requestData = JSON.parse(bodyText);
+                } catch (e) {
+                    showResult('custom-result', `⚠️ Invalid JSON in request body: ${e.message}`, false);
+                    return;
+                }
+            }
+
+            showInfo('custom-result', `🧪 Testing ${method} /${endpoint}...`);
+
+            const response = await makeApiCall(endpoint, method, requestData);
+
+            if (response.success) {
+                showResult('custom-result', {
+                    status: '✅ SUCCESS',
+                    endpoint: `${method} /${endpoint}`,
+                    http_status: response.status,
+                    response: response.data
+                }, true);
+            } else {
+                showResult('custom-result', {
+                    status: '❌ ERROR',
+                    endpoint: `${method} /${endpoint}`,
+                    http_status: response.status,
+                    error: response.data
+                }, false);
+            }
+        }
+
+        // Helper Functions
+        function addLevelInput() {
+            const container = document.getElementById('levelsContainer');
+            const levelCount = container.children.length + 1;
+            
+            const levelInput = document.createElement('div');
+            levelInput.className = 'level-input';
+            levelInput.innerHTML = `
+                <input type="number" placeholder="Level Number" value="${levelCount}">
+                <input type="text" placeholder="Level Name" value="">
+                <input type="color" value="#ffffff" title="Display Color">
+                <input type="text" placeholder="Description (optional)">
+                <button type="button" class="btn btn-danger btn-small" onclick="this.parentElement.remove()">🗑️ Remove</button>
+            `;
+            
+            container.appendChild(levelInput);
+        }
+
+        function generateRandomTheme() {
+            const themes = ['space_ranks', 'gaming_levels', 'cooking_skills', 'music_grades', 'sports_levels'];
+            const randomTheme = themes[Math.floor(Math.random() * themes.length)] + '_' + Date.now();
+            document.getElementById('newThemeName').value = randomTheme;
+
+            const levels = [
+                { name: 'Novice', color: '#ffffff', desc: 'Just starting out' },
+                { name: 'Apprentice', color: '#ffff00', desc: 'Learning the basics' },
+                { name: 'Journeyman', color: '#00ff00', desc: 'Developing skills' },
+                { name: 'Expert', color: '#0000ff', desc: 'Highly skilled' },
+                { name: 'Master', color: '#800080', desc: 'Elite level' }
+            ];
+
+            const container = document.getElementById('levelsContainer');
+            container.innerHTML = '';
+
+            levels.forEach((level, index) => {
+                const levelInput = document.createElement('div');
+                levelInput.className = 'level-input';
+                levelInput.innerHTML = `
+                    <input type="number" placeholder="Level Number" value="${index + 1}">
+                    <input type="text" placeholder="Level Name" value="${level.name}">
+                    <input type="color" value="${level.color}" title="Display Color">
+                    <input type="text" placeholder="Description (optional)" value="${level.desc}">
+                    <button type="button" class="btn btn-danger btn-small" onclick="this.parentElement.remove()">🗑️ Remove</button>
+                `;
+                container.appendChild(levelInput);
+            });
+        }
+
+        function displayAchievementTypes(data) {
+            const container = document.getElementById('achievementTypesDisplay');
+            const list = document.getElementById('achievementTypesList');
+            
+            if (data && data.length > 0) {
+                list.innerHTML = '';
+                data.forEach(type => {
+                    const item = document.createElement('div');
+                    item.className = 'data-item';
+                    item.innerHTML = `
+                        <strong>ID ${type.id}:</strong> ${type.display_name} 
+                        <em>(${type.calculation_method})</em><br>
+                        <small>${type.description || 'No description'}</small>
+                    `;
+                    list.appendChild(item);
+                });
+                container.style.display = 'block';
+            } else {
+                container.style.display = 'none';
+            }
+        }
+
+        function displayThemes(data) {
+            const container = document.getElementById('themesDisplay');
+            const list = document.getElementById('themesList');
+            
+            if (data && data.length > 0) {
+                list.innerHTML = '';
+                data.forEach(theme => {
+                    const item = document.createElement('div');
+                    item.className = 'data-item';
+                    item.innerHTML = `
+                        <strong>${theme.theme_name}</strong> 
+                        <em>(${theme.level_count} levels)</em><br>
+                        <small>Created: ${new Date(theme.created_at).toLocaleDateString()}</small>
+                    `;
+                    list.appendChild(item);
+                });
+                container.style.display = 'block';
+            } else {
+                container.style.display = 'none';
+            }
+        }
+
+        async function runQuickTests() {
+            console.log('⚡ Running quick tests...');
+            
+            await testConnection();
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            await testGetAchievementTypes();
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            await testGetThemes();
+        }
+
+        async function runAllTests() {
+            console.log('🚀 Running comprehensive test suite...');
+            
+            // Reset status indicators
+            document.querySelectorAll('.status-indicator').forEach(el => {
+                el.className = 'status-indicator status-pending';
+            });
+            
+            testResults = {};
+
+            // Test connection first
+            await testConnection();
+            await new Promise(resolve => setTimeout(resolve, 800));
+
+            // Test achievement types
+            await testGetAchievementTypes();
+            await new Promise(resolve => setTimeout(resolve, 800));
+            
+            if (achievementTypesData.length > 0) {
+                // Set first available ID for specific test
+                document.getElementById('achievementTypeId').value = achievementTypesData[0].id;
+                await testGetAchievementType();
+                await new Promise(resolve => setTimeout(resolve, 800));
+            }
+
+            // Test level names
+            await testGetThemes();
+            await new Promise(resolve => setTimeout(resolve, 800));
+            
+            if (themesData.length > 0) {
+                // Set first available theme for specific test
+                document.getElementById('themeName').value = themesData[0].theme_name;
+                await testGetThemeLevels();
+                await new Promise(resolve => setTimeout(resolve, 800));
+            }
+
+            console.log('✅ All tests completed!');
+        }
+
+        function updateTestSummary() {
+            const summary = document.getElementById('testSummary');
+            const total = Object.keys(testResults).length;
+            const passed = Object.values(testResults).filter(result => result).length;
+            const failed = total - passed;
+
+            if (total === 0) {
+                summary.innerHTML = '<p style="color: #666; font-style: italic;">Run tests to see results summary</p>';
+                return;
+            }
+
+            const successRate = Math.round((passed/total) * 100);
+            const statusIcon = successRate === 100 ? '🎉' : successRate >= 75 ? '✅' : successRate >= 50 ? '⚠️' : '❌';
+
+            summary.innerHTML = `
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+                    <div style="text-align: center; padding: 20px; background: #f8f9fa; border-radius: 10px;">
+                        <h2 style="color: #2c3e50; margin-bottom: 10px;">${statusIcon} ${successRate}%</h2>
+                        <p>Success Rate</p>
+                    </div>
+                    <div style="text-align: center; padding: 20px; background: #d4edda; border-radius: 10px;">
+                        <h2 style="color: #155724; margin-bottom: 10px;">✅ ${passed}</h2>
+                        <p>Tests Passed</p>
+                    </div>
+                    <div style="text-align: center; padding: 20px; background: #f8d7da; border-radius: 10px;">
+                        <h2 style="color: #721c24; margin-bottom: 10px;">❌ ${failed}</h2>
+                        <p>Tests Failed</p>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 20px;">
+                    <h5 style="margin-bottom: 15px;">Individual Results:</h5>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 10px;">
+                        ${Object.entries(testResults).map(([test, success]) => 
+                            `<div style="padding: 10px; background: ${success ? '#d4edda' : '#f8d7da'}; border-radius: 5px;">
+                                ${success ? '✅' : '❌'} ${test.replace('-', ' ').toUpperCase()}
+                            </div>`
+                        ).join('')}
+                    </div>
+                </div>
+                
+                ${failed > 0 ? `
+                <div style="margin-top: 20px; padding: 15px; background: #fff3cd; border-radius: 8px; border-left: 4px solid #ffc107;">
+                    <h5 style="color: #856404;">💡 Troubleshooting Tips:</h5>
+                    <ul style="margin-top: 10px; color: #856404;">
+                        <li>Make sure you created the database tables first</li>
+                        <li>Verify your API URL is correct</li>
+                        <li>Check that you added the endpoint cases to your PHP switch statement</li>
+                        <li>Look at browser console for detailed error messages</li>
+                        <li>Ensure you have sample data in the tables to test with</li>
+                    </ul>
+                </div>
+                ` : `
+                <div style="margin-top: 20px; padding: 15px; background: #d4edda; border-radius: 8px; border-left: 4px solid #28a745;">
+                    <h5 style="color: #155724;">🎉 All Tests Passed!</h5>
+                    <p style="color: #155724; margin-top: 10px;">Your achievement API integration is working perfectly!</p>
+                </div>
+                `}
+            `;
+        }
+
+        // Auto-setup on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Try to detect the API URL automatically
+            const currentUrl = window.location.href;
+            const baseUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/'));
+            document.getElementById('apiBase').value = baseUrl + '/drill-api.php';
+            
+            // Add unique timestamp to default theme name
+            document.getElementById('newThemeName').value = 'test_theme_' + Date.now();
+            
+            console.log('🏆 Achievement API Test Harness loaded');
+            console.log('📍 Auto-detected API URL:', baseUrl + '/drill-api.php');
+            console.log('💡 Ready to test your achievement endpoints!');
+            
+            // Auto-test connection after a short delay
+            setTimeout(testConnection, 1000);
+        });
+    </script>
+</body>
+</html>

@@ -441,7 +441,18 @@ private function generateFilenameFromId($diagramId, $extension) {
 			} elseif (count($segments) >= 2) {
 				$id = $segments[1];
 			}
-            
+			// Handle special compound endpoints
+			if ($endpoint === 'level-names' && isset($segments[1]) && $segments[1] === 'themes') {
+				if (isset($segments[2])) {
+					// level-names/themes/{theme_name}
+					$endpoint = 'level-names/themes/specific';
+					$id = $segments[2];
+				} else {
+					// level-names/themes
+					$endpoint = 'level-names/themes';
+				}
+			}   
+			
             error_log("API Request: Method=$method, Endpoint=$endpoint, ID=$id");
             
             // Get request data
@@ -535,6 +546,38 @@ private function generateFilenameFromId($diagramId, $extension) {
                     }
                     break;
                     
+				case 'content-assignments':
+					if ($method === 'GET' && $id) {
+						$this->getContentAssignment($id);
+					} elseif ($method === 'GET') {
+						$this->getContentAssignments($_GET);
+					} elseif ($method === 'POST' && !$id) {
+						$this->createContentAssignment($input);
+					} elseif ($method === 'PUT' && $id) {
+						$this->updateContentAssignment($id, $input);
+					} elseif ($method === 'DELETE' && $id) {
+						$this->deleteContentAssignment($id);
+					} elseif ($method === 'POST' && $id && isset($input['_method']) && $input['_method'] === 'DELETE') {
+						$this->deleteContentAssignment($id);
+					} elseif ($method === 'POST' && $id && isset($input['is_active'])) {
+						$this->updateContentAssignment($id, $input);
+					}
+					break;
+				case 'achievement-types':
+					if ($method === 'GET' && $id) {
+						$this->getAchievementType($id);
+					} elseif ($method === 'GET') {
+						$this->getAchievementTypes();
+					}
+					break;
+
+				case 'level-names':
+					if ($method === 'PUT' && $id) {
+						$this->updateLevelName($id, $input);
+					} elseif ($method === 'DELETE' && $id) {
+						$this->deleteLevelName($id);
+					}
+					break;
                 case 'scores':
                     if ($method === 'GET') {
                         $this->getScores($_GET);
@@ -554,7 +597,20 @@ private function generateFilenameFromId($diagramId, $extension) {
 						$this->getDrillStats($_GET);
 					}
 					break;
-                    
+				case 'level-names/themes':
+					if ($method === 'GET') {
+						$this->getLevelNameThemes();
+					} elseif ($method === 'POST') {
+						$this->createLevelNameTheme($input);
+					}
+					break;
+
+				case 'level-names/themes/specific':
+					if ($method === 'GET') {
+						$this->getLevelNameThemeSpecific($id);
+					}
+					break;
+	
                 case 'journal':
                     if ($method === 'GET' && $id) {
                         $this->getJournalEntry($id);
@@ -837,7 +893,7 @@ private function generateFilenameFromId($diagramId, $extension) {
 					break;
 
                 default:
-                    $this->sendError("Endpoint '$endpoint' not found. Available endpoints: login, admin-login, users, categories, skills, drills, assignments, scores, stats, journal, challenge-events, challenge-scoring-methods, challenge-participants, challenge-scores, diagrams, version, debug-blob", 404);
+                    $this->sendError("Endpoint '$endpoint' not found. Available endpoints: login, admin-login, users, categories, skills, drills, assignments, scores, stats, journal, challenge-events, challenge-scoring-methods, challenge-participants, challenge-scores, diagrams, achievement-types, level-names, version, debug-blob", 404);
             }
             
         } catch (Exception $e) {
@@ -3021,6 +3077,282 @@ public function deleteTrainingProgramContent($id) {
         $this->sendError('Failed to delete training program content: ' . $e->getMessage(), 500);
     }
 }
+
+/**
+ * Get a specific content assignment by ID
+ */
+public function getContentAssignment($id) {
+    $stmt = $this->db->prepare("
+        SELECT ca.*, tc.name as content_name, tc.description as content_description,
+               tc.content_type, tc.file_url, tc.external_url, tc.difficulty_level,
+               dc.display_name as category_display,
+               ds.display_name as skill_display,
+               u.display_name as user_name, u.email as user_email,
+               assigner.display_name as assigned_by_name
+        FROM wp_training_content_assignments ca
+        JOIN wp_training_content tc ON ca.content_id = tc.id
+        JOIN wp_drill_categories dc ON tc.category_id = dc.id
+        JOIN wp_drill_skills ds ON tc.skill_id = ds.id
+        JOIN wp_drill_users u ON ca.user_id = u.id
+        JOIN wp_drill_users assigner ON ca.assigned_by = assigner.id
+        WHERE ca.id = ? AND ca.is_active = 1
+    ");
+    
+    $stmt->bind_param('i', $id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
+    if ($assignment = $result->fetch_assoc()) {
+        $this->sendSuccess($assignment);
+    } else {
+        $this->sendError('Content assignment not found', 404);
+    }
+}
+
+/**
+ * Get content assignments with enhanced filtering
+ */
+public function getContentAssignments($params = []) {
+    $where = ["ca.is_active = 1"];
+    $bindings = [];
+    $types = "";
+    
+    if (!empty($params['user_id'])) {
+        $where[] = "ca.user_id = ?";
+        $bindings[] = $params['user_id'];
+        $types .= "i";
+    }
+    
+    if (!empty($params['content_id'])) {
+        $where[] = "ca.content_id = ?";
+        $bindings[] = $params['content_id'];
+        $types .= "i";
+    }
+    
+    if (!empty($params['assigned_by'])) {
+        $where[] = "ca.assigned_by = ?";
+        $bindings[] = $params['assigned_by'];
+        $types .= "i";
+    }
+    
+    if (isset($params['is_completed'])) {
+        $where[] = "ca.is_completed = ?";
+        $bindings[] = $params['is_completed'] ? 1 : 0;
+        $types .= "i";
+    }
+    
+    if (!empty($params['assigned_after'])) {
+        $where[] = "ca.assigned_date >= ?";
+        $bindings[] = $params['assigned_after'];
+        $types .= "s";
+    }
+    
+    if (!empty($params['due_before'])) {
+        $where[] = "ca.due_date <= ?";
+        $bindings[] = $params['due_before'];
+        $types .= "s";
+    }
+    
+    $sql = "SELECT ca.*, tc.name as content_name, tc.description as content_description,
+                   tc.content_type, tc.file_url, tc.external_url, tc.difficulty_level,
+                   dc.display_name as category_display,
+                   ds.display_name as skill_display,
+                   u.display_name as user_name, u.email as user_email,
+                   assigner.display_name as assigned_by_name
+            FROM wp_training_content_assignments ca
+            JOIN wp_training_content tc ON ca.content_id = tc.id
+            JOIN wp_drill_categories dc ON tc.category_id = dc.id
+            JOIN wp_drill_skills ds ON tc.skill_id = ds.id
+            JOIN wp_drill_users u ON ca.user_id = u.id
+            JOIN wp_drill_users assigner ON ca.assigned_by = assigner.id
+            WHERE " . implode(' AND ', $where) . "
+            ORDER BY ca.assigned_date DESC";
+    
+    if (!empty($bindings)) {
+        $stmt = $this->db->prepare($sql);
+        $stmt->bind_param($types, ...$bindings);
+        $stmt->execute();
+        $result = $stmt->get_result();
+    } else {
+        $result = $this->db->query($sql);
+    }
+    
+    $assignments = [];
+    while ($row = $result->fetch_assoc()) {
+        $assignments[] = $row;
+    }
+    
+    $this->sendSuccess($assignments);
+}
+
+/**
+ * Create content assignment
+ */
+public function createContentAssignment($data) {
+    $user_id = $data['user_id'] ?? 0;
+    $content_id = $data['content_id'] ?? 0;
+    $assigned_by = $data['assigned_by'] ?? 0;
+    $due_date = !empty($data['due_date']) ? $data['due_date'] : null;
+    $notes = trim($data['notes'] ?? '');
+    $coach_comments = trim($data['coach_comments'] ?? '');
+    
+    if (!$user_id || !$content_id || !$assigned_by) {
+        $this->sendError('User ID, content ID, and assigned_by are required', 400);
+    }
+    
+    // Verify user exists and is active
+    $userCheck = $this->db->prepare("SELECT id FROM wp_drill_users WHERE id = ? AND is_active = 1");
+    $userCheck->bind_param('i', $user_id);
+    $userCheck->execute();
+    if ($userCheck->get_result()->num_rows === 0) {
+        $this->sendError('User not found or inactive', 404);
+    }
+    
+    // Verify content exists and is active
+    $contentCheck = $this->db->prepare("SELECT id, name FROM wp_training_content WHERE id = ? AND is_active = 1");
+    $contentCheck->bind_param('i', $content_id);
+    $contentCheck->execute();
+    $contentResult = $contentCheck->get_result();
+    if ($contentResult->num_rows === 0) {
+        $this->sendError('Training content not found or inactive', 404);
+    }
+    
+    $content = $contentResult->fetch_assoc();
+    
+    // Check for duplicate active assignment
+    $duplicateCheck = $this->db->prepare("
+        SELECT id FROM wp_training_content_assignments 
+        WHERE user_id = ? AND content_id = ? AND is_active = 1
+    ");
+    $duplicateCheck->bind_param('ii', $user_id, $content_id);
+    $duplicateCheck->execute();
+    if ($duplicateCheck->get_result()->num_rows > 0) {
+        $this->sendError("This training content is already assigned to the user", 409);
+    }
+    
+    $stmt = $this->db->prepare("
+        INSERT INTO wp_training_content_assignments (user_id, content_id, assigned_by, due_date, notes, coach_comments) 
+        VALUES (?, ?, ?, ?, ?, ?)
+    ");
+    $stmt->bind_param('iiisss', $user_id, $content_id, $assigned_by, $due_date, $notes, $coach_comments);
+    
+    if ($stmt->execute()) {
+        $assignment_id = $this->db->insert_id;
+        
+        $this->sendSuccess([
+            'id' => $assignment_id, 
+            'message' => "Training content '{$content['name']}' assigned successfully",
+            'content_name' => $content['name']
+        ]);
+    } else {
+        $this->sendError('Failed to create content assignment: ' . $this->db->error, 500);
+    }
+}
+
+/**
+ * Update content assignment
+ */
+public function updateContentAssignment($id, $data) {
+    $checkStmt = $this->db->prepare("
+        SELECT ca.*, tc.name as content_name, u.display_name as user_name 
+        FROM wp_training_content_assignments ca
+        JOIN wp_training_content tc ON ca.content_id = tc.id
+        JOIN wp_drill_users u ON ca.user_id = u.id
+        WHERE ca.id = ?
+    ");
+    $checkStmt->bind_param('i', $id);
+    $checkStmt->execute();
+    $result = $checkStmt->get_result();
+    
+    if ($result->num_rows === 0) {
+        $this->sendError('Content assignment not found', 404);
+    }
+    
+    $assignment = $result->fetch_assoc();
+    
+    // Handle soft delete
+    if (isset($data['is_active']) && $data['is_active'] == 0) {
+        $stmt = $this->db->prepare("UPDATE wp_training_content_assignments SET is_active = 0 WHERE id = ?");
+        $stmt->bind_param('i', $id);
+        
+        if ($stmt->execute()) {
+            $this->sendSuccess([
+                'message' => "Assignment for '{$assignment['content_name']}' removed successfully"
+            ]);
+        } else {
+            $this->sendError('Failed to remove content assignment: ' . $this->db->error, 500);
+        }
+        return;
+    }
+    
+    // Handle other updates
+    $due_date = !empty($data['due_date']) ? $data['due_date'] : null;
+    $notes = trim($data['notes'] ?? $assignment['notes']);
+    $coach_comments = trim($data['coach_comments'] ?? ($assignment['coach_comments'] ?? ''));
+    $is_completed = isset($data['is_completed']) ? ($data['is_completed'] ? 1 : 0) : $assignment['is_completed'];
+    $completed_date = $is_completed && !$assignment['is_completed'] ? date('Y-m-d H:i:s') : $assignment['completed_date'];
+    
+    $stmt = $this->db->prepare("
+        UPDATE wp_training_content_assignments 
+        SET due_date = ?, notes = ?, coach_comments = ?, is_completed = ?, completed_date = ?
+        WHERE id = ?
+    ");
+    $stmt->bind_param('sssisi', $due_date, $notes, $coach_comments, $is_completed, $completed_date, $id);
+    
+    if ($stmt->execute()) {
+        if ($stmt->affected_rows > 0) {
+            $this->sendSuccess(['message' => 'Content assignment updated successfully']);
+        } else {
+            $this->sendSuccess(['message' => 'No changes made to content assignment']);
+        }
+    } else {
+        $this->sendError('Failed to update content assignment: ' . $this->db->error, 500);
+    }
+}
+
+/**
+ * Delete content assignment
+ */
+public function deleteContentAssignment($id) {
+    $id = (int)$id;
+    
+    if ($id <= 0) {
+        $this->sendError('Invalid content assignment ID', 400);
+    }
+    
+    $checkStmt = $this->db->prepare("
+        SELECT ca.*, tc.name as content_name, u.display_name as user_name 
+        FROM wp_training_content_assignments ca
+        JOIN wp_training_content tc ON ca.content_id = tc.id
+        JOIN wp_drill_users u ON ca.user_id = u.id
+        WHERE ca.id = ? AND ca.is_active = 1
+    ");
+    $checkStmt->bind_param('i', $id);
+    $checkStmt->execute();
+    $result = $checkStmt->get_result();
+    
+    if ($result->num_rows === 0) {
+        $this->sendError('Content assignment not found or already deleted', 404);
+    }
+    
+    $assignment = $result->fetch_assoc();
+    
+    $stmt = $this->db->prepare("UPDATE wp_training_content_assignments SET is_active = 0 WHERE id = ?");
+    $stmt->bind_param('i', $id);
+    
+    if ($stmt->execute()) {
+        if ($stmt->affected_rows > 0) {
+            $this->sendSuccess([
+                'message' => "Assignment for '{$assignment['content_name']}' removed from {$assignment['user_name']} successfully"
+            ]);
+        } else {
+            $this->sendError('Failed to remove content assignment', 500);
+        }
+    } else {
+        $this->sendError('Failed to remove content assignment: ' . $this->db->error, 500);
+    }
+}
+
 
 /**
  * Create the training program assignments table if it doesn't exist
@@ -7726,7 +8058,284 @@ public function deleteDiagram($id) {
             $this->sendError('Debug failed: ' . $e->getMessage(), 500);
         }
     }
-    
+/**
+ * ACHIEVEMENT TYPES MANAGEMENT
+ */
+
+/**
+ * Get all achievement types
+ */
+public function getAchievementTypes() {
+    try {
+        $stmt = $this->db->query("
+            SELECT id, name, display_name, description, calculation_method, is_active 
+            FROM wp_drill_achievement_types 
+            WHERE is_active = 1 
+            ORDER BY name
+        ");
+        
+        if (!$stmt) {
+            throw new Exception('Query failed: ' . $this->db->error);
+        }
+        
+        $achievementTypes = [];
+        while ($row = $stmt->fetch_assoc()) {
+            $achievementTypes[] = $row;
+        }
+        
+        $this->sendSuccess($achievementTypes);
+        
+    } catch (Exception $e) {
+        error_log("getAchievementTypes error: " . $e->getMessage());
+        $this->sendError('Failed to fetch achievement types: ' . $e->getMessage(), 500);
+    }
+}
+
+/**
+ * Get specific achievement type details
+ */
+public function getAchievementType($typeId) {
+    try {
+        $stmt = $this->db->prepare("
+            SELECT id, name, display_name, description, calculation_method, is_active, created_at
+            FROM wp_drill_achievement_types 
+            WHERE id = ? AND is_active = 1
+        ");
+        
+        if (!$stmt) {
+            throw new Exception('Prepare failed: ' . $this->db->error);
+        }
+        
+        $stmt->bind_param('i', $typeId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        if ($achievementType = $result->fetch_assoc()) {
+            $this->sendSuccess($achievementType);
+        } else {
+            $this->sendError('Achievement type not found', 404);
+        }
+        
+    } catch (Exception $e) {
+        error_log("getAchievementType error: " . $e->getMessage());
+        $this->sendError('Failed to fetch achievement type: ' . $e->getMessage(), 500);
+    }
+}
+
+/**
+ * LEVEL NAMES MANAGEMENT
+ */
+
+/**
+ * Get all available themes
+ */
+public function getLevelNameThemes() {
+    try {
+        $stmt = $this->db->query("
+            SELECT DISTINCT theme_name,
+                   COUNT(*) as level_count,
+                   MIN(created_at) as created_at
+            FROM wp_achievement_level_names 
+            WHERE is_active = 1 
+            GROUP BY theme_name 
+            ORDER BY theme_name
+        ");
+        
+        if (!$stmt) {
+            throw new Exception('Query failed: ' . $this->db->error);
+        }
+        
+        $themes = [];
+        while ($row = $stmt->fetch_assoc()) {
+            $themes[] = $row;
+        }
+        
+        $this->sendSuccess($themes);
+        
+    } catch (Exception $e) {
+        error_log("getLevelNameThemes error: " . $e->getMessage());
+        $this->sendError('Failed to fetch themes: ' . $e->getMessage(), 500);
+    }
+}
+
+/**
+ * Get all levels for a specific theme
+ */
+public function getLevelNameThemeSpecific($themeName) {
+    try {
+        $themeName = urldecode($themeName);
+        
+        $stmt = $this->db->prepare("
+            SELECT id, theme_name, level_number, level_name, display_color, 
+                   display_icon, description, sort_order, created_by, created_at
+            FROM wp_achievement_level_names 
+            WHERE theme_name = ? AND is_active = 1 
+            ORDER BY level_number
+        ");
+        
+        if (!$stmt) {
+            throw new Exception('Prepare failed: ' . $this->db->error);
+        }
+        
+        $stmt->bind_param('s', $themeName);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        $levels = [];
+        while ($row = $result->fetch_assoc()) {
+            $levels[] = $row;
+        }
+        
+        $this->sendSuccess($levels);
+        
+    } catch (Exception $e) {
+        error_log("getLevelNameThemeSpecific error: " . $e->getMessage());
+        $this->sendError('Failed to fetch theme levels: ' . $e->getMessage(), 500);
+    }
+}
+
+/**
+ * Create new theme with levels
+ */
+public function createLevelNameTheme($data) {
+    try {
+        // Get user from your existing authentication system
+        // You'll need to replace this with your actual auth method
+        $current_user_id = 1; // Replace with actual user ID from session/auth
+        
+        if (!isset($data['theme_name']) || !isset($data['levels']) || !is_array($data['levels'])) {
+            $this->sendError('Missing required fields: theme_name and levels array', 400);
+            return;
+        }
+        
+        $this->db->begin_transaction();
+        
+        try {
+            // Insert each level in the theme
+            $stmt = $this->db->prepare("
+                INSERT INTO wp_achievement_level_names 
+                (theme_name, level_number, level_name, display_color, display_icon, description, sort_order, created_by) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            ");
+            
+            if (!$stmt) {
+                throw new Exception('Prepare failed: ' . $this->db->error);
+            }
+            
+            foreach ($data['levels'] as $level) {
+                if (!isset($level['level_number']) || !isset($level['level_name'])) {
+                    throw new Exception('Each level must have level_number and level_name');
+                }
+                
+                $stmt->bind_param('sissssis', 
+                    $data['theme_name'],
+                    $level['level_number'],
+                    $level['level_name'],
+                    $level['display_color'] ?? null,
+                    $level['display_icon'] ?? null,
+                    $level['description'] ?? null,
+                    $level['sort_order'] ?? $level['level_number'],
+                    $current_user_id
+                );
+                
+                if (!$stmt->execute()) {
+                    throw new Exception('Failed to insert level: ' . $this->db->error);
+                }
+            }
+            
+            $this->db->commit();
+            
+            $this->sendSuccess([
+                'message' => 'Theme created successfully'
+            ]);
+            
+        } catch (Exception $e) {
+            $this->db->rollback();
+            throw $e;
+        }
+        
+    } catch (Exception $e) {
+        error_log("createLevelNameTheme error: " . $e->getMessage());
+        $this->sendError('Failed to create theme: ' . $e->getMessage(), 500);
+    }
+}
+
+/**
+ * Update level name
+ */
+public function updateLevelName($levelId, $data) {
+    try {
+        $stmt = $this->db->prepare("
+            UPDATE wp_achievement_level_names 
+            SET level_name = ?, display_color = ?, display_icon = ?, description = ?, updated_at = CURRENT_TIMESTAMP
+            WHERE id = ? AND is_active = 1
+        ");
+        
+        if (!$stmt) {
+            throw new Exception('Prepare failed: ' . $this->db->error);
+        }
+		$level_name = $data['level_name'] ?? null;
+		$display_color = $data['display_color'] ?? null;
+		$display_icon = $data['display_icon'] ?? null;
+		$description = $data['description'] ?? null;        
+		$stmt->bind_param('ssssi', 
+			$level_name, 
+			$display_color, 
+			$display_icon, 
+			$description, 
+			$levelId);
+        
+        if (!$stmt->execute()) {
+            throw new Exception('Update failed: ' . $this->db->error);
+        }
+        
+        if ($stmt->affected_rows === 0) {
+            $this->sendError('Level not found or no changes made', 404);
+            return;
+        }
+        
+        $this->sendSuccess(['message' => 'Level updated successfully']);
+        
+    } catch (Exception $e) {
+        error_log("updateLevelName error: " . $e->getMessage());
+        $this->sendError('Failed to update level: ' . $e->getMessage(), 500);
+    }
+}
+
+/**
+ * Delete level name (soft delete)
+ */
+public function deleteLevelName($levelId) {
+    try {
+        // Soft delete - set is_active = 0
+        $stmt = $this->db->prepare("
+            UPDATE wp_achievement_level_names 
+            SET is_active = 0, updated_at = CURRENT_TIMESTAMP
+            WHERE id = ?
+        ");
+        
+        if (!$stmt) {
+            throw new Exception('Prepare failed: ' . $this->db->error);
+        }
+        
+        $stmt->bind_param('i', $levelId);
+        
+        if (!$stmt->execute()) {
+            throw new Exception('Delete failed: ' . $this->db->error);
+        }
+        
+        if ($stmt->affected_rows === 0) {
+            $this->sendError('Level not found', 404);
+            return;
+        }
+        
+        $this->sendSuccess(['message' => 'Level deleted successfully']);
+        
+    } catch (Exception $e) {
+        error_log("deleteLevelName error: " . $e->getMessage());
+        $this->sendError('Failed to delete level: ' . $e->getMessage(), 500);
+    }
+}    
     /**
      * VERSION INFO
      */
@@ -7746,6 +8355,9 @@ public function deleteDiagram($id) {
                 'challenge-scores' => 'Challenge-specific score tracking and submission',
                 'assignment-management' => 'Complete drill assignment system with admin interface',
                 'diagram-management' => 'File-based diagram upload and management with thumbnails',
+				'content-assignments' => 'Training content assignment management system',
+				'achievement-types' => 'Achievement type management for different scoring systems',
+				'level-names' => 'Customizable level naming themes (e.g., martial arts, military ranks)',
 				'training-content-management' => 'File-based training content upload and management with thumbnails'
             ],
             'status' => 'operational',
