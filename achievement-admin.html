@@ -821,7 +821,7 @@
                                    min="1" max="100" required placeholder="1">
                         </div>
                         <div class="form-col">
-                            <label for="targetScore" class="form-label">Target Score:</label>
+                            <label for="targetScore" class="form-label">Target Score <span id="targetScoreUnit"></span>:</label>
                             <input type="number" id="targetScore" name="target_score" class="form-input" 
                                    min="0" placeholder="Target score to achieve this level">
                         </div>
@@ -829,12 +829,12 @@
 
                     <div class="form-row">
                         <div class="form-col">
-                            <label for="minThreshold" class="form-label">Minimum Threshold:</label>
+                            <label for="minThreshold" class="form-label">Minimum Threshold <span id="minThresholdUnit"></span>:</label>
                             <input type="number" id="minThreshold" name="min_threshold" class="form-input" 
                                    min="0" required placeholder="Minimum score for this level">
                         </div>
                         <div class="form-col">
-                            <label for="maxThreshold" class="form-label">Maximum Threshold:</label>
+                            <label for="maxThreshold" class="form-label">Maximum Threshold <span id="maxThresholdUnit"></span>:</label>
                             <input type="number" id="maxThreshold" name="max_threshold" class="form-input" 
                                    min="0" placeholder="Maximum score (leave empty for highest level)">
                         </div>
@@ -896,6 +896,21 @@
         let currentView = 'overview';
         let isEditing = false;
         let editingLevel = null;
+
+        // Utility function to format values based on calculation method
+        function formatValue(value, calculationMethod, includeUnit = true) {
+            if (value === null || value === undefined || value === '') {
+                return '';
+            }
+            
+            const numValue = Math.round(parseFloat(value)); // Remove decimals
+            
+            if (calculationMethod === 'percentage' && includeUnit) {
+                return `${numValue}%`;
+            }
+            
+            return numValue.toString();
+        }
 
         // API Helper Function
         async function apiRequest(endpoint, method = 'GET', data = null) {
@@ -1076,6 +1091,8 @@
                 return;
             }
             
+            const calculationMethod = currentAchievementType?.calculation_method || 'score';
+            
             const levelsHtml = currentLevels.map((level, index) => {
                 // Map API field names to interface expectations
                 const levelName = level.level_name || level.name || 'Unnamed Level';
@@ -1101,11 +1118,15 @@
                     console.log('🎭 Using fallback icon for level:', levelName);
                 }
                 
-                const thresholdText = level.max_threshold 
-                    ? `${level.min_threshold || 0} - ${level.max_threshold}`
-                    : `${level.min_threshold || 0}+`;
+                // Format thresholds with proper units and no decimals
+                const minFormatted = formatValue(level.min_threshold, calculationMethod);
+                const maxFormatted = level.max_threshold ? formatValue(level.max_threshold, calculationMethod) : null;
+                const thresholdText = maxFormatted 
+                    ? `${minFormatted} - ${maxFormatted}`
+                    : `${minFormatted}+`;
                     
-                const targetText = level.target_score ? ` • Target: ${level.target_score}` : '';
+                const targetFormatted = level.target_score ? formatValue(level.target_score, calculationMethod) : null;
+                const targetText = targetFormatted ? ` • Target: ${targetFormatted}` : '';
                 
                 return `
                     <div class="level-item">
@@ -1341,6 +1362,9 @@
             document.getElementById('displayColor').value = '#667eea';
             document.getElementById('colorPreview').style.backgroundColor = '#667eea';
             
+            // Update field labels based on calculation method
+            updateModalFieldLabels();
+            
             document.getElementById('levelModal').style.display = 'block';
         }
 
@@ -1371,14 +1395,30 @@
             document.getElementById('levelAchievementTypeId').value = level.achievement_type_id;
             document.getElementById('levelName').value = level.level_name || level.name || '';
             document.getElementById('levelOrder').value = level.level_number || level.level_order || '';
+            
+            // Set threshold values without formatting (raw numbers for editing)
             document.getElementById('minThreshold').value = level.min_threshold || '';
             document.getElementById('maxThreshold').value = level.max_threshold || '';
             document.getElementById('targetScore').value = level.target_score || '';
+            
             document.getElementById('displayColor').value = level.display_color || '#667eea';
             document.getElementById('displayIcon').value = displayIcon;
             document.getElementById('colorPreview').style.backgroundColor = level.display_color || '#667eea';
             
+            // Update field labels based on calculation method
+            updateModalFieldLabels();
+            
             document.getElementById('levelModal').style.display = 'block';
+        }
+
+        function updateModalFieldLabels() {
+            const calculationMethod = currentAchievementType?.calculation_method || 'score';
+            const isPercentage = calculationMethod === 'percentage';
+            
+            // Update field labels to show units
+            document.getElementById('targetScoreUnit').textContent = isPercentage ? '(%)' : '';
+            document.getElementById('minThresholdUnit').textContent = isPercentage ? '(%)' : '';
+            document.getElementById('maxThresholdUnit').textContent = isPercentage ? '(%)' : '';
         }
 
         function closeLevelModal() {
