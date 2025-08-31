@@ -853,25 +853,10 @@ private function generateFilenameFromId($diagramId, $extension) {
 						$this->debugCredits();
 					}
 					break;
-				case 'achievement-types':
-					if ($method === 'GET' && $id) {
-						$this->getAchievementType($id);
-					} elseif ($method === 'GET') {
-						$this->getAchievementTypes();
-					}
-					break;
 
 				case 'achievement-schemes':
 					if ($method === 'GET') {
 						$this->getAchievementSchemes();
-					}
-					break;
-
-				case 'achievement-levels':
-					if ($method === 'GET' && $id) {
-						$this->getAchievementLevels($id);
-					} else {
-						$this->sendError('Achievement type ID required', 400);
 					}
 					break;
 
@@ -886,7 +871,37 @@ private function generateFilenameFromId($diagramId, $extension) {
 						$this->sendError('POST method required', 405);
 					}
 					break;
+					
+				case 'achievement-types':
+					if ($method === 'GET' && $id) {
+						$this->getAchievementType($id);
+					} elseif ($method === 'GET') {
+						$this->getAchievementTypes();
+					} elseif ($method === 'POST' && !$id) {
+						$this->createAchievementType($input);
+					} elseif ($method === 'PUT' && $id) {
+						$this->updateAchievementType($id, $input);
+					} elseif ($method === 'DELETE' && $id) {
+						$this->deleteAchievementType($id);
+					} else {
+						$this->sendError('Invalid achievement-types request', 400);
+					}
+					break;
 
+				case 'achievement-levels':
+					if ($method === 'GET' && $id) {
+						$this->getAchievementLevels($id);
+					} elseif ($method === 'POST' && !$id) {
+						$this->createAchievementLevel($input);
+					} elseif ($method === 'PUT' && $id) {
+						$this->updateAchievementLevel($id, $input);
+					} elseif ($method === 'DELETE' && $id) {
+						$this->deleteAchievementLevel($id);
+					} else {
+						$this->sendError('Invalid achievement-levels request', 400);
+					}
+					break;					
+					
                 default:
                     $this->sendError("Endpoint '$endpoint' not found. Available endpoints: login, admin-login, users, categories, skills, drills, assignments, scores, stats, journal, challenge-events, challenge-scoring-methods, challenge-participants, challenge-scores, diagrams, version, debug-blob", 404);
             }
@@ -8205,6 +8220,442 @@ public function calculateUserAchievementLevel($userId, $drillId, $userScore = nu
         ]);
     } else {
         $this->sendError('No matching achievement level found', 404);
+    }
+}
+
+/**
+ * Get a specific achievement type by ID
+ */
+public function getAchievementType($id) {
+    try {
+        $stmt = $this->db->prepare("
+            SELECT at.*, 
+                   COUNT(al.id) as level_count
+            FROM wp_achievement_types at
+            LEFT JOIN wp_achievement_levels al ON at.id = al.achievement_type_id
+            WHERE at.id = ? AND at.is_active = 1
+            GROUP BY at.id
+        ");
+        
+        if (!$stmt) {
+            throw new Exception('Prepare failed: ' . $this->db->error);
+        }
+        
+        $stmt->bind_param('i', $id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        if ($achievementType = $result->fetch_assoc()) {
+            $this->sendSuccess($achievementType);
+        } else {
+            $this->sendError('Achievement type not found', 404);
+        }
+        
+    } catch (Exception $e) {
+        error_log("getAchievementType error: " . $e->getMessage());
+        $this->sendError('Failed to load achievement type: ' . $e->getMessage(), 500);
+    }
+}
+
+/**
+ * Create a new achievement type
+ */
+public function createAchievementType($data) {
+    try {
+        $name = trim($data['name'] ?? '');
+        $description = trim($data['description'] ?? '');
+        $calculation_method = $data['calculation_method'] ?? '';
+        
+        // Validation
+        if (empty($name)) {
+            $this->sendError('Achievement type name is required', 400);
+            return;
+        }
+        
+        if (!in_array($calculation_method, ['percentage', 'score'])) {
+            $this->sendError('Valid calculation method (percentage or score) is required', 400);
+            return;
+        }
+        
+        // Check for duplicate name
+        $duplicateCheck = $this->db->prepare("SELECT id FROM wp_achievement_types WHERE name = ? AND is_active = 1");
+        $duplicateCheck->bind_param('s', $name);
+        $duplicateCheck->execute();
+        if ($duplicateCheck->get_result()->num_rows > 0) {
+            $this->sendError('An achievement type with this name already exists', 409);
+            return;
+        }
+        
+        $stmt = $this->db->prepare("
+            INSERT INTO wp_achievement_types (name, description, calculation_method) 
+            VALUES (?, ?, ?)
+        ");
+        
+        if (!$stmt) {
+            throw new Exception('Insert prepare failed: ' . $this->db->error);
+        }
+        
+        $stmt->bind_param('sss', $name, $description, $calculation_method);
+        
+        if (!$stmt->execute()) {
+            throw new Exception('Failed to insert achievement type: ' . $this->db->error);
+        }
+        
+        $typeId = $this->db->insert_id;
+        error_log("Achievement type created successfully with ID: $typeId");
+        
+        $this->sendSuccess([
+            'id' => $typeId, 
+            'message' => 'Achievement type created successfully'
+        ]);
+        
+    } catch (Exception $e) {
+        error_log("createAchievementType error: " . $e->getMessage());
+        $this->sendError('Failed to create achievement type: ' . $e->getMessage(), 500);
+    }
+}
+
+/**
+ * Update an existing achievement type
+ */
+public function updateAchievementType($id, $data) {
+    try {
+        $name = trim($data['name'] ?? '');
+        $description = trim($data['description'] ?? '');
+        $calculation_method = $data['calculation_method'] ?? '';
+        
+        // Validation
+        if (empty($name)) {
+            $this->sendError('Achievement type name is required', 400);
+            return;
+        }
+        
+        if (!in_array($calculation_method, ['percentage', 'score'])) {
+            $this->sendError('Valid calculation method (percentage or score) is required', 400);
+            return;
+        }
+        
+        // Check if achievement type exists
+        $checkStmt = $this->db->prepare("SELECT id FROM wp_achievement_types WHERE id = ? AND is_active = 1");
+        $checkStmt->bind_param('i', $id);
+        $checkStmt->execute();
+        if ($checkStmt->get_result()->num_rows === 0) {
+            $this->sendError('Achievement type not found', 404);
+            return;
+        }
+        
+        // Check for duplicate name (excluding current record)
+        $duplicateCheck = $this->db->prepare("SELECT id FROM wp_achievement_types WHERE name = ? AND id != ? AND is_active = 1");
+        $duplicateCheck->bind_param('si', $name, $id);
+        $duplicateCheck->execute();
+        if ($duplicateCheck->get_result()->num_rows > 0) {
+            $this->sendError('An achievement type with this name already exists', 409);
+            return;
+        }
+        
+        $stmt = $this->db->prepare("
+            UPDATE wp_achievement_types 
+            SET name = ?, description = ?, calculation_method = ?, updated_at = NOW()
+            WHERE id = ?
+        ");
+        
+        if (!$stmt) {
+            throw new Exception('Update prepare failed: ' . $this->db->error);
+        }
+        
+        $stmt->bind_param('sssi', $name, $description, $calculation_method, $id);
+        
+        if ($stmt->execute()) {
+            $this->sendSuccess([
+                'message' => 'Achievement type updated successfully'
+            ]);
+        } else {
+            throw new Exception('Update failed: ' . $this->db->error);
+        }
+        
+    } catch (Exception $e) {
+        error_log("updateAchievementType error: " . $e->getMessage());
+        $this->sendError('Failed to update achievement type: ' . $e->getMessage(), 500);
+    }
+}
+
+/**
+ * Delete an achievement type (soft delete)
+ */
+public function deleteAchievementType($id) {
+    try {
+        // Ensure ID is an integer
+        $id = (int)$id;
+        
+        if ($id <= 0) {
+            $this->sendError('Invalid achievement type ID', 400);
+            return;
+        }
+        
+        // Check if achievement type exists
+        $checkStmt = $this->db->prepare("SELECT id, name FROM wp_achievement_types WHERE id = ? AND is_active = 1");
+        $checkStmt->bind_param('i', $id);
+        $checkStmt->execute();
+        $result = $checkStmt->get_result();
+        
+        if ($result->num_rows === 0) {
+            $this->sendError('Achievement type not found', 404);
+            return;
+        }
+        
+        $achievementType = $result->fetch_assoc();
+        
+        // Check if achievement type is being used by any drills
+        $usageCheck = $this->db->prepare("SELECT COUNT(*) as count FROM wp_drills WHERE achievement_type_id = ? AND is_active = 1");
+        $usageCheck->bind_param('i', $id);
+        $usageCheck->execute();
+        $usageResult = $usageCheck->get_result();
+        $usageCount = $usageResult->fetch_assoc()['count'];
+        
+        if ($usageCount > 0) {
+            $this->sendError("Cannot delete achievement type '{$achievementType['name']}' because it is assigned to $usageCount drill(s). Please remove the assignments first.", 409);
+            return;
+        }
+        
+        // Start transaction for safe deletion
+        $this->db->begin_transaction();
+        
+        try {
+            // Soft delete the achievement type
+            $stmt = $this->db->prepare("UPDATE wp_achievement_types SET is_active = 0, updated_at = NOW() WHERE id = ?");
+            $stmt->bind_param('i', $id);
+            
+            if (!$stmt->execute()) {
+                throw new Exception('Failed to delete achievement type: ' . $this->db->error);
+            }
+            
+            if ($stmt->affected_rows === 0) {
+                throw new Exception('No changes made to achievement type');
+            }
+            
+            // Also deactivate all levels for this achievement type
+            $levelsStmt = $this->db->prepare("UPDATE wp_achievement_levels SET is_active = 0, updated_at = NOW() WHERE achievement_type_id = ?");
+            $levelsStmt->bind_param('i', $id);
+            $levelsStmt->execute();
+            
+            // Commit transaction
+            $this->db->commit();
+            
+            $this->sendSuccess(['message' => "Achievement type '{$achievementType['name']}' deleted successfully."]);
+            
+        } catch (Exception $e) {
+            // Rollback transaction on error
+            $this->db->rollback();
+            throw $e;
+        }
+        
+    } catch (Exception $e) {
+        error_log("deleteAchievementType error: " . $e->getMessage());
+        $this->sendError('Failed to delete achievement type: ' . $e->getMessage(), 500);
+    }
+}
+
+/**
+ * Create a new achievement level
+ */
+public function createAchievementLevel($data) {
+    try {
+        $achievement_type_id = $data['achievement_type_id'] ?? 0;
+        $level_name = trim($data['level_name'] ?? '');
+        $level_number = $data['level_number'] ?? 0;
+        $min_threshold = $data['min_threshold'] ?? 0;
+        $max_threshold = $data['max_threshold'] ?? null;
+        $target_threshold = $data['target_score'] ?? null; // Note: form sends target_score but DB stores target_threshold
+        $display_color = trim($data['display_color'] ?? '#4CAF50');
+        $display_icon = trim($data['display_icon'] ?? 'fa-trophy');
+        $icon_type = 'fontawesome'; // Default to fontawesome for now
+        
+        // Validation
+        if (!$achievement_type_id || empty($level_name) || !$level_number) {
+            $this->sendError('Achievement type ID, level name, and level number are required', 400);
+            return;
+        }
+        
+        if ($min_threshold < 0) {
+            $this->sendError('Minimum threshold cannot be negative', 400);
+            return;
+        }
+        
+        if ($max_threshold !== null && $max_threshold <= $min_threshold) {
+            $this->sendError('Maximum threshold must be greater than minimum threshold', 400);
+            return;
+        }
+        
+        // Verify achievement type exists
+        $typeCheck = $this->db->prepare("SELECT id FROM wp_achievement_types WHERE id = ? AND is_active = 1");
+        $typeCheck->bind_param('i', $achievement_type_id);
+        $typeCheck->execute();
+        if ($typeCheck->get_result()->num_rows === 0) {
+            $this->sendError('Invalid achievement type specified', 400);
+            return;
+        }
+        
+        // Check for duplicate level number in this achievement type
+        $duplicateCheck = $this->db->prepare("SELECT id FROM wp_achievement_levels WHERE achievement_type_id = ? AND level_number = ?");
+        $duplicateCheck->bind_param('ii', $achievement_type_id, $level_number);
+        $duplicateCheck->execute();
+        if ($duplicateCheck->get_result()->num_rows > 0) {
+            $this->sendError('A level with this number already exists for this achievement type', 409);
+            return;
+        }
+        
+        $stmt = $this->db->prepare("
+            INSERT INTO wp_achievement_levels 
+            (achievement_type_id, level_number, level_name, min_threshold, max_threshold, target_threshold, display_color, display_icon, icon_type) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ");
+        
+        if (!$stmt) {
+            throw new Exception('Insert prepare failed: ' . $this->db->error);
+        }
+        
+        $stmt->bind_param('iisdddsss', $achievement_type_id, $level_number, $level_name, $min_threshold, $max_threshold, $target_threshold, $display_color, $display_icon, $icon_type);
+        
+        if (!$stmt->execute()) {
+            throw new Exception('Failed to insert achievement level: ' . $this->db->error);
+        }
+        
+        $levelId = $this->db->insert_id;
+        error_log("Achievement level created successfully with ID: $levelId");
+        
+        $this->sendSuccess([
+            'id' => $levelId, 
+            'message' => 'Achievement level created successfully'
+        ]);
+        
+    } catch (Exception $e) {
+        error_log("createAchievementLevel error: " . $e->getMessage());
+        $this->sendError('Failed to create achievement level: ' . $e->getMessage(), 500);
+    }
+}
+
+/**
+ * Update an existing achievement level
+ */
+public function updateAchievementLevel($id, $data) {
+    try {
+        $level_name = trim($data['level_name'] ?? '');
+        $level_number = $data['level_number'] ?? 0;
+        $min_threshold = $data['min_threshold'] ?? 0;
+        $max_threshold = $data['max_threshold'] ?? null;
+        $target_threshold = $data['target_score'] ?? null; // Note: form sends target_score but DB stores target_threshold
+        $display_color = trim($data['display_color'] ?? '#4CAF50');
+        $display_icon = trim($data['display_icon'] ?? 'fa-trophy');
+        
+        // Validation
+        if (empty($level_name) || !$level_number) {
+            $this->sendError('Level name and level number are required', 400);
+            return;
+        }
+        
+        if ($min_threshold < 0) {
+            $this->sendError('Minimum threshold cannot be negative', 400);
+            return;
+        }
+        
+        if ($max_threshold !== null && $max_threshold <= $min_threshold) {
+            $this->sendError('Maximum threshold must be greater than minimum threshold', 400);
+            return;
+        }
+        
+        // Check if achievement level exists and get achievement_type_id
+        $checkStmt = $this->db->prepare("SELECT id, achievement_type_id FROM wp_achievement_levels WHERE id = ?");
+        $checkStmt->bind_param('i', $id);
+        $checkStmt->execute();
+        $result = $checkStmt->get_result();
+        
+        if ($result->num_rows === 0) {
+            $this->sendError('Achievement level not found', 404);
+            return;
+        }
+        
+        $existingLevel = $result->fetch_assoc();
+        $achievement_type_id = $existingLevel['achievement_type_id'];
+        
+        // Check for duplicate level number in this achievement type (excluding current record)
+        $duplicateCheck = $this->db->prepare("SELECT id FROM wp_achievement_levels WHERE achievement_type_id = ? AND level_number = ? AND id != ?");
+        $duplicateCheck->bind_param('iii', $achievement_type_id, $level_number, $id);
+        $duplicateCheck->execute();
+        if ($duplicateCheck->get_result()->num_rows > 0) {
+            $this->sendError('A level with this number already exists for this achievement type', 409);
+            return;
+        }
+        
+        $stmt = $this->db->prepare("
+            UPDATE wp_achievement_levels 
+            SET level_number = ?, level_name = ?, min_threshold = ?, max_threshold = ?, target_threshold = ?, 
+                display_color = ?, display_icon = ?, updated_at = NOW()
+            WHERE id = ?
+        ");
+        
+        if (!$stmt) {
+            throw new Exception('Update prepare failed: ' . $this->db->error);
+        }
+        
+        $stmt->bind_param('isdddssi', $level_number, $level_name, $min_threshold, $max_threshold, $target_threshold, $display_color, $display_icon, $id);
+        
+        if ($stmt->execute()) {
+            $this->sendSuccess([
+                'message' => 'Achievement level updated successfully'
+            ]);
+        } else {
+            throw new Exception('Update failed: ' . $this->db->error);
+        }
+        
+    } catch (Exception $e) {
+        error_log("updateAchievementLevel error: " . $e->getMessage());
+        $this->sendError('Failed to update achievement level: ' . $e->getMessage(), 500);
+    }
+}
+
+/**
+ * Delete an achievement level (hard delete - levels can be safely removed)
+ */
+public function deleteAchievementLevel($id) {
+    try {
+        // Ensure ID is an integer
+        $id = (int)$id;
+        
+        if ($id <= 0) {
+            $this->sendError('Invalid achievement level ID', 400);
+            return;
+        }
+        
+        // Check if achievement level exists
+        $checkStmt = $this->db->prepare("SELECT id, level_name FROM wp_achievement_levels WHERE id = ?");
+        $checkStmt->bind_param('i', $id);
+        $checkStmt->execute();
+        $result = $checkStmt->get_result();
+        
+        if ($result->num_rows === 0) {
+            $this->sendError('Achievement level not found', 404);
+            return;
+        }
+        
+        $level = $result->fetch_assoc();
+        
+        // Hard delete the level (levels are safe to completely remove)
+        $stmt = $this->db->prepare("DELETE FROM wp_achievement_levels WHERE id = ?");
+        $stmt->bind_param('i', $id);
+        
+        if ($stmt->execute()) {
+            if ($stmt->affected_rows > 0) {
+                $this->sendSuccess(['message' => "Achievement level '{$level['level_name']}' deleted successfully."]);
+            } else {
+                $this->sendError('Failed to delete achievement level', 500);
+            }
+        } else {
+            $this->sendError('Failed to delete achievement level: ' . $this->db->error, 500);
+        }
+        
+    } catch (Exception $e) {
+        error_log("deleteAchievementLevel error: " . $e->getMessage());
+        $this->sendError('Failed to delete achievement level: ' . $e->getMessage(), 500);
     }
 }
     

@@ -70,7 +70,7 @@
 
         .page-title {
             font-size: 2.5em;
-            margin: 20px 0 10px 0;
+            margin: 10px 0;
             background: linear-gradient(45deg, #667eea, #764ba2);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -82,7 +82,7 @@
             background: rgba(102, 126, 234, 0.1);
             border-radius: 10px;
             padding: 15px;
-            margin-bottom: 30px;
+            margin-bottom: 15px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -341,6 +341,11 @@
             font-weight: 600;
         }
 
+        .form-label .required {
+            color: #dc3545;
+            font-weight: bold;
+        }
+
         .form-input {
             width: 100%;
             padding: 12px;
@@ -355,6 +360,16 @@
             outline: none;
             border-color: #667eea;
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-input.error {
+            border-color: #dc3545;
+            background: #fdf2f2;
+        }
+
+        .form-input.error:focus {
+            border-color: #dc3545;
+            box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
         }
 
         .form-textarea {
@@ -378,6 +393,13 @@
             outline: none;
             border-color: #667eea;
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-help {
+            color: #666;
+            font-size: 12px;
+            margin-top: 5px;
+            line-height: 1.3;
         }
 
         .levels-view {
@@ -490,8 +512,11 @@
             border: 1px solid #f5c6cb;
             border-radius: 8px;
             padding: 15px;
-            margin: 20px 0;
-            display: none;
+            margin: 2px 0;
+            visibility: hidden;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
         }
 
         .success-message {
@@ -500,8 +525,11 @@
             border: 1px solid #c3e6cb;
             border-radius: 8px;
             padding: 15px;
-            margin: 20px 0;
-            display: none;
+            margin: 2px 0;
+            visibility: hidden;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
         }
 
         /* Modal Styles */
@@ -623,6 +651,16 @@
             font-size: 16px;
         }
 
+        .validation-info {
+            background: #e3f2fd;
+            border: 1px solid #bbdefb;
+            border-radius: 6px;
+            padding: 10px;
+            margin-bottom: 15px;
+            font-size: 13px;
+            color: #1565c0;
+        }
+
         @media (max-width: 768px) {
             .container {
                 margin: 10px;
@@ -701,7 +739,7 @@
         <div class="system-info">
             <div class="system-details">
                 <span>Achievement System Management</span><br>
-                <small>Manager Mode | Build: <span id="buildTimestamp"></span></small>
+                <small>Manager Mode | Build: <span id="buildTimestamp"></span> | Version: <strong style="color: #667eea;">1.5-ACHIEVEMENT-ADMIN-TIGHT-SPACING</strong></small>
             </div>
             <div class="action-buttons">
                 <button class="btn btn-primary" id="newAchievementTypeBtn" onclick="createNewAchievementType()">+ New Achievement Type</button>
@@ -746,7 +784,7 @@
                 <div id="editorForm" style="display: none;">
                     <form id="achievementTypeForm">
                         <div class="form-group">
-                            <label for="achievementTypeName" class="form-label">Achievement Type Name:</label>
+                            <label for="achievementTypeName" class="form-label">Achievement Type Name: <span class="required">*</span></label>
                             <input type="text" id="achievementTypeName" name="name" class="form-input" 
                                    placeholder="Enter a name for this achievement type" required maxlength="255">
                         </div>
@@ -758,7 +796,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="calculationMethod" class="form-label">Calculation Method:</label>
+                            <label for="calculationMethod" class="form-label">Calculation Method: <span class="required">*</span></label>
                             <select id="calculationMethod" name="calculation_method" class="form-select" required>
                                 <option value="">Select calculation method</option>
                                 <option value="percentage">Percentage - Uses (user_score/drill_max_score)*100 vs thresholds</option>
@@ -804,43 +842,45 @@
                 <button class="modal-close" onclick="closeLevelModal()">&times;</button>
             </div>
             <div class="modal-body">
+                <div class="validation-info">
+                    <strong>Required Fields:</strong> All fields marked with * are required. Define the score ranges for this achievement level.
+                    <br><strong>Calculation Method:</strong> This achievement type uses <strong id="modalCalculationMethod">score</strong> calculation.
+                </div>
+
+                <!-- Modal-specific error message container -->
+                <div id="modalErrorMessage" class="error-message" style="margin: 15px 0; display: none;"></div>
+
                 <form id="levelForm">
                     <input type="hidden" id="levelId" name="id">
                     <input type="hidden" id="levelAchievementTypeId" name="achievement_type_id">
                     
                     <div class="form-group">
-                        <label for="levelName" class="form-label">Level Name:</label>
+                        <label for="levelName" class="form-label">Level Name: <span class="required">*</span></label>
                         <input type="text" id="levelName" name="name" class="form-input" 
                                placeholder="e.g., Beginner, Expert, Master" required maxlength="100">
                     </div>
 
                     <div class="form-row">
                         <div class="form-col-small">
-                            <label for="levelOrder" class="form-label">Order:</label>
+                            <label for="levelOrder" class="form-label">Order: <span class="required">*</span></label>
                             <input type="number" id="levelOrder" name="level_order" class="form-input" 
-                                   min="1" max="100" required placeholder="1">
+                                   min="1" max="100" step="1" required placeholder="1">
                         </div>
                         <div class="form-col">
-                            <label for="targetScore" class="form-label">Target Score <span id="targetScoreUnit"></span>:</label>
-                            <input type="number" id="targetScore" name="target_score" class="form-input" 
-                                   min="0" placeholder="Target score to achieve this level">
+                            <label for="minThreshold" class="form-label">Minimum Threshold <span id="minThresholdUnit"></span>: <span class="required">*</span></label>
+                            <input type="number" id="minThreshold" name="min_threshold" class="form-input" 
+                                   min="0" step="1" required placeholder="Minimum score for this level">
+                            <div class="form-help">Lowest score that qualifies for this level</div>
                         </div>
                     </div>
 
                     <div class="form-row">
-                        <div class="form-col">
-                            <label for="minThreshold" class="form-label">Minimum Threshold <span id="minThresholdUnit"></span>:</label>
-                            <input type="number" id="minThreshold" name="min_threshold" class="form-input" 
-                                   min="0" required placeholder="Minimum score for this level">
-                        </div>
                         <div class="form-col">
                             <label for="maxThreshold" class="form-label">Maximum Threshold <span id="maxThresholdUnit"></span>:</label>
                             <input type="number" id="maxThreshold" name="max_threshold" class="form-input" 
-                                   min="0" placeholder="Maximum score (leave empty for highest level)">
+                                   min="0" step="1" placeholder="Maximum score (leave empty for highest level)">
+                            <div class="form-help">Highest score for this level (optional for top level)</div>
                         </div>
-                    </div>
-
-                    <div class="form-row">
                         <div class="form-col">
                             <label for="displayColor" class="form-label">Display Color:</label>
                             <div class="color-input-group">
@@ -849,27 +889,28 @@
                                 <div class="color-preview" id="colorPreview" style="background-color: #667eea;"></div>
                             </div>
                         </div>
-                        <div class="form-col">
-                            <label for="displayIcon" class="form-label">Display Icon:</label>
-                            <input type="text" id="displayIcon" name="display_icon" class="form-input" 
-                                   placeholder="🏆" maxlength="10">
-                            <div class="emoji-picker">
-                                <span class="emoji-option" onclick="selectEmoji('🏆')">🏆</span>
-                                <span class="emoji-option" onclick="selectEmoji('🥇')">🥇</span>
-                                <span class="emoji-option" onclick="selectEmoji('🥈')">🥈</span>
-                                <span class="emoji-option" onclick="selectEmoji('🥉')">🥉</span>
-                                <span class="emoji-option" onclick="selectEmoji('⭐')">⭐</span>
-                                <span class="emoji-option" onclick="selectEmoji('🌟')">🌟</span>
-                                <span class="emoji-option" onclick="selectEmoji('💎')">💎</span>
-                                <span class="emoji-option" onclick="selectEmoji('👑')">👑</span>
-                                <span class="emoji-option" onclick="selectEmoji('🎯')">🎯</span>
-                                <span class="emoji-option" onclick="selectEmoji('🎱')">🎱</span>
-                                <span class="emoji-option" onclick="selectEmoji('🔰')">🔰</span>
-                                <span class="emoji-option" onclick="selectEmoji('📈')">📈</span>
-                                <span class="emoji-option" onclick="selectEmoji('🚀')">🚀</span>
-                                <span class="emoji-option" onclick="selectEmoji('⚡')">⚡</span>
-                                <span class="emoji-option" onclick="selectEmoji('🔥')">🔥</span>
-                            </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="displayIcon" class="form-label">Display Icon:</label>
+                        <input type="text" id="displayIcon" name="display_icon" class="form-input" 
+                               placeholder="🏆" maxlength="10">
+                        <div class="emoji-picker">
+                            <span class="emoji-option" onclick="selectEmoji('🏆')">🏆</span>
+                            <span class="emoji-option" onclick="selectEmoji('🥇')">🥇</span>
+                            <span class="emoji-option" onclick="selectEmoji('🥈')">🥈</span>
+                            <span class="emoji-option" onclick="selectEmoji('🥉')">🥉</span>
+                            <span class="emoji-option" onclick="selectEmoji('⭐')">⭐</span>
+                            <span class="emoji-option" onclick="selectEmoji('🌟')">🌟</span>
+                            <span class="emoji-option" onclick="selectEmoji('💎')">💎</span>
+                            <span class="emoji-option" onclick="selectEmoji('👑')">👑</span>
+                            <span class="emoji-option" onclick="selectEmoji('🎯')">🎯</span>
+                            <span class="emoji-option" onclick="selectEmoji('🎱')">🎱</span>
+                            <span class="emoji-option" onclick="selectEmoji('🔰')">🔰</span>
+                            <span class="emoji-option" onclick="selectEmoji('📈')">📈</span>
+                            <span class="emoji-option" onclick="selectEmoji('🚀')">🚀</span>
+                            <span class="emoji-option" onclick="selectEmoji('⚡')">⚡</span>
+                            <span class="emoji-option" onclick="selectEmoji('🔥')">🔥</span>
                         </div>
                     </div>
 
@@ -884,7 +925,7 @@
 
     <script>
         // Version and Configuration
-        const VERSION = '1.0-ACHIEVEMENT-ADMIN';
+        const VERSION = '1.5-ACHIEVEMENT-ADMIN-TIGHT-SPACING';
         const BUILD_TIMESTAMP = new Date().toISOString();
         const CACHE_BUSTER = Date.now() + Math.random() * 1000000;
         const API_BASE_URL = 'https://steveshermanbilliards.com/drill-api.php';
@@ -910,6 +951,84 @@
             }
             
             return numValue.toString();
+        }
+
+        // Function to format values as integers only (no decimals anywhere)
+        function formatIntegerValue(value, calculationMethod, includeUnit = true) {
+            if (value === null || value === undefined || value === '') {
+                return '';
+            }
+            
+            const numValue = Math.floor(parseFloat(value)); // Always floor to remove any decimals
+            
+            if (calculationMethod === 'percentage' && includeUnit) {
+                return `${numValue}%`;
+            }
+            
+            return numValue.toString();
+        }
+
+        // Clear validation errors
+        function clearValidationErrors() {
+            document.querySelectorAll('.form-input.error').forEach(input => {
+                input.classList.remove('error');
+            });
+            
+            // Clear both main page and modal errors
+            clearModalError();
+        }
+
+        // Show validation error on field
+        function showFieldError(fieldId, message) {
+            const field = document.getElementById(fieldId);
+            if (field) {
+                field.classList.add('error');
+            }
+            
+            // Check if we're in the modal context
+            const modal = document.getElementById('levelModal');
+            if (modal && modal.style.display === 'block') {
+                showModalError(message);
+            } else {
+                showError(message);
+            }
+            
+            // Scroll the field into view so user can see the error
+            if (field) {
+                field.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+
+        // Modal-specific error display
+        function showModalError(message) {
+            const modalErrorDiv = document.getElementById('modalErrorMessage');
+            if (modalErrorDiv) {
+                modalErrorDiv.textContent = message;
+                modalErrorDiv.style.display = 'block';
+                
+                // Scroll to top of modal to show error
+                modalErrorDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                
+                console.error('❌ Modal Error:', message);
+                
+                // Auto-hide after 8 seconds
+                setTimeout(() => {
+                    if (modalErrorDiv.style.display === 'block') {
+                        modalErrorDiv.style.display = 'none';
+                    }
+                }, 8000);
+            } else {
+                // Fallback to main error display
+                showError(message);
+            }
+        }
+
+        // Clear modal errors
+        function clearModalError() {
+            const modalErrorDiv = document.getElementById('modalErrorMessage');
+            if (modalErrorDiv) {
+                modalErrorDiv.style.display = 'none';
+            }
         }
 
         // API Helper Function
@@ -1042,7 +1161,7 @@
                 
                 return `
                     <div class="achievement-type-item ${isSelected ? 'selected' : ''}" 
-                         onclick="selectAchievementType(${type.id})">
+                         onclick="selectAchievementType(${type.id}, 'overview')">
                         <div class="achievement-type-method ${methodClass}">${type.calculation_method || 'score'}</div>
                         <div class="achievement-type-title">${type.name || 'Unnamed Achievement Type'}</div>
                         <div class="achievement-type-description">
@@ -1057,11 +1176,11 @@
                             <span>${levelCountText} levels</span>
                         </div>
                         <div class="achievement-type-actions">
-                            <button class="achievement-type-btn overview-btn ${currentView === 'overview' ? 'active' : ''}" 
-                                    onclick="event.stopPropagation(); console.log('Overview clicked for ID:', ${type.id}); selectAchievementType(${type.id}, 'overview'); return false;">
-                                Overview
+                            <button class="achievement-type-btn overview-btn ${currentView === 'overview' && isSelected ? 'active' : ''}" 
+                                    onclick="event.stopPropagation(); console.log('Update clicked for ID:', ${type.id}); updateAchievementType(${type.id}); return false;">
+                                Update
                             </button>
-                            <button class="achievement-type-btn levels-btn ${currentView === 'levels' ? 'active' : ''}" 
+                            <button class="achievement-type-btn levels-btn ${currentView === 'levels' && isSelected ? 'active' : ''}" 
                                     onclick="event.stopPropagation(); console.log('Levels clicked for ID:', ${type.id}); selectAchievementType(${type.id}, 'levels'); return false;">
                                 Levels (${levelCountText})
                             </button>
@@ -1118,15 +1237,12 @@
                     console.log('🎭 Using fallback icon for level:', levelName);
                 }
                 
-                // Format thresholds with proper units and no decimals
-                const minFormatted = formatValue(level.min_threshold, calculationMethod);
-                const maxFormatted = level.max_threshold ? formatValue(level.max_threshold, calculationMethod) : null;
+                // Format thresholds with proper units and NO DECIMALS
+                const minFormatted = formatIntegerValue(level.min_threshold, calculationMethod);
+                const maxFormatted = level.max_threshold ? formatIntegerValue(level.max_threshold, calculationMethod) : null;
                 const thresholdText = maxFormatted 
                     ? `${minFormatted} - ${maxFormatted}`
                     : `${minFormatted}+`;
-                    
-                const targetFormatted = level.target_score ? formatValue(level.target_score, calculationMethod) : null;
-                const targetText = targetFormatted ? ` • Target: ${targetFormatted}` : '';
                 
                 return `
                     <div class="level-item">
@@ -1135,7 +1251,7 @@
                         <div class="level-info">
                             <div class="level-name">${levelName}</div>
                             <div class="level-thresholds">
-                                Range: ${thresholdText}${targetText}
+                                Range: ${thresholdText}
                             </div>
                         </div>
                         <div class="level-color-indicator" style="background-color: ${level.display_color || '#667eea'};"></div>
@@ -1186,6 +1302,23 @@
             } catch (error) {
                 console.error('❌ Error selecting achievement type:', error);
                 showError('Failed to select achievement type: ' + error.message);
+            }
+        }
+
+        // New function specifically for the Update button
+        async function updateAchievementType(typeId) {
+            try {
+                console.log('💾 updateAchievementType called for:', typeId);
+                
+                // First select the achievement type and show overview if not already showing
+                await selectAchievementType(typeId, 'overview');
+                
+                // Then trigger the save operation
+                await saveAchievementType();
+                
+            } catch (error) {
+                console.error('❌ Error in updateAchievementType:', error);
+                showError('Failed to update achievement type: ' + error.message);
             }
         }
 
@@ -1269,6 +1402,8 @@
             }
             
             try {
+                clearValidationErrors();
+                
                 const formData = {
                     name: document.getElementById('achievementTypeName').value.trim(),
                     description: document.getElementById('achievementTypeDescription').value.trim(),
@@ -1276,13 +1411,38 @@
                 };
                 
                 if (!formData.name) {
-                    showError('Achievement type name is required');
+                    showFieldError('achievementTypeName', 'Achievement type name is required');
                     return;
                 }
                 
                 if (!formData.calculation_method) {
-                    showError('Calculation method is required');
+                    showFieldError('calculationMethod', 'Calculation method is required');
                     return;
+                }
+                
+                // Check if calculation method is changing and there are existing levels
+                const methodChanged = currentAchievementType.calculation_method !== formData.calculation_method;
+                const hasLevels = (currentAchievementType.level_count || 0) > 0;
+                
+                if (methodChanged && hasLevels) {
+                    const oldMethod = currentAchievementType.calculation_method;
+                    const newMethod = formData.calculation_method;
+                    
+                    const confirmMessage = `⚠️ WARNING: Changing Calculation Method\n\n` +
+                        `You are changing from "${oldMethod}" to "${newMethod}" calculation method.\n\n` +
+                        `This achievement type has ${currentAchievementType.level_count} existing levels. ` +
+                        `Changing the calculation method may make the current threshold values invalid:\n\n` +
+                        `• Percentage thresholds should be 0-100\n` +
+                        `• Score thresholds can be any positive number\n\n` +
+                        `After saving, you should review and update all level thresholds to ensure they make sense with the new calculation method.\n\n` +
+                        `Do you want to continue with this change?`;
+                    
+                    if (!confirm(confirmMessage)) {
+                        console.log('🚫 User cancelled calculation method change');
+                        return;
+                    }
+                    
+                    console.log('⚠️ User confirmed calculation method change from', oldMethod, 'to', newMethod);
                 }
                 
                 console.log('💾 Saving achievement type:', currentAchievementType.id, formData);
@@ -1290,10 +1450,31 @@
                 const response = await apiRequest(`achievement-types/${currentAchievementType.id}`, 'PUT', formData);
                 
                 console.log('✅ Achievement type saved:', response);
-                showSuccess('Achievement type saved successfully!');
                 
+                // Update the current achievement type object with the new data
                 Object.assign(currentAchievementType, formData);
-                await loadAchievementTypes();
+                
+                // Only reload all types if we need to (for level count updates, etc.)
+                // For simple name/description changes, just update the display
+                if (methodChanged) {
+                    // Calculation method changed - need full reload for validation
+                    await loadAchievementTypes();
+                    
+                    if (methodChanged && hasLevels) {
+                        showSuccess(`Achievement type saved! ⚠️ Please review the thresholds in all ${currentAchievementType.level_count} levels to ensure they're appropriate for ${formData.calculation_method} calculation.`);
+                        
+                        // If we're viewing levels and method changed, refresh levels display
+                        if (currentView === 'levels') {
+                            await loadAchievementLevels(currentAchievementType.id);
+                        }
+                    } else {
+                        showSuccess('Achievement type saved successfully!');
+                    }
+                } else {
+                    // Just name/description change - update display without full reload
+                    displayAchievementTypes();
+                    showSuccess('Achievement type saved successfully!');
+                }
                 
             } catch (error) {
                 console.error('❌ Error saving achievement type:', error);
@@ -1343,6 +1524,7 @@
                 document.getElementById('editorContent').style.display = 'block';
                 isEditing = false;
             }
+            clearValidationErrors();
         }
 
         // Level Management
@@ -1365,6 +1547,7 @@
             // Update field labels based on calculation method
             updateModalFieldLabels();
             
+            clearValidationErrors();
             document.getElementById('levelModal').style.display = 'block';
         }
 
@@ -1390,16 +1573,15 @@
                 console.log('🎭 Decoded icon for editing:', displayIcon);
             }
             
-            // Map API field names to form fields
+            // Map API field names to form fields and ROUND VALUES to remove decimals
             document.getElementById('levelId').value = level.id;
             document.getElementById('levelAchievementTypeId').value = level.achievement_type_id;
             document.getElementById('levelName').value = level.level_name || level.name || '';
             document.getElementById('levelOrder').value = level.level_number || level.level_order || '';
             
-            // Set threshold values without formatting (raw numbers for editing)
-            document.getElementById('minThreshold').value = level.min_threshold || '';
-            document.getElementById('maxThreshold').value = level.max_threshold || '';
-            document.getElementById('targetScore').value = level.target_score || '';
+            // Set threshold values as whole numbers (rounded, no decimals)
+            document.getElementById('minThreshold').value = level.min_threshold ? Math.round(parseFloat(level.min_threshold)) : '';
+            document.getElementById('maxThreshold').value = level.max_threshold ? Math.round(parseFloat(level.max_threshold)) : '';
             
             document.getElementById('displayColor').value = level.display_color || '#667eea';
             document.getElementById('displayIcon').value = displayIcon;
@@ -1408,6 +1590,7 @@
             // Update field labels based on calculation method
             updateModalFieldLabels();
             
+            clearValidationErrors();
             document.getElementById('levelModal').style.display = 'block';
         }
 
@@ -1416,14 +1599,21 @@
             const isPercentage = calculationMethod === 'percentage';
             
             // Update field labels to show units
-            document.getElementById('targetScoreUnit').textContent = isPercentage ? '(%)' : '';
             document.getElementById('minThresholdUnit').textContent = isPercentage ? '(%)' : '';
             document.getElementById('maxThresholdUnit').textContent = isPercentage ? '(%)' : '';
+            
+            // Update the modal calculation method display
+            const methodDisplay = document.getElementById('modalCalculationMethod');
+            if (methodDisplay) {
+                methodDisplay.textContent = calculationMethod;
+                methodDisplay.style.color = isPercentage ? '#1976d2' : '#388e3c';
+            }
         }
 
         function closeLevelModal() {
             document.getElementById('levelModal').style.display = 'none';
             editingLevel = null;
+            clearValidationErrors();
         }
 
         async function deleteLevel(levelId) {
@@ -1456,48 +1646,95 @@
             input.blur(); // Trigger any change events
         }
 
-        // Color picker update
-        document.addEventListener('DOMContentLoaded', function() {
-            const colorInput = document.getElementById('displayColor');
-            if (colorInput) {
-                colorInput.addEventListener('input', function() {
-                    document.getElementById('colorPreview').style.backgroundColor = this.value;
-                });
-            }
-        });
-
-        // Level form submission
-        document.addEventListener('DOMContentLoaded', function() {
-            const levelForm = document.getElementById('levelForm');
-            if (levelForm) {
-                levelForm.addEventListener('submit', async function(e) {
-                    e.preventDefault();
-                    await saveLevelForm();
-                });
-            }
-        });
-
+        // Level form submission with comprehensive validation including range overlap checking
         async function saveLevelForm() {
             try {
+                clearValidationErrors();
+                
+                // Get and validate form values
+                const levelName = document.getElementById('levelName').value.trim();
+                const levelOrder = document.getElementById('levelOrder').value;
+                const minThreshold = document.getElementById('minThreshold').value;
+                const maxThreshold = document.getElementById('maxThreshold').value;
                 const iconValue = document.getElementById('displayIcon').value;
+                
                 console.log('🎭 Raw icon value from form:', iconValue, 'Character codes:', [...iconValue].map(c => c.charCodeAt(0)));
                 
-                // Map form fields to API field names
+                // COMPREHENSIVE FRONTEND VALIDATION
+                let hasErrors = false;
+                
+                if (!levelName) {
+                    showFieldError('levelName', 'Level name is required');
+                    hasErrors = true;
+                }
+                
+                if (!levelOrder || parseInt(levelOrder) < 1) {
+                    showFieldError('levelOrder', 'Level order is required and must be 1 or greater');
+                    hasErrors = true;
+                }
+                
+                if (!minThreshold || isNaN(parseFloat(minThreshold)) || parseFloat(minThreshold) < 0) {
+                    showFieldError('minThreshold', 'Minimum threshold is required and must be 0 or greater');
+                    hasErrors = true;
+                }
+                
+                // Additional validation for numeric relationships
+                if (!hasErrors) {
+                    const minVal = parseFloat(minThreshold);
+                    const maxVal = maxThreshold ? parseFloat(maxThreshold) : null;
+                    
+                    if (maxVal !== null && maxVal <= minVal) {
+                        showFieldError('maxThreshold', 'Maximum threshold must be greater than minimum threshold');
+                        hasErrors = true;
+                    }
+                }
+                
+                // RANGE OVERLAP VALIDATION - Check against all other levels
+                if (!hasErrors) {
+                    const proposedMin = parseFloat(minThreshold);
+                    const proposedMax = maxThreshold ? parseFloat(maxThreshold) : null;
+                    const currentEditingId = editingLevel ? editingLevel.id : null;
+                    
+                    // Check for overlaps with existing levels (exclude the level we're currently editing)
+                    const otherLevels = currentLevels.filter(level => level.id !== currentEditingId);
+                    
+                    for (const otherLevel of otherLevels) {
+                        const otherMin = parseFloat(otherLevel.min_threshold || 0);
+                        const otherMax = otherLevel.max_threshold ? parseFloat(otherLevel.max_threshold) : null;
+                        const otherName = otherLevel.level_name || otherLevel.name || `Level ${otherLevel.level_number}`;
+                        
+                        // Check for overlaps
+                        const overlap = checkRangeOverlap(proposedMin, proposedMax, otherMin, otherMax);
+                        
+                        if (overlap.hasOverlap) {
+                            const calculationMethod = currentAchievementType?.calculation_method || 'score';
+                            const unit = calculationMethod === 'percentage' ? '%' : '';
+                            const otherRangeText = otherMax ? `${Math.floor(otherMin)}${unit} - ${Math.floor(otherMax)}${unit}` : `${Math.floor(otherMin)}${unit}+`;
+                            const proposedRangeText = proposedMax ? `${Math.floor(proposedMin)}${unit} - ${Math.floor(proposedMax)}${unit}` : `${Math.floor(proposedMin)}${unit}+`;
+                            
+                            showFieldError('minThreshold', `Range overlap detected! Your proposed range (${proposedRangeText}) overlaps with "${otherName}" (${otherRangeText}). ${overlap.suggestion}`);
+                            hasErrors = true;
+                            break; // Show only the first overlap found
+                        }
+                    }
+                }
+                
+                // Stop if there are validation errors
+                if (hasErrors) {
+                    return;
+                }
+                
+                // Map form fields to API field names (target_threshold will be null)
                 const formData = {
                     achievement_type_id: parseInt(document.getElementById('levelAchievementTypeId').value),
-                    level_name: document.getElementById('levelName').value.trim(), // API uses level_name
-                    level_number: parseInt(document.getElementById('levelOrder').value), // API uses level_number
-                    min_threshold: parseFloat(document.getElementById('minThreshold').value) || 0,
-                    max_threshold: document.getElementById('maxThreshold').value ? parseFloat(document.getElementById('maxThreshold').value) : null,
-                    target_score: document.getElementById('targetScore').value ? parseFloat(document.getElementById('targetScore').value) : null,
+                    level_name: levelName,
+                    level_number: parseInt(levelOrder),
+                    min_threshold: parseFloat(minThreshold),
+                    max_threshold: maxThreshold ? parseFloat(maxThreshold) : null,
+                    target_threshold: null, // Explicitly set to null
                     display_color: document.getElementById('displayColor').value,
                     display_icon: iconValue || '🏆'
                 };
-                
-                if (!formData.level_name) {
-                    showError('Level name is required');
-                    return;
-                }
                 
                 console.log('💾 Saving level with API field names:', formData);
                 console.log('🎭 Icon being saved:', formData.display_icon, 'Length:', formData.display_icon.length);
@@ -1522,6 +1759,58 @@
                 console.error('❌ Error saving level:', error);
                 showError('Failed to save level: ' + error.message);
             }
+        }
+
+        // Helper function to check if two ranges overlap and provide suggestions
+        function checkRangeOverlap(min1, max1, min2, max2) {
+            // Handle null max values (indicating open-ended ranges like "50+")
+            const isRange1OpenEnded = max1 === null;
+            const isRange2OpenEnded = max2 === null;
+            
+            // If both ranges are open-ended, they definitely overlap
+            if (isRange1OpenEnded && isRange2OpenEnded) {
+                return {
+                    hasOverlap: true,
+                    suggestion: 'Only one level can have an open-ended range (no maximum threshold).'
+                };
+            }
+            
+            // Check for overlaps using standard range overlap logic
+            let hasOverlap = false;
+            let suggestion = '';
+            
+            if (isRange1OpenEnded) {
+                // Range 1 is open-ended (min1 to infinity)
+                // Overlap if range 2 extends into range 1's territory
+                if (max2 === null || max2 > min1) {
+                    hasOverlap = true;
+                    suggestion = `Try setting maximum threshold to ${Math.floor(min1 - 1)} or lower.`;
+                }
+            } else if (isRange2OpenEnded) {
+                // Range 2 is open-ended (min2 to infinity)  
+                // Overlap if range 1 extends into range 2's territory
+                if (max1 > min2) {
+                    hasOverlap = true;
+                    suggestion = `Try setting maximum threshold to ${Math.floor(min2 - 1)} or lower, or minimum threshold to ${Math.floor(min2)} or higher.`;
+                }
+            } else {
+                // Both ranges have defined endpoints
+                // Classic range overlap: ranges overlap if max1 >= min2 AND max2 >= min1
+                if (max1 >= min2 && max2 >= min1) {
+                    hasOverlap = true;
+                    // Provide intelligent suggestions based on which direction makes more sense
+                    if (min1 < min2) {
+                        suggestion = `Try setting maximum threshold to ${Math.floor(min2 - 1)} or lower.`;
+                    } else {
+                        suggestion = `Try setting minimum threshold to ${Math.floor(max2 + 1)} or higher.`;
+                    }
+                }
+            }
+            
+            return {
+                hasOverlap: hasOverlap,
+                suggestion: suggestion
+            };
         }
 
         // Utility Functions
@@ -1549,29 +1838,43 @@
             const errorDiv = document.getElementById('errorMessage');
             const successDiv = document.getElementById('successMessage');
             
-            successDiv.style.display = 'none';
+            // Hide success message
+            successDiv.style.visibility = 'hidden';
+            
+            // Show error message
             errorDiv.textContent = message;
-            errorDiv.style.display = 'block';
+            errorDiv.style.visibility = 'visible';
             
             console.error('❌ Error:', message);
             
+            // Scroll to top so user can see the error
+            errorDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            
+            // Auto-hide after 10 seconds for range overlap errors (they're longer)
             setTimeout(() => {
-                errorDiv.style.display = 'none';
-            }, 5000);
+                if (errorDiv.style.visibility === 'visible') {
+                    errorDiv.style.visibility = 'hidden';
+                }
+            }, 10000);
         }
 
         function showSuccess(message) {
             const errorDiv = document.getElementById('errorMessage');
             const successDiv = document.getElementById('successMessage');
             
-            errorDiv.style.display = 'none';
+            // Hide error message
+            errorDiv.style.visibility = 'hidden';
+            
+            // Show success message
             successDiv.textContent = message;
-            successDiv.style.display = 'block';
+            successDiv.style.visibility = 'visible';
             
             console.log('✅ Success:', message);
             
             setTimeout(() => {
-                successDiv.style.display = 'none';
+                if (successDiv.style.visibility === 'visible') {
+                    successDiv.style.visibility = 'hidden';
+                }
             }, 3000);
         }
 
@@ -1582,6 +1885,25 @@
                 closeLevelModal();
             }
         };
+
+        // Color picker update
+        document.addEventListener('DOMContentLoaded', function() {
+            const colorInput = document.getElementById('displayColor');
+            if (colorInput) {
+                colorInput.addEventListener('input', function() {
+                    document.getElementById('colorPreview').style.backgroundColor = this.value;
+                });
+            }
+
+            // Level form submission
+            const levelForm = document.getElementById('levelForm');
+            if (levelForm) {
+                levelForm.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    await saveLevelForm();
+                });
+            }
+        });
 
         // Initialization
         document.addEventListener('DOMContentLoaded', async function() {
