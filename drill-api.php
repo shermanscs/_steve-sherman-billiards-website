@@ -441,18 +441,7 @@ private function generateFilenameFromId($diagramId, $extension) {
 			} elseif (count($segments) >= 2) {
 				$id = $segments[1];
 			}
-			// Handle special compound endpoints
-			if ($endpoint === 'level-names' && isset($segments[1]) && $segments[1] === 'themes') {
-				if (isset($segments[2])) {
-					// level-names/themes/{theme_name}
-					$endpoint = 'level-names/themes/specific';
-					$id = $segments[2];
-				} else {
-					// level-names/themes
-					$endpoint = 'level-names/themes';
-				}
-			}   
-			
+            
             error_log("API Request: Method=$method, Endpoint=$endpoint, ID=$id");
             
             // Get request data
@@ -563,21 +552,7 @@ private function generateFilenameFromId($diagramId, $extension) {
 						$this->updateContentAssignment($id, $input);
 					}
 					break;
-				case 'achievement-types':
-					if ($method === 'GET' && $id) {
-						$this->getAchievementType($id);
-					} elseif ($method === 'GET') {
-						$this->getAchievementTypes();
-					}
-					break;
 
-				case 'level-names':
-					if ($method === 'PUT' && $id) {
-						$this->updateLevelName($id, $input);
-					} elseif ($method === 'DELETE' && $id) {
-						$this->deleteLevelName($id);
-					}
-					break;
                 case 'scores':
                     if ($method === 'GET') {
                         $this->getScores($_GET);
@@ -597,20 +572,7 @@ private function generateFilenameFromId($diagramId, $extension) {
 						$this->getDrillStats($_GET);
 					}
 					break;
-				case 'level-names/themes':
-					if ($method === 'GET') {
-						$this->getLevelNameThemes();
-					} elseif ($method === 'POST') {
-						$this->createLevelNameTheme($input);
-					}
-					break;
-
-				case 'level-names/themes/specific':
-					if ($method === 'GET') {
-						$this->getLevelNameThemeSpecific($id);
-					}
-					break;
-	
+                    
                 case 'journal':
                     if ($method === 'GET' && $id) {
                         $this->getJournalEntry($id);
@@ -891,9 +853,42 @@ private function generateFilenameFromId($diagramId, $extension) {
 						$this->debugCredits();
 					}
 					break;
+				case 'achievement-types':
+					if ($method === 'GET' && $id) {
+						$this->getAchievementType($id);
+					} elseif ($method === 'GET') {
+						$this->getAchievementTypes();
+					}
+					break;
+
+				case 'achievement-schemes':
+					if ($method === 'GET') {
+						$this->getAchievementSchemes();
+					}
+					break;
+
+				case 'achievement-levels':
+					if ($method === 'GET' && $id) {
+						$this->getAchievementLevels($id);
+					} else {
+						$this->sendError('Achievement type ID required', 400);
+					}
+					break;
+
+				case 'user-achievement-level':
+					if ($method === 'POST') {
+						$this->calculateUserAchievementLevel(
+							$input['user_id'] ?? 0,
+							$input['drill_id'] ?? 0,
+							$input['user_score'] ?? null
+						);
+					} else {
+						$this->sendError('POST method required', 405);
+					}
+					break;
 
                 default:
-                    $this->sendError("Endpoint '$endpoint' not found. Available endpoints: login, admin-login, users, categories, skills, drills, assignments, scores, stats, journal, challenge-events, challenge-scoring-methods, challenge-participants, challenge-scores, diagrams, achievement-types, level-names, version, debug-blob", 404);
+                    $this->sendError("Endpoint '$endpoint' not found. Available endpoints: login, admin-login, users, categories, skills, drills, assignments, scores, stats, journal, challenge-events, challenge-scoring-methods, challenge-participants, challenge-scores, diagrams, version, debug-blob", 404);
             }
             
         } catch (Exception $e) {
@@ -8058,284 +8053,161 @@ public function deleteDiagram($id) {
             $this->sendError('Debug failed: ' . $e->getMessage(), 500);
         }
     }
-/**
- * ACHIEVEMENT TYPES MANAGEMENT
- */
+
 
 /**
  * Get all achievement types
  */
 public function getAchievementTypes() {
-    try {
-        $stmt = $this->db->query("
-            SELECT id, name, display_name, description, calculation_method, is_active 
-            FROM wp_drill_achievement_types 
-            WHERE is_active = 1 
-            ORDER BY name
-        ");
-        
-        if (!$stmt) {
-            throw new Exception('Query failed: ' . $this->db->error);
-        }
-        
-        $achievementTypes = [];
-        while ($row = $stmt->fetch_assoc()) {
-            $achievementTypes[] = $row;
-        }
-        
-        $this->sendSuccess($achievementTypes);
-        
-    } catch (Exception $e) {
-        error_log("getAchievementTypes error: " . $e->getMessage());
-        $this->sendError('Failed to fetch achievement types: ' . $e->getMessage(), 500);
+    $result = $this->db->query("
+        SELECT id, name, description, calculation_method, is_active 
+        FROM wp_achievement_types 
+        WHERE is_active = 1 
+        ORDER BY name
+    ");
+    
+    $types = [];
+    while ($row = $result->fetch_assoc()) {
+        // Add level count
+        $levelCount = $this->db->query("SELECT COUNT(*) as count FROM wp_achievement_levels WHERE achievement_type_id = {$row['id']}");
+        $row['level_count'] = $levelCount->fetch_assoc()['count'];
+        $types[] = $row;
     }
+    
+    $this->sendSuccess($types);
 }
 
 /**
- * Get specific achievement type details
+ * Get achievement schemes (formatted for selection)
  */
-public function getAchievementType($typeId) {
-    try {
-        $stmt = $this->db->prepare("
-            SELECT id, name, display_name, description, calculation_method, is_active, created_at
-            FROM wp_drill_achievement_types 
-            WHERE id = ? AND is_active = 1
-        ");
-        
-        if (!$stmt) {
-            throw new Exception('Prepare failed: ' . $this->db->error);
-        }
-        
-        $stmt->bind_param('i', $typeId);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        
-        if ($achievementType = $result->fetch_assoc()) {
-            $this->sendSuccess($achievementType);
-        } else {
-            $this->sendError('Achievement type not found', 404);
-        }
-        
-    } catch (Exception $e) {
-        error_log("getAchievementType error: " . $e->getMessage());
-        $this->sendError('Failed to fetch achievement type: ' . $e->getMessage(), 500);
+public function getAchievementSchemes() {
+    $result = $this->db->query("
+        SELECT 
+            at.id, at.name, at.description, at.calculation_method,
+            COUNT(al.id) as level_count,
+            GROUP_CONCAT(al.level_name ORDER BY al.level_number SEPARATOR ', ') as level_names
+        FROM wp_achievement_types at
+        LEFT JOIN wp_achievement_levels al ON at.id = al.achievement_type_id
+        WHERE at.is_active = 1
+        GROUP BY at.id
+        ORDER BY at.name
+    ");
+    
+    $schemes = [];
+    while ($row = $result->fetch_assoc()) {
+        $schemes[] = $row;
     }
+    
+    $this->sendSuccess($schemes);
 }
 
 /**
- * LEVEL NAMES MANAGEMENT
+ * Get levels for specific achievement type
  */
-
-/**
- * Get all available themes
- */
-public function getLevelNameThemes() {
-    try {
-        $stmt = $this->db->query("
-            SELECT DISTINCT theme_name,
-                   COUNT(*) as level_count,
-                   MIN(created_at) as created_at
-            FROM wp_achievement_level_names 
-            WHERE is_active = 1 
-            GROUP BY theme_name 
-            ORDER BY theme_name
-        ");
-        
-        if (!$stmt) {
-            throw new Exception('Query failed: ' . $this->db->error);
-        }
-        
-        $themes = [];
-        while ($row = $stmt->fetch_assoc()) {
-            $themes[] = $row;
-        }
-        
-        $this->sendSuccess($themes);
-        
-    } catch (Exception $e) {
-        error_log("getLevelNameThemes error: " . $e->getMessage());
-        $this->sendError('Failed to fetch themes: ' . $e->getMessage(), 500);
+public function getAchievementLevels($typeId) {
+    $stmt = $this->db->prepare("
+        SELECT * FROM wp_achievement_levels 
+        WHERE achievement_type_id = ? 
+        ORDER BY level_number
+    ");
+    $stmt->bind_param('i', $typeId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
+    $levels = [];
+    while ($row = $result->fetch_assoc()) {
+        $levels[] = $row;
     }
+    
+    $this->sendSuccess($levels);
 }
 
 /**
- * Get all levels for a specific theme
+ * Calculate user achievement level
  */
-public function getLevelNameThemeSpecific($themeName) {
-    try {
-        $themeName = urldecode($themeName);
-        
-        $stmt = $this->db->prepare("
-            SELECT id, theme_name, level_number, level_name, display_color, 
-                   display_icon, description, sort_order, created_by, created_at
-            FROM wp_achievement_level_names 
-            WHERE theme_name = ? AND is_active = 1 
-            ORDER BY level_number
+public function calculateUserAchievementLevel($userId, $drillId, $userScore = null) {
+    // Get drill info
+    $drillStmt = $this->db->prepare("
+        SELECT id, name, max_score, achievement_type_id
+        FROM wp_drills WHERE id = ? AND is_active = 1
+    ");
+    $drillStmt->bind_param('i', $drillId);
+    $drillStmt->execute();
+    $drillResult = $drillStmt->get_result();
+    
+    if (!$drill = $drillResult->fetch_assoc()) {
+        $this->sendError('Drill not found', 404);
+        return;
+    }
+    
+    if (!$drill['achievement_type_id']) {
+        $this->sendError('No achievement system assigned to this drill', 400);
+        return;
+    }
+    
+    // Get user's best score if not provided
+    if ($userScore === null) {
+        $scoreStmt = $this->db->prepare("
+            SELECT MAX(score) as best_score 
+            FROM wp_drill_scores 
+            WHERE user_id = ? AND drill_id = ?
         ");
-        
-        if (!$stmt) {
-            throw new Exception('Prepare failed: ' . $this->db->error);
+        $scoreStmt->bind_param('ii', $userId, $drillId);
+        $scoreStmt->execute();
+        $scoreData = $scoreStmt->get_result()->fetch_assoc();
+        $userScore = $scoreData['best_score'];
+    }
+    
+    if ($userScore === null) {
+        $this->sendError('No scores found for this user and drill', 404);
+        return;
+    }
+    
+    // Get achievement type info
+    $typeStmt = $this->db->prepare("SELECT name, calculation_method FROM wp_achievement_types WHERE id = ?");
+    $typeStmt->bind_param('i', $drill['achievement_type_id']);
+    $typeStmt->execute();
+    $typeResult = $typeStmt->get_result();
+    $achievementType = $typeResult->fetch_assoc();
+    
+    // Calculate comparison value
+    if ($achievementType['calculation_method'] === 'percentage') {
+        $comparisonValue = ($userScore / $drill['max_score']) * 100;
+    } else {
+        $comparisonValue = $userScore;
+    }
+    
+    // Get levels and find matching one
+    $levelsStmt = $this->db->prepare("SELECT * FROM wp_achievement_levels WHERE achievement_type_id = ? ORDER BY level_number");
+    $levelsStmt->bind_param('i', $drill['achievement_type_id']);
+    $levelsStmt->execute();
+    $levelsResult = $levelsStmt->get_result();
+    
+    $matchedLevel = null;
+    while ($level = $levelsResult->fetch_assoc()) {
+        if ($comparisonValue >= $level['min_threshold'] && $comparisonValue <= $level['max_threshold']) {
+            $matchedLevel = $level;
+            break;
         }
-        
-        $stmt->bind_param('s', $themeName);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        
-        $levels = [];
-        while ($row = $result->fetch_assoc()) {
-            $levels[] = $row;
-        }
-        
-        $this->sendSuccess($levels);
-        
-    } catch (Exception $e) {
-        error_log("getLevelNameThemeSpecific error: " . $e->getMessage());
-        $this->sendError('Failed to fetch theme levels: ' . $e->getMessage(), 500);
+    }
+    
+    if ($matchedLevel) {
+        $this->sendSuccess([
+            'level_name' => $matchedLevel['level_name'],
+            'level_number' => $matchedLevel['level_number'],
+            'display_color' => $matchedLevel['display_color'],
+            'display_icon' => $matchedLevel['display_icon'],
+            'comparison_value' => $comparisonValue,
+            'achievement_type' => $achievementType['name'],
+            'calculation_method' => $achievementType['calculation_method'],
+            'user_score' => $userScore,
+            'drill_max_score' => $drill['max_score']
+        ]);
+    } else {
+        $this->sendError('No matching achievement level found', 404);
     }
 }
-
-/**
- * Create new theme with levels
- */
-public function createLevelNameTheme($data) {
-    try {
-        // Get user from your existing authentication system
-        // You'll need to replace this with your actual auth method
-        $current_user_id = 1; // Replace with actual user ID from session/auth
-        
-        if (!isset($data['theme_name']) || !isset($data['levels']) || !is_array($data['levels'])) {
-            $this->sendError('Missing required fields: theme_name and levels array', 400);
-            return;
-        }
-        
-        $this->db->begin_transaction();
-        
-        try {
-            // Insert each level in the theme
-            $stmt = $this->db->prepare("
-                INSERT INTO wp_achievement_level_names 
-                (theme_name, level_number, level_name, display_color, display_icon, description, sort_order, created_by) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-            ");
-            
-            if (!$stmt) {
-                throw new Exception('Prepare failed: ' . $this->db->error);
-            }
-            
-            foreach ($data['levels'] as $level) {
-                if (!isset($level['level_number']) || !isset($level['level_name'])) {
-                    throw new Exception('Each level must have level_number and level_name');
-                }
-                
-                $stmt->bind_param('sissssis', 
-                    $data['theme_name'],
-                    $level['level_number'],
-                    $level['level_name'],
-                    $level['display_color'] ?? null,
-                    $level['display_icon'] ?? null,
-                    $level['description'] ?? null,
-                    $level['sort_order'] ?? $level['level_number'],
-                    $current_user_id
-                );
-                
-                if (!$stmt->execute()) {
-                    throw new Exception('Failed to insert level: ' . $this->db->error);
-                }
-            }
-            
-            $this->db->commit();
-            
-            $this->sendSuccess([
-                'message' => 'Theme created successfully'
-            ]);
-            
-        } catch (Exception $e) {
-            $this->db->rollback();
-            throw $e;
-        }
-        
-    } catch (Exception $e) {
-        error_log("createLevelNameTheme error: " . $e->getMessage());
-        $this->sendError('Failed to create theme: ' . $e->getMessage(), 500);
-    }
-}
-
-/**
- * Update level name
- */
-public function updateLevelName($levelId, $data) {
-    try {
-        $stmt = $this->db->prepare("
-            UPDATE wp_achievement_level_names 
-            SET level_name = ?, display_color = ?, display_icon = ?, description = ?, updated_at = CURRENT_TIMESTAMP
-            WHERE id = ? AND is_active = 1
-        ");
-        
-        if (!$stmt) {
-            throw new Exception('Prepare failed: ' . $this->db->error);
-        }
-		$level_name = $data['level_name'] ?? null;
-		$display_color = $data['display_color'] ?? null;
-		$display_icon = $data['display_icon'] ?? null;
-		$description = $data['description'] ?? null;        
-		$stmt->bind_param('ssssi', 
-			$level_name, 
-			$display_color, 
-			$display_icon, 
-			$description, 
-			$levelId);
-        
-        if (!$stmt->execute()) {
-            throw new Exception('Update failed: ' . $this->db->error);
-        }
-        
-        if ($stmt->affected_rows === 0) {
-            $this->sendError('Level not found or no changes made', 404);
-            return;
-        }
-        
-        $this->sendSuccess(['message' => 'Level updated successfully']);
-        
-    } catch (Exception $e) {
-        error_log("updateLevelName error: " . $e->getMessage());
-        $this->sendError('Failed to update level: ' . $e->getMessage(), 500);
-    }
-}
-
-/**
- * Delete level name (soft delete)
- */
-public function deleteLevelName($levelId) {
-    try {
-        // Soft delete - set is_active = 0
-        $stmt = $this->db->prepare("
-            UPDATE wp_achievement_level_names 
-            SET is_active = 0, updated_at = CURRENT_TIMESTAMP
-            WHERE id = ?
-        ");
-        
-        if (!$stmt) {
-            throw new Exception('Prepare failed: ' . $this->db->error);
-        }
-        
-        $stmt->bind_param('i', $levelId);
-        
-        if (!$stmt->execute()) {
-            throw new Exception('Delete failed: ' . $this->db->error);
-        }
-        
-        if ($stmt->affected_rows === 0) {
-            $this->sendError('Level not found', 404);
-            return;
-        }
-        
-        $this->sendSuccess(['message' => 'Level deleted successfully']);
-        
-    } catch (Exception $e) {
-        error_log("deleteLevelName error: " . $e->getMessage());
-        $this->sendError('Failed to delete level: ' . $e->getMessage(), 500);
-    }
-}    
+    
     /**
      * VERSION INFO
      */
@@ -8356,8 +8228,6 @@ public function deleteLevelName($levelId) {
                 'assignment-management' => 'Complete drill assignment system with admin interface',
                 'diagram-management' => 'File-based diagram upload and management with thumbnails',
 				'content-assignments' => 'Training content assignment management system',
-				'achievement-types' => 'Achievement type management for different scoring systems',
-				'level-names' => 'Customizable level naming themes (e.g., martial arts, military ranks)',
 				'training-content-management' => 'File-based training content upload and management with thumbnails'
             ],
             'status' => 'operational',

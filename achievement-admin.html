@@ -1,0 +1,1574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Achievement System Administration - Steve Sherman Billiards</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .logo {
+            width: 60px;
+            height: 60px;
+            margin-right: 15px;
+        }
+
+        .brand-text {
+            text-align: left;
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .brand-text h2 {
+            font-size: 1.1em;
+            margin: 0;
+            color: #333;
+            font-weight: 600;
+            line-height: 1.2;
+        }
+
+        .page-title {
+            font-size: 2.5em;
+            margin: 20px 0 10px 0;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-align: center;
+        }
+
+        .system-info {
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .system-details {
+            color: #333;
+            font-weight: 600;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-1px);
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+            transform: translateY(-1px);
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+            transform: translateY(-1px);
+        }
+
+        .btn-sm {
+            padding: 4px 8px;
+            font-size: 12px;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+            min-height: 500px;
+        }
+
+        .achievement-types-list {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            overflow-y: auto;
+            max-height: 700px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .achievement-types-list h3 {
+            margin-bottom: 20px;
+            color: #333;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .achievement-type-item {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            position: relative;
+            cursor: pointer;
+        }
+
+        .achievement-type-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+            border-color: #667eea;
+        }
+
+        .achievement-type-item.selected {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .achievement-type-title {
+            font-weight: 600;
+            font-size: 1.1em;
+            color: #333;
+            margin-bottom: 5px;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            hyphens: auto;
+            line-height: 1.3;
+        }
+
+        .achievement-type-method {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .achievement-type-method.percentage {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .achievement-type-method.score {
+            background: #e8f5e8;
+            color: #388e3c;
+        }
+
+        .achievement-type-description {
+            font-size: 0.9em;
+            color: #777;
+            line-height: 1.4;
+            margin-bottom: 10px;
+        }
+
+        .achievement-type-stats {
+            font-size: 0.8em;
+            color: #666;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .achievement-type-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .achievement-type-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 80px;
+        }
+
+        .achievement-type-btn.overview-btn {
+            background: #667eea;
+            color: white;
+        }
+
+        .achievement-type-btn.overview-btn:hover {
+            background: #5a6fd8;
+            transform: translateY(-1px);
+        }
+
+        .achievement-type-btn.overview-btn.active {
+            background: #4c63d2;
+            box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.3);
+        }
+
+        .achievement-type-btn.levels-btn {
+            background: #28a745;
+            color: white;
+        }
+
+        .achievement-type-btn.levels-btn:hover {
+            background: #218838;
+            transform: translateY(-1px);
+        }
+
+        .achievement-type-btn.levels-btn.active {
+            background: #1e7e34;
+            box-shadow: 0 0 0 2px rgba(40, 167, 69, 0.3);
+        }
+
+        .achievement-editor {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .editor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .editor-title {
+            color: #333;
+            font-size: 1.3em;
+            flex: 1;
+        }
+
+        .editor-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 600;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+            font-family: inherit;
+            line-height: 1.5;
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            background: #f8f9fa;
+            cursor: pointer;
+        }
+
+        .form-select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .levels-view {
+            display: none;
+        }
+
+        .levels-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .levels-list {
+            max-height: 500px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+
+        .level-item {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            border: 1px solid #e0e0e0;
+            transition: all 0.3s ease;
+        }
+
+        .level-item:hover {
+            background: #e9ecef;
+            transform: translateY(-1px);
+        }
+
+        .level-order {
+            background: #667eea;
+            color: white;
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: bold;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+
+        .level-icon {
+            font-size: 20px;
+            margin-right: 10px;
+            flex-shrink: 0;
+            font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
+            line-height: 1;
+        }
+
+        .level-info {
+            flex: 1;
+        }
+
+        .level-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+            font-size: 1.1em;
+        }
+
+        .level-thresholds {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 2px;
+        }
+
+        .level-color-indicator {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            margin-left: 10px;
+            flex-shrink: 0;
+            border: 1px solid #ddd;
+        }
+
+        .level-actions {
+            display: flex;
+            gap: 5px;
+            margin-left: 15px;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+            padding: 40px 20px;
+        }
+
+        .loading {
+            text-align: center;
+            color: #667eea;
+            font-weight: 600;
+            padding: 20px;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+            display: none;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+            display: none;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 0;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 20px;
+            border-radius: 10px 10px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .form-col {
+            flex: 1;
+        }
+
+        .form-col-small {
+            flex: 0 0 120px;
+        }
+
+        .color-input-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .color-preview {
+            width: 40px;
+            height: 40px;
+            border-radius: 6px;
+            border: 2px solid #ddd;
+            flex-shrink: 0;
+        }
+
+        .emoji-picker {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 10px;
+            max-height: 120px;
+            overflow-y: auto;
+            padding: 5px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+        }
+
+        .emoji-option {
+            font-size: 20px;
+            padding: 5px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+            font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
+            line-height: 1;
+        }
+
+        .emoji-option:hover {
+            background: #f0f0f0;
+        }
+
+        #displayIcon {
+            font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", Arial, sans-serif;
+            font-size: 16px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                padding: 20px;
+            }
+
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .achievement-types-list {
+                max-height: 300px;
+            }
+
+            .header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .brand-text {
+                text-align: center;
+                min-width: auto;
+            }
+
+            .system-info {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .editor-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .editor-actions {
+                justify-content: center;
+            }
+
+            .form-row {
+                flex-direction: column;
+            }
+
+            .achievement-type-actions {
+                flex-direction: column;
+            }
+
+            .achievement-type-btn {
+                min-width: auto;
+            }
+
+            .modal-content {
+                width: 95%;
+                margin: 2% auto;
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="mainContainer">
+        <!-- Header -->
+        <div class="header">
+            <img src="images/logo.png" alt="Steve Sherman Billiards Logo" class="logo">
+            <div class="brand-text">
+                <h2>Steve Sherman Billiards Training System</h2>
+            </div>
+        </div>
+        <h1 class="page-title">Achievement System Administration</h1>
+
+        <!-- System Info -->
+        <div class="system-info">
+            <div class="system-details">
+                <span>Achievement System Management</span><br>
+                <small>Manager Mode | Build: <span id="buildTimestamp"></span></small>
+            </div>
+            <div class="action-buttons">
+                <button class="btn btn-primary" id="newAchievementTypeBtn" onclick="createNewAchievementType()">+ New Achievement Type</button>
+                <button class="btn btn-secondary" onclick="forceRefresh()">🔄 Refresh</button>
+                <button class="btn btn-secondary" onclick="window.close()">Close</button>
+            </div>
+        </div>
+
+        <!-- Messages -->
+        <div id="errorMessage" class="error-message"></div>
+        <div id="successMessage" class="success-message"></div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Achievement Types List -->
+            <div class="achievement-types-list">
+                <h3>Achievement Types</h3>
+                
+                <div id="achievementTypesContainer">
+                    <div class="loading">Loading achievement types...</div>
+                </div>
+            </div>
+
+            <!-- Achievement Type Editor -->
+            <div class="achievement-editor">
+                <div class="editor-header">
+                    <h3 class="editor-title" id="editorTitle">Select an achievement type to view</h3>
+                    <div class="editor-actions" id="editorActions" style="display: none;">
+                        <button class="btn btn-success" onclick="saveAchievementType()">Save</button>
+                        <button class="btn btn-danger" onclick="deleteAchievementType()">Delete</button>
+                        <button class="btn btn-secondary" onclick="cancelEdit()">Cancel</button>
+                    </div>
+                </div>
+                
+                <div id="editorContent">
+                    <div class="empty-state">
+                        Select an achievement type from the list to view its details and manage levels.
+                    </div>
+                </div>
+
+                <!-- Achievement Type Overview Form -->
+                <div id="editorForm" style="display: none;">
+                    <form id="achievementTypeForm">
+                        <div class="form-group">
+                            <label for="achievementTypeName" class="form-label">Achievement Type Name:</label>
+                            <input type="text" id="achievementTypeName" name="name" class="form-input" 
+                                   placeholder="Enter a name for this achievement type" required maxlength="255">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="achievementTypeDescription" class="form-label">Description:</label>
+                            <textarea id="achievementTypeDescription" name="description" class="form-input form-textarea" 
+                                      placeholder="Describe this achievement system and how it works..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="calculationMethod" class="form-label">Calculation Method:</label>
+                            <select id="calculationMethod" name="calculation_method" class="form-select" required>
+                                <option value="">Select calculation method</option>
+                                <option value="percentage">Percentage - Uses (user_score/drill_max_score)*100 vs thresholds</option>
+                                <option value="score">Score - Uses raw user_score vs thresholds</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Achievement Levels View -->
+                <div id="levelsView" class="levels-view">
+                    <div class="levels-header">
+                        <h4>Achievement Levels</h4>
+                        <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
+                            <div style="display: flex; gap: 10px; align-items: center;">
+                                <span style="font-size: 14px; color: #666;">
+                                    <span id="levelCount">0</span> levels defined
+                                </span>
+                            </div>
+                            <div style="display: flex; gap: 10px;">
+                                <button class="btn btn-primary" onclick="openAddLevelModal()" style="font-size: 13px;">
+                                    + Add Level
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="levels-list" id="levelsList">
+                        <div class="empty-state">
+                            No levels defined for this achievement type.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Level Modal -->
+    <div id="levelModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="levelModalTitle">Add Achievement Level</h3>
+                <button class="modal-close" onclick="closeLevelModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="levelForm">
+                    <input type="hidden" id="levelId" name="id">
+                    <input type="hidden" id="levelAchievementTypeId" name="achievement_type_id">
+                    
+                    <div class="form-group">
+                        <label for="levelName" class="form-label">Level Name:</label>
+                        <input type="text" id="levelName" name="name" class="form-input" 
+                               placeholder="e.g., Beginner, Expert, Master" required maxlength="100">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-col-small">
+                            <label for="levelOrder" class="form-label">Order:</label>
+                            <input type="number" id="levelOrder" name="level_order" class="form-input" 
+                                   min="1" max="100" required placeholder="1">
+                        </div>
+                        <div class="form-col">
+                            <label for="targetScore" class="form-label">Target Score:</label>
+                            <input type="number" id="targetScore" name="target_score" class="form-input" 
+                                   min="0" placeholder="Target score to achieve this level">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-col">
+                            <label for="minThreshold" class="form-label">Minimum Threshold:</label>
+                            <input type="number" id="minThreshold" name="min_threshold" class="form-input" 
+                                   min="0" required placeholder="Minimum score for this level">
+                        </div>
+                        <div class="form-col">
+                            <label for="maxThreshold" class="form-label">Maximum Threshold:</label>
+                            <input type="number" id="maxThreshold" name="max_threshold" class="form-input" 
+                                   min="0" placeholder="Maximum score (leave empty for highest level)">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-col">
+                            <label for="displayColor" class="form-label">Display Color:</label>
+                            <div class="color-input-group">
+                                <input type="color" id="displayColor" name="display_color" class="form-input" 
+                                       value="#667eea" style="width: 60px; height: 40px; padding: 0;">
+                                <div class="color-preview" id="colorPreview" style="background-color: #667eea;"></div>
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <label for="displayIcon" class="form-label">Display Icon:</label>
+                            <input type="text" id="displayIcon" name="display_icon" class="form-input" 
+                                   placeholder="🏆" maxlength="10">
+                            <div class="emoji-picker">
+                                <span class="emoji-option" onclick="selectEmoji('🏆')">🏆</span>
+                                <span class="emoji-option" onclick="selectEmoji('🥇')">🥇</span>
+                                <span class="emoji-option" onclick="selectEmoji('🥈')">🥈</span>
+                                <span class="emoji-option" onclick="selectEmoji('🥉')">🥉</span>
+                                <span class="emoji-option" onclick="selectEmoji('⭐')">⭐</span>
+                                <span class="emoji-option" onclick="selectEmoji('🌟')">🌟</span>
+                                <span class="emoji-option" onclick="selectEmoji('💎')">💎</span>
+                                <span class="emoji-option" onclick="selectEmoji('👑')">👑</span>
+                                <span class="emoji-option" onclick="selectEmoji('🎯')">🎯</span>
+                                <span class="emoji-option" onclick="selectEmoji('🎱')">🎱</span>
+                                <span class="emoji-option" onclick="selectEmoji('🔰')">🔰</span>
+                                <span class="emoji-option" onclick="selectEmoji('📈')">📈</span>
+                                <span class="emoji-option" onclick="selectEmoji('🚀')">🚀</span>
+                                <span class="emoji-option" onclick="selectEmoji('⚡')">⚡</span>
+                                <span class="emoji-option" onclick="selectEmoji('🔥')">🔥</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 30px;">
+                        <button type="button" class="btn btn-secondary" onclick="closeLevelModal()">Cancel</button>
+                        <button type="submit" class="btn btn-success">Save Level</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Version and Configuration
+        const VERSION = '1.0-ACHIEVEMENT-ADMIN';
+        const BUILD_TIMESTAMP = new Date().toISOString();
+        const CACHE_BUSTER = Date.now() + Math.random() * 1000000;
+        const API_BASE_URL = 'https://steveshermanbilliards.com/drill-api.php';
+
+        // State management
+        let achievementTypes = [];
+        let currentAchievementType = null;
+        let currentLevels = [];
+        let currentView = 'overview';
+        let isEditing = false;
+        let editingLevel = null;
+
+        // API Helper Function
+        async function apiRequest(endpoint, method = 'GET', data = null) {
+            try {
+                const options = {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Cache-Control': 'no-cache, no-store, must-revalidate',
+                        'Pragma': 'no-cache',
+                        'Expires': '0'
+                    }
+                };
+                
+                if (data) {
+                    options.body = JSON.stringify(data);
+                }
+                
+                let fullUrl = `${API_BASE_URL}/${endpoint}`;
+                if (method === 'GET') {
+                    const separator = endpoint.includes('?') ? '&' : '?';
+                    fullUrl += `${separator}_t=${CACHE_BUSTER}&_v=${VERSION}&_r=${Math.random()}`;
+                }
+                
+                console.log('🌐 API Request:', method, fullUrl);
+                
+                const response = await fetch(fullUrl, options);
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('❌ HTTP Error:', response.status, errorText);
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const result = await response.json();
+                console.log('📄 API Response:', result);
+                
+                if (!result.success) {
+                    throw new Error(result.message || 'API request failed');
+                }
+                
+                return result;
+            } catch (error) {
+                console.error('❌ API Error:', error);
+                throw error;
+            }
+        }
+
+        // Data Loading Functions
+        async function loadAllData() {
+            try {
+                console.log('📚 Loading achievement system data...');
+                console.log('🔗 API Base URL:', API_BASE_URL);
+                
+                await loadAchievementTypes();
+                console.log('✅ Achievement types loaded successfully');
+                
+            } catch (error) {
+                console.error('❌ Error loading data:', error);
+                showError('Failed to load data: ' + error.message);
+            }
+        }
+
+        async function loadAchievementTypes() {
+            try {
+                console.log('📋 Loading achievement types...');
+                
+                const response = await apiRequest('achievement-types');
+                achievementTypes = response.data || [];
+                
+                console.log('📋 Loaded achievement types:', achievementTypes.length);
+                displayAchievementTypes();
+                
+            } catch (error) {
+                console.error('❌ Error loading achievement types:', error);
+                achievementTypes = [];
+                displayAchievementTypes();
+                throw error;
+            }
+        }
+
+        async function loadAchievementLevels(achievementTypeId) {
+            try {
+                console.log('📊 Loading levels for achievement type:', achievementTypeId);
+                
+                const response = await apiRequest(`achievement-levels/${achievementTypeId}`);
+                currentLevels = response.data || [];
+                
+                // Sort levels by level_number (API field) or level_order (fallback)
+                currentLevels.sort((a, b) => {
+                    const orderA = parseInt(a.level_number || a.level_order) || 0;
+                    const orderB = parseInt(b.level_number || b.level_order) || 0;
+                    return orderA - orderB;
+                });
+                
+                console.log('📊 Loaded levels:', currentLevels.length);
+                console.log('📊 First level structure:', currentLevels.length > 0 ? currentLevels[0] : 'No levels');
+                displayLevels();
+                
+            } catch (error) {
+                console.error('❌ Error loading levels:', error);
+                currentLevels = [];
+                displayLevels();
+            }
+        }
+
+        // Display Functions
+        function displayAchievementTypes() {
+            const container = document.getElementById('achievementTypesContainer');
+            
+            console.log('🖥️ displayAchievementTypes called with', achievementTypes.length, 'types');
+            console.log('🔍 Achievement types data:', achievementTypes.map(t => ({id: t.id, name: t.name, level_count: t.level_count})));
+            
+            if (achievementTypes.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        No achievement types found. Create your first achievement system!
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = achievementTypes.map(type => {
+                const isSelected = currentAchievementType && currentAchievementType.id == type.id;
+                const methodClass = type.calculation_method === 'percentage' ? 'percentage' : 'score';
+                const levelCountText = type.level_count || 0;
+                
+                console.log('🏷️ Generating HTML for type:', type.id, type.name, 'levels:', levelCountText);
+                
+                return `
+                    <div class="achievement-type-item ${isSelected ? 'selected' : ''}" 
+                         onclick="selectAchievementType(${type.id})">
+                        <div class="achievement-type-method ${methodClass}">${type.calculation_method || 'score'}</div>
+                        <div class="achievement-type-title">${type.name || 'Unnamed Achievement Type'}</div>
+                        <div class="achievement-type-description">
+                            ${type.description ? 
+                                (type.description.length > 100 ? 
+                                    type.description.substring(0, 100) + '...' : 
+                                    type.description) : 
+                                'No description available'}
+                        </div>
+                        <div class="achievement-type-stats">
+                            <span>ID: ${type.id}</span>
+                            <span>${levelCountText} levels</span>
+                        </div>
+                        <div class="achievement-type-actions">
+                            <button class="achievement-type-btn overview-btn ${currentView === 'overview' ? 'active' : ''}" 
+                                    onclick="event.stopPropagation(); console.log('Overview clicked for ID:', ${type.id}); selectAchievementType(${type.id}, 'overview'); return false;">
+                                Overview
+                            </button>
+                            <button class="achievement-type-btn levels-btn ${currentView === 'levels' ? 'active' : ''}" 
+                                    onclick="event.stopPropagation(); console.log('Levels clicked for ID:', ${type.id}); selectAchievementType(${type.id}, 'levels'); return false;">
+                                Levels (${levelCountText})
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            console.log('✅ Achievement types HTML generated and inserted');
+        }
+
+        function displayLevels() {
+            const levelsList = document.getElementById('levelsList');
+            const levelCount = document.getElementById('levelCount');
+            
+            console.log('🏆 displayLevels called with', currentLevels.length, 'levels');
+            console.log('🔍 Level data structure:', currentLevels.length > 0 ? currentLevels[0] : 'No levels');
+            
+            levelCount.textContent = currentLevels.length;
+            
+            if (currentLevels.length === 0) {
+                levelsList.innerHTML = `
+                    <div class="empty-state">
+                        No levels defined for this achievement type. Add your first level!
+                    </div>
+                `;
+                return;
+            }
+            
+            const levelsHtml = currentLevels.map((level, index) => {
+                // Map API field names to interface expectations
+                const levelName = level.level_name || level.name || 'Unnamed Level';
+                const levelNumber = level.level_number || level.level_order || (index + 1);
+                
+                // Handle emoji display - decode if needed and provide fallback
+                let displayIcon = level.display_icon || '🏆';
+                
+                // Debug emoji handling
+                console.log('🎭 Level icon raw:', level.display_icon, 'Display icon:', displayIcon);
+                
+                // Try to decode HTML entities if they exist
+                if (displayIcon.includes('&') || displayIcon.includes('#')) {
+                    const tempDiv = document.createElement('div');
+                    tempDiv.innerHTML = displayIcon;
+                    displayIcon = tempDiv.textContent || tempDiv.innerText || displayIcon;
+                    console.log('🎭 Decoded icon:', displayIcon);
+                }
+                
+                // Fallback to a default emoji if display seems wrong
+                if (!displayIcon || displayIcon.length > 10 || displayIcon.includes('&')) {
+                    displayIcon = '🏆';
+                    console.log('🎭 Using fallback icon for level:', levelName);
+                }
+                
+                const thresholdText = level.max_threshold 
+                    ? `${level.min_threshold || 0} - ${level.max_threshold}`
+                    : `${level.min_threshold || 0}+`;
+                    
+                const targetText = level.target_score ? ` • Target: ${level.target_score}` : '';
+                
+                return `
+                    <div class="level-item">
+                        <div class="level-order">${levelNumber}</div>
+                        <div class="level-icon" title="Icon: ${level.display_icon || 'Default'}">${displayIcon}</div>
+                        <div class="level-info">
+                            <div class="level-name">${levelName}</div>
+                            <div class="level-thresholds">
+                                Range: ${thresholdText}${targetText}
+                            </div>
+                        </div>
+                        <div class="level-color-indicator" style="background-color: ${level.display_color || '#667eea'};"></div>
+                        <div class="level-actions">
+                            <button class="btn btn-sm btn-primary" onclick="editLevel(${level.id})" title="Edit Level">✏️</button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteLevel(${level.id})" title="Delete Level">🗑️</button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            levelsList.innerHTML = levelsHtml.join('');
+        }
+
+        // Achievement Type Management
+        async function selectAchievementType(typeId, view = null) {
+            try {
+                console.log('🎯 selectAchievementType called with:', typeId, view);
+                console.log('🔍 Available achievement types:', achievementTypes.map(t => ({id: t.id, name: t.name, idType: typeof t.id})));
+                
+                // Try both string and number comparison to handle different data types
+                const type = achievementTypes.find(t => t.id == typeId || t.id === parseInt(typeId) || t.id === String(typeId));
+                if (!type) {
+                    console.error('❌ Could not find achievement type with ID:', typeId);
+                    console.error('❌ Available IDs:', achievementTypes.map(t => t.id));
+                    showError('Achievement type not found');
+                    return;
+                }
+                
+                console.log('✅ Found achievement type:', type.name);
+                
+                currentAchievementType = type;
+                
+                if (view) {
+                    currentView = view;
+                }
+                
+                console.log('📋 Selected type:', type.name, '- View:', currentView);
+                
+                displayAchievementTypes();
+                
+                if (currentView === 'levels') {
+                    await showLevelsView();
+                } else {
+                    showOverviewView();
+                }
+                
+            } catch (error) {
+                console.error('❌ Error selecting achievement type:', error);
+                showError('Failed to select achievement type: ' + error.message);
+            }
+        }
+
+        function showOverviewView() {
+            currentView = 'overview';
+            
+            document.getElementById('editorTitle').textContent = `Achievement Type: ${currentAchievementType.name}`;
+            document.getElementById('editorActions').style.display = 'flex';
+            document.getElementById('editorContent').style.display = 'none';
+            document.getElementById('levelsView').style.display = 'none';
+            
+            const form = document.getElementById('editorForm');
+            form.style.display = 'block';
+            
+            document.getElementById('achievementTypeName').value = currentAchievementType.name || '';
+            document.getElementById('achievementTypeDescription').value = currentAchievementType.description || '';
+            document.getElementById('calculationMethod').value = currentAchievementType.calculation_method || '';
+            
+            isEditing = true;
+            updateViewButtons();
+        }
+
+        async function showLevelsView() {
+            currentView = 'levels';
+            
+            document.getElementById('editorTitle').textContent = `Levels: ${currentAchievementType.name}`;
+            document.getElementById('editorActions').style.display = 'none';
+            document.getElementById('editorContent').style.display = 'none';
+            document.getElementById('editorForm').style.display = 'none';
+            document.getElementById('levelsView').style.display = 'block';
+            
+            isEditing = false;
+            
+            await loadAchievementLevels(currentAchievementType.id);
+            updateViewButtons();
+        }
+
+        function updateViewButtons() {
+            document.querySelectorAll('.achievement-type-item').forEach(item => {
+                const overviewBtn = item.querySelector('.overview-btn');
+                const levelsBtn = item.querySelector('.levels-btn');
+                
+                if (overviewBtn && levelsBtn) {
+                    overviewBtn.classList.toggle('active', currentView === 'overview');
+                    levelsBtn.classList.toggle('active', currentView === 'levels');
+                }
+            });
+        }
+
+        async function createNewAchievementType() {
+            try {
+                const typeData = {
+                    name: 'New Achievement Type',
+                    description: 'Description for new achievement type',
+                    calculation_method: 'score'
+                };
+                
+                console.log('🔨 Creating new achievement type:', typeData);
+                
+                const response = await apiRequest('achievement-types', 'POST', typeData);
+                
+                console.log('✅ Achievement type created:', response);
+                showSuccess('New achievement type created successfully!');
+                
+                await loadAchievementTypes();
+                
+                const newType = achievementTypes.find(t => t.id === response.data.id);
+                if (newType) {
+                    await selectAchievementType(newType.id, 'overview');
+                }
+                
+            } catch (error) {
+                console.error('❌ Error creating achievement type:', error);
+                showError('Failed to create achievement type: ' + error.message);
+            }
+        }
+
+        async function saveAchievementType() {
+            if (!currentAchievementType || !isEditing) {
+                return;
+            }
+            
+            try {
+                const formData = {
+                    name: document.getElementById('achievementTypeName').value.trim(),
+                    description: document.getElementById('achievementTypeDescription').value.trim(),
+                    calculation_method: document.getElementById('calculationMethod').value
+                };
+                
+                if (!formData.name) {
+                    showError('Achievement type name is required');
+                    return;
+                }
+                
+                if (!formData.calculation_method) {
+                    showError('Calculation method is required');
+                    return;
+                }
+                
+                console.log('💾 Saving achievement type:', currentAchievementType.id, formData);
+                
+                const response = await apiRequest(`achievement-types/${currentAchievementType.id}`, 'PUT', formData);
+                
+                console.log('✅ Achievement type saved:', response);
+                showSuccess('Achievement type saved successfully!');
+                
+                Object.assign(currentAchievementType, formData);
+                await loadAchievementTypes();
+                
+            } catch (error) {
+                console.error('❌ Error saving achievement type:', error);
+                showError('Failed to save achievement type: ' + error.message);
+            }
+        }
+
+        function deleteAchievementType() {
+            if (!currentAchievementType) {
+                showError('No achievement type selected for deletion');
+                return;
+            }
+            
+            if (confirm(`Are you sure you want to delete the achievement type "${currentAchievementType.name}"? This will also remove all levels for this type. This action cannot be undone.`)) {
+                performDeleteAchievementType();
+            }
+        }
+
+        async function performDeleteAchievementType() {
+            try {
+                console.log('🗑️ Deleting achievement type:', currentAchievementType.id);
+                
+                const response = await apiRequest(`achievement-types/${currentAchievementType.id}`, 'DELETE');
+                
+                console.log('✅ Achievement type deleted:', response);
+                showSuccess(`Achievement type "${currentAchievementType.name}" deleted successfully!`);
+                
+                currentAchievementType = null;
+                isEditing = false;
+                await loadAchievementTypes();
+                cancelEdit();
+                
+            } catch (error) {
+                console.error('❌ Error deleting achievement type:', error);
+                showError('Failed to delete achievement type: ' + error.message);
+            }
+        }
+
+        function cancelEdit() {
+            if (currentAchievementType) {
+                selectAchievementType(currentAchievementType.id, currentView);
+            } else {
+                document.getElementById('editorTitle').textContent = 'Select an achievement type to view';
+                document.getElementById('editorActions').style.display = 'none';
+                document.getElementById('editorForm').style.display = 'none';
+                document.getElementById('levelsView').style.display = 'none';
+                document.getElementById('editorContent').style.display = 'block';
+                isEditing = false;
+            }
+        }
+
+        // Level Management
+        function openAddLevelModal() {
+            editingLevel = null;
+            document.getElementById('levelModalTitle').textContent = 'Add Achievement Level';
+            document.getElementById('levelForm').reset();
+            document.getElementById('levelId').value = '';
+            document.getElementById('levelAchievementTypeId').value = currentAchievementType.id;
+            
+            // Set next level number (API uses level_number)
+            const maxOrder = currentLevels.length > 0 ? 
+                Math.max(...currentLevels.map(l => parseInt(l.level_number || l.level_order) || 0)) : 0;
+            document.getElementById('levelOrder').value = maxOrder + 1;
+            
+            // Set default color
+            document.getElementById('displayColor').value = '#667eea';
+            document.getElementById('colorPreview').style.backgroundColor = '#667eea';
+            
+            document.getElementById('levelModal').style.display = 'block';
+        }
+
+        function editLevel(levelId) {
+            const level = currentLevels.find(l => l.id === levelId);
+            if (!level) {
+                showError('Level not found');
+                return;
+            }
+            
+            editingLevel = level;
+            document.getElementById('levelModalTitle').textContent = 'Edit Achievement Level';
+            
+            // Handle emoji decoding for the form
+            let displayIcon = level.display_icon || '';
+            console.log('🎭 Editing level icon raw:', displayIcon);
+            
+            // Try to decode HTML entities if they exist
+            if (displayIcon && (displayIcon.includes('&') || displayIcon.includes('#'))) {
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = displayIcon;
+                displayIcon = tempDiv.textContent || tempDiv.innerText || displayIcon;
+                console.log('🎭 Decoded icon for editing:', displayIcon);
+            }
+            
+            // Map API field names to form fields
+            document.getElementById('levelId').value = level.id;
+            document.getElementById('levelAchievementTypeId').value = level.achievement_type_id;
+            document.getElementById('levelName').value = level.level_name || level.name || '';
+            document.getElementById('levelOrder').value = level.level_number || level.level_order || '';
+            document.getElementById('minThreshold').value = level.min_threshold || '';
+            document.getElementById('maxThreshold').value = level.max_threshold || '';
+            document.getElementById('targetScore').value = level.target_score || '';
+            document.getElementById('displayColor').value = level.display_color || '#667eea';
+            document.getElementById('displayIcon').value = displayIcon;
+            document.getElementById('colorPreview').style.backgroundColor = level.display_color || '#667eea';
+            
+            document.getElementById('levelModal').style.display = 'block';
+        }
+
+        function closeLevelModal() {
+            document.getElementById('levelModal').style.display = 'none';
+            editingLevel = null;
+        }
+
+        async function deleteLevel(levelId) {
+            if (confirm('Are you sure you want to delete this level? This action cannot be undone.')) {
+                try {
+                    console.log('🗑️ Deleting level:', levelId);
+                    
+                    const response = await apiRequest(`achievement-levels/${levelId}`, 'DELETE');
+                    
+                    console.log('✅ Level deleted:', response);
+                    showSuccess('Level deleted successfully!');
+                    
+                    await loadAchievementLevels(currentAchievementType.id);
+                    
+                } catch (error) {
+                    console.error('❌ Error deleting level:', error);
+                    showError('Failed to delete level: ' + error.message);
+                }
+            }
+        }
+
+        // Modal helpers
+        function selectEmoji(emoji) {
+            console.log('🎭 Emoji selected:', emoji, 'Character codes:', [...emoji].map(c => c.charCodeAt(0)));
+            document.getElementById('displayIcon').value = emoji;
+            
+            // Update the input to show the selected emoji
+            const input = document.getElementById('displayIcon');
+            input.focus();
+            input.blur(); // Trigger any change events
+        }
+
+        // Color picker update
+        document.addEventListener('DOMContentLoaded', function() {
+            const colorInput = document.getElementById('displayColor');
+            if (colorInput) {
+                colorInput.addEventListener('input', function() {
+                    document.getElementById('colorPreview').style.backgroundColor = this.value;
+                });
+            }
+        });
+
+        // Level form submission
+        document.addEventListener('DOMContentLoaded', function() {
+            const levelForm = document.getElementById('levelForm');
+            if (levelForm) {
+                levelForm.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    await saveLevelForm();
+                });
+            }
+        });
+
+        async function saveLevelForm() {
+            try {
+                const iconValue = document.getElementById('displayIcon').value;
+                console.log('🎭 Raw icon value from form:', iconValue, 'Character codes:', [...iconValue].map(c => c.charCodeAt(0)));
+                
+                // Map form fields to API field names
+                const formData = {
+                    achievement_type_id: parseInt(document.getElementById('levelAchievementTypeId').value),
+                    level_name: document.getElementById('levelName').value.trim(), // API uses level_name
+                    level_number: parseInt(document.getElementById('levelOrder').value), // API uses level_number
+                    min_threshold: parseFloat(document.getElementById('minThreshold').value) || 0,
+                    max_threshold: document.getElementById('maxThreshold').value ? parseFloat(document.getElementById('maxThreshold').value) : null,
+                    target_score: document.getElementById('targetScore').value ? parseFloat(document.getElementById('targetScore').value) : null,
+                    display_color: document.getElementById('displayColor').value,
+                    display_icon: iconValue || '🏆'
+                };
+                
+                if (!formData.level_name) {
+                    showError('Level name is required');
+                    return;
+                }
+                
+                console.log('💾 Saving level with API field names:', formData);
+                console.log('🎭 Icon being saved:', formData.display_icon, 'Length:', formData.display_icon.length);
+                
+                let response;
+                if (editingLevel) {
+                    // Update existing level
+                    response = await apiRequest(`achievement-levels/${editingLevel.id}`, 'PUT', formData);
+                    console.log('✅ Level updated:', response);
+                    showSuccess('Level updated successfully!');
+                } else {
+                    // Create new level
+                    response = await apiRequest('achievement-levels', 'POST', formData);
+                    console.log('✅ Level created:', response);
+                    showSuccess('Level created successfully!');
+                }
+                
+                closeLevelModal();
+                await loadAchievementLevels(currentAchievementType.id);
+                
+            } catch (error) {
+                console.error('❌ Error saving level:', error);
+                showError('Failed to save level: ' + error.message);
+            }
+        }
+
+        // Utility Functions
+        async function forceRefresh() {
+            try {
+                showSuccess('Refreshing data...');
+                
+                currentAchievementType = null;
+                currentView = 'overview';
+                isEditing = false;
+                
+                await loadAllData();
+                cancelEdit();
+                
+                showSuccess('Data refreshed successfully!');
+                
+            } catch (error) {
+                console.error('❌ Error refreshing data:', error);
+                showError('Failed to refresh data: ' + error.message);
+            }
+        }
+
+        // Message Functions
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            const successDiv = document.getElementById('successMessage');
+            
+            successDiv.style.display = 'none';
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            
+            console.error('❌ Error:', message);
+            
+            setTimeout(() => {
+                errorDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        function showSuccess(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            const successDiv = document.getElementById('successMessage');
+            
+            errorDiv.style.display = 'none';
+            successDiv.textContent = message;
+            successDiv.style.display = 'block';
+            
+            console.log('✅ Success:', message);
+            
+            setTimeout(() => {
+                successDiv.style.display = 'none';
+            }, 3000);
+        }
+
+        // Modal click-outside-to-close
+        window.onclick = function(event) {
+            const modal = document.getElementById('levelModal');
+            if (event.target === modal) {
+                closeLevelModal();
+            }
+        };
+
+        // Initialization
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('🚀 Achievement System Admin loaded, initializing...');
+            console.log(`🎯 VERSION: ${VERSION}`);
+            console.log(`🕐 BUILD: ${BUILD_TIMESTAMP}`);
+            console.log(`💾 CACHE BUSTER: ${CACHE_BUSTER}`);
+            
+            // Display version info
+            document.getElementById('buildTimestamp').textContent = new Date().toLocaleString();
+            
+            try {
+                await loadAllData();
+                console.log('✅ Initialization complete');
+                console.log(`🎉 SUCCESSFULLY RUNNING VERSION: ${VERSION}`);
+                
+            } catch (error) {
+                console.error('❌ Initialization failed:', error);
+                showError('Failed to initialize: ' + error.message);
+            }
+        });
+
+        console.log('🏆 Achievement System Admin Interface Ready');
+        console.log(`📡 API URL: ${API_BASE_URL}`);
+        console.log(`🎯 VERSION: ${VERSION}`);
+        console.log(`🕐 BUILD: ${BUILD_TIMESTAMP}`);
+        console.log(`💾 CACHE BUSTER: ${CACHE_BUSTER}`);
+    </script>
+</body>
+</html>
