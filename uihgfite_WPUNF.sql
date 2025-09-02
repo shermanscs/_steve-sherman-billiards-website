@@ -3,8 +3,8 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Aug 21, 2025 at 12:54 PM
--- Server version: 8.0.42-33
+-- Generation Time: Sep 02, 2025 at 01:23 PM
+-- Server version: 8.0.43-34
 -- PHP Version: 8.3.23
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
@@ -75,6 +75,73 @@ CREATE TABLE `vw_user_program_progress` (
 ,`total_time_spent_minutes` decimal(32,0)
 ,`last_activity_date` timestamp
 );
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `wp_achievement_levels`
+--
+
+CREATE TABLE `wp_achievement_levels` (
+  `id` int NOT NULL,
+  `achievement_type_id` int NOT NULL,
+  `level_number` int NOT NULL,
+  `level_name` varchar(255) NOT NULL,
+  `min_threshold` decimal(10,2) NOT NULL,
+  `max_threshold` decimal(10,2) NOT NULL,
+  `target_threshold` decimal(10,2) DEFAULT NULL,
+  `display_color` varchar(7) DEFAULT '#4CAF50',
+  `display_icon` varchar(255) DEFAULT 'fa-trophy',
+  `icon_type` enum('fontawesome','custom','emoji') DEFAULT 'fontawesome',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ;
+
+--
+-- Dumping data for table `wp_achievement_levels`
+--
+
+INSERT INTO `wp_achievement_levels` (`id`, `achievement_type_id`, `level_number`, `level_name`, `min_threshold`, `max_threshold`, `target_threshold`, `display_color`, `display_icon`, `icon_type`, `created_at`, `updated_at`) VALUES
+(1, 1, 1, 'D Player', 1.00, 10.00, 5.00, '#8B4513', '🔘', 'fontawesome', '2025-08-30 12:22:34', '2025-08-31 16:38:44'),
+(2, 1, 2, 'C Player', 11.00, 20.00, 15.00, '#CD853F', 'fa-circle-dot', 'fontawesome', '2025-08-30 12:22:34', '2025-08-30 12:22:34'),
+(3, 1, 3, 'B Player', 21.00, 30.00, 25.00, '#4682B4', '🏆', 'fontawesome', '2025-08-30 12:22:34', '2025-08-31 16:38:44'),
+(4, 1, 4, 'A Player', 31.00, 40.00, 35.00, '#32CD32', '🏅', 'fontawesome', '2025-08-30 12:22:34', '2025-08-31 16:38:44'),
+(5, 1, 5, 'AA Player', 41.00, 50.00, 45.00, '#FFD700', '👑', 'fontawesome', '2025-08-30 12:22:34', '2025-08-31 16:38:44'),
+(6, 1, 6, 'Open Player', 51.00, 60.00, 55.00, '#FF6347', '⭐', 'fontawesome', '2025-08-30 12:22:34', '2025-08-31 16:38:44'),
+(7, 1, 7, 'Pro Player', 61.00, 100.00, 80.00, '#9400D3', '💎', 'fontawesome', '2025-08-30 12:22:34', '2025-08-31 16:39:00'),
+(8, 2, 1, 'Beginner', 1.00, 30.00, 20.00, '#FF7043', '🌱', 'fontawesome', '2025-08-30 12:22:54', '2025-08-31 16:42:32'),
+(9, 2, 2, 'Intermediate', 31.00, 70.00, 50.00, '#42A5F5', '📈', 'fontawesome', '2025-08-30 12:22:54', '2025-08-31 16:42:32'),
+(10, 2, 3, 'Advanced', 71.00, 100.00, 85.00, '#66BB6A', '🎓', 'fontawesome', '2025-08-30 12:22:54', '2025-08-31 16:42:32'),
+(11, 3, 1, 'Novice', 1.00, 19.00, NULL, '#f44336', '👤', 'fontawesome', '2025-08-30 12:23:12', '2025-08-31 21:49:05'),
+(12, 3, 2, 'Apprentice', 20.00, 39.00, NULL, '#ff9800', '🔨', 'fontawesome', '2025-08-30 12:23:12', '2025-08-31 21:24:25'),
+(13, 3, 3, 'Skilled', 40.00, 59.00, NULL, '#2196f3', '⚙️', 'fontawesome', '2025-08-30 12:23:12', '2025-08-31 21:24:39'),
+(14, 3, 4, 'Expert', 60.00, 79.00, NULL, '#4caf50', 'fa-certificate', 'fontawesome', '2025-08-30 12:23:12', '2025-08-31 21:24:59'),
+(16, 3, 5, 'Master', 80.00, 100.00, NULL, '#667eea', '👑', 'fontawesome', '2025-08-31 21:25:48', '2025-08-31 21:25:48');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `wp_achievement_types`
+--
+
+CREATE TABLE `wp_achievement_types` (
+  `id` int NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `description` text,
+  `calculation_method` enum('percentage','score') NOT NULL DEFAULT 'percentage',
+  `is_active` tinyint(1) DEFAULT '1',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `wp_achievement_types`
+--
+
+INSERT INTO `wp_achievement_types` (`id`, `name`, `description`, `calculation_method`, `is_active`, `created_at`, `updated_at`) VALUES
+(1, 'Pool Player Ratings', 'Traditional pool player skill ratings with 7 levels based on score ranges', 'score', 1, '2025-08-30 12:21:06', '2025-08-30 12:21:06'),
+(2, 'Basic Proficiency', 'Simple 3-level proficiency system based on percentage scores', 'percentage', 1, '2025-08-30 12:21:06', '2025-08-30 12:21:06'),
+(3, 'Advanced Skills', '5-level mastery system for advanced skill tracking', 'percentage', 1, '2025-08-30 12:21:06', '2025-08-31 21:34:48');
 
 -- --------------------------------------------------------
 
@@ -315,30 +382,31 @@ CREATE TABLE `wp_drills` (
   `is_active` tinyint(1) DEFAULT '1',
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `credit_id` int DEFAULT NULL COMMENT 'Optional credit reference'
+  `credit_id` int DEFAULT NULL COMMENT 'Optional credit reference',
+  `achievement_type_id` int DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `wp_drills`
 --
 
-INSERT INTO `wp_drills` (`id`, `name`, `category_id`, `skill_id`, `description`, `instructions`, `max_score`, `video_url`, `difficulty_rating`, `estimated_time_minutes`, `diagram_id`, `color_code`, `is_active`, `created_at`, `updated_at`, `credit_id`) VALUES
-(1, 'Basic Stance', 1, 1, 'Practice proper stance and bridge formation', NULL, 10, 'https://youtu.be/wIfK1YE7bCI', 1.0, NULL, NULL, '#4A90E2', 0, '2025-07-17 03:28:38', '2025-07-17 17:43:37', NULL),
-(2, 'Straight Shots', 1, 1, 'Practice shooting straight into pockets', NULL, 20, 'https://youtu.be/wIfK1YE7bCI', 1.0, NULL, NULL, '#50C878', 0, '2025-07-17 03:28:38', '2025-07-17 17:33:49', NULL),
-(3, 'Stop Shot Practice', 1, 2, 'Practice stopping the cue ball on contact', NULL, 15, '', 1.0, NULL, NULL, '#FF6347', 0, '2025-07-17 03:28:38', '2025-07-17 19:29:52', NULL),
-(4, 'Basic 8-Ball Rack', 1, 3, 'Practice basic position play in 8-ball', NULL, 8, 'https://youtu.be/wIfK1YE7bCI', 1.0, NULL, NULL, '#9370DB', 0, '2025-07-17 03:28:38', '2025-07-17 17:33:16', NULL),
-(5, 'Draw Shot Control', 2, 2, 'Practice controlled draw shots', NULL, 30, 'https://youtu.be/wIfK1YE7bCI', 1.0, NULL, NULL, '#DC143C', 0, '2025-07-17 03:28:38', '2025-07-17 20:15:11', NULL),
-(6, 'Follow Shot Practice', 2, 2, 'Practice controlled follow shots', NULL, 20, '', 1.0, NULL, NULL, '#00CED1', 0, '2025-07-17 03:28:38', '2025-07-18 05:14:14', NULL),
-(7, 'Simple Patterns', 2, 4, 'Practice running 3-4 ball patterns', NULL, 25, 'https://youtu.be/wIfK1YE7bCI', 1.0, NULL, NULL, '#FF8C00', 0, '2025-07-17 03:28:38', '2025-07-18 20:37:02', NULL),
-(8, '14.1 Level 1', 1, 3, 'Practice your high run in 14.1', '', 50, '', 1.0, NULL, 9, '#9932cc', 1, '2025-07-17 03:28:38', '2025-07-28 23:01:45', NULL),
-(9, 'Bridge Techniques', 2, 1, 'Advanced bridge formations and techniques', NULL, 15, 'https://youtu.be/wIfK1YE7bCI', 1.0, NULL, NULL, '#228B22', 0, '2025-07-17 03:28:38', '2025-07-17 20:25:11', NULL),
-(10, 'Complex Patterns', 3, 4, 'Practice running full racks', NULL, 50, 'https://youtu.be/wIfK1YE7bCI', 1.0, NULL, NULL, '#800080', 0, '2025-07-17 03:28:38', '2025-07-17 17:34:02', NULL),
-(11, 'Advanced Position', 3, 3, 'Advanced position play scenarios', NULL, 30, 'https://youtu.be/wIfK1YE7bCI', 1.0, NULL, NULL, '#FF1493', 0, '2025-07-17 03:28:38', '2025-07-24 22:35:34', NULL),
-(12, 'Five ball position drill level 1', 3, 2, 'The five ball position drill is a very good way to start practicing cue ball control and the tangent line.', '1 point for each ball pocketed', 40, 'https://youtu.be/wIfK1YE7bCI', 1.0, NULL, NULL, '#8B0000', 1, '2025-07-17 03:28:38', '2025-07-19 02:58:17', NULL),
-(13, 'Speed Control', 3, 2, 'Practice precise speed control', NULL, 35, '', 1.0, NULL, NULL, '#006400', 1, '2025-07-17 03:28:38', '2025-07-17 03:28:38', NULL),
-(14, 'Advanced Fundamentals', 3, 1, 'Refinement of fundamental techniques', NULL, 25, 'https://youtu.be/wIfK1YE7bCI', 1.0, NULL, NULL, '#4B0082', 0, '2025-07-17 03:28:38', '2025-07-17 20:25:20', NULL),
-(15, 'Use this 15 Across Drill it grabs diagram 7', 1, 1, 'The Fifteen Across drill will be one of our most \"go to\" drills. We will use it to focus on specific skill sets including rhythm, cadence, pre shot routine, stroke mechanics, ball approach and much more.', 'Ball in hand each shot, around the first diamond\nIf you are just beginning, you could start without a cueball\nShoot half the object balls in the top left corner\nShoot half the object balls in the top right corner\nWhen you can make all 15 , move one diamond down and continue the process\n\nScore 1 point if you performed the drill without a cueball\nIf you used a cueball, score the points equal to the diamond from where you shot the line of balls.\nScore 2 if the balls were lined up on the 2nd diamond, 3 if the balls were lined up on the 3rd diamond, 4, if the balls were lined up on side pocket (4 is the max)', 15, '', 1.0, NULL, 7, '#667eea', 1, '2025-07-18 23:18:09', '2025-07-27 13:07:02', NULL),
-(16, 'test drill with new integration', 1, 2, 'sfsdfsdfsdf', 'sfdsdfsf', 10, '', 1.0, NULL, 9, '#667eea', 1, '2025-07-26 13:48:33', '2025-07-28 23:01:16', NULL);
+INSERT INTO `wp_drills` (`id`, `name`, `category_id`, `skill_id`, `description`, `instructions`, `max_score`, `video_url`, `difficulty_rating`, `estimated_time_minutes`, `diagram_id`, `color_code`, `is_active`, `created_at`, `updated_at`, `credit_id`, `achievement_type_id`) VALUES
+(1, 'Basic Stance', 1, 1, 'Practice proper stance and bridge formation', NULL, 10, 'https://youtu.be/wIfK1YE7bCI', 1.0, NULL, NULL, '#4A90E2', 0, '2025-07-17 03:28:38', '2025-07-17 17:43:37', NULL, NULL),
+(2, 'Straight Shots', 1, 1, 'Practice shooting straight into pockets', NULL, 20, 'https://youtu.be/wIfK1YE7bCI', 1.0, NULL, NULL, '#50C878', 0, '2025-07-17 03:28:38', '2025-07-17 17:33:49', NULL, NULL),
+(3, 'Stop Shot Practice', 1, 2, 'Practice stopping the cue ball on contact', NULL, 15, '', 1.0, NULL, NULL, '#FF6347', 0, '2025-07-17 03:28:38', '2025-07-17 19:29:52', NULL, NULL),
+(4, 'Basic 8-Ball Rack', 1, 3, 'Practice basic position play in 8-ball', NULL, 8, 'https://youtu.be/wIfK1YE7bCI', 1.0, NULL, NULL, '#9370DB', 0, '2025-07-17 03:28:38', '2025-07-17 17:33:16', NULL, NULL),
+(5, 'Draw Shot Control', 2, 2, 'Practice controlled draw shots', NULL, 30, 'https://youtu.be/wIfK1YE7bCI', 1.0, NULL, NULL, '#DC143C', 0, '2025-07-17 03:28:38', '2025-07-17 20:15:11', NULL, NULL),
+(6, 'Follow Shot Practice', 2, 2, 'Practice controlled follow shots', NULL, 20, '', 1.0, NULL, NULL, '#00CED1', 0, '2025-07-17 03:28:38', '2025-07-18 05:14:14', NULL, NULL),
+(7, 'Simple Patterns', 2, 4, 'Practice running 3-4 ball patterns', NULL, 25, 'https://youtu.be/wIfK1YE7bCI', 1.0, NULL, NULL, '#FF8C00', 0, '2025-07-17 03:28:38', '2025-07-18 20:37:02', NULL, NULL),
+(8, '14.1 Level 1', 1, 3, 'Practice your high run in 14.1', '', 50, '', 1.0, NULL, 9, '#9932cc', 1, '2025-07-17 03:28:38', '2025-07-28 23:01:45', NULL, NULL),
+(9, 'Bridge Techniques', 2, 1, 'Advanced bridge formations and techniques', NULL, 15, 'https://youtu.be/wIfK1YE7bCI', 1.0, NULL, NULL, '#228B22', 0, '2025-07-17 03:28:38', '2025-07-17 20:25:11', NULL, NULL),
+(10, 'Complex Patterns', 3, 4, 'Practice running full racks', NULL, 50, 'https://youtu.be/wIfK1YE7bCI', 1.0, NULL, NULL, '#800080', 0, '2025-07-17 03:28:38', '2025-07-17 17:34:02', NULL, NULL),
+(11, 'Advanced Position', 3, 3, 'Advanced position play scenarios', NULL, 30, 'https://youtu.be/wIfK1YE7bCI', 1.0, NULL, NULL, '#FF1493', 0, '2025-07-17 03:28:38', '2025-07-24 22:35:34', NULL, NULL),
+(12, 'Five ball position drill level 1', 3, 2, 'The five ball position drill is a very good way to start practicing cue ball control and the tangent line.', '1 point for each ball pocketed', 40, 'https://youtu.be/wIfK1YE7bCI', 1.0, NULL, 6, '#8B0000', 1, '2025-07-17 03:28:38', '2025-08-23 06:24:23', NULL, NULL),
+(13, 'Speed Control', 3, 2, 'Practice precise speed control', NULL, 35, '', 1.0, NULL, NULL, '#006400', 1, '2025-07-17 03:28:38', '2025-07-17 03:28:38', NULL, NULL),
+(14, 'Advanced Fundamentals', 3, 1, 'Refinement of fundamental techniques', NULL, 25, 'https://youtu.be/wIfK1YE7bCI', 1.0, NULL, NULL, '#4B0082', 0, '2025-07-17 03:28:38', '2025-07-17 20:25:20', NULL, NULL),
+(15, 'Use this 15 Across Drill it grabs diagram 7', 1, 1, 'The Fifteen Across drill will be one of our most \"go to\" drills. We will use it to focus on specific skill sets including rhythm, cadence, pre shot routine, stroke mechanics, ball approach and much more.', 'Ball in hand each shot, around the first diamond\nIf you are just beginning, you could start without a cueball\nShoot half the object balls in the top left corner\nShoot half the object balls in the top right corner\nWhen you can make all 15 , move one diamond down and continue the process\n\nScore 1 point if you performed the drill without a cueball\nIf you used a cueball, score the points equal to the diamond from where you shot the line of balls.\nScore 2 if the balls were lined up on the 2nd diamond, 3 if the balls were lined up on the 3rd diamond, 4, if the balls were lined up on side pocket (4 is the max)', 15, '', 1.0, NULL, 7, '#667eea', 1, '2025-07-18 23:18:09', '2025-08-22 18:36:22', 1, NULL),
+(16, 'test drill with new integration', 1, 2, 'sfsdfsdfsdf', 'sfdsdfsf', 10, '', 1.0, NULL, 9, '#667eea', 1, '2025-07-26 13:48:33', '2025-08-22 18:36:41', 2, NULL);
 
 -- --------------------------------------------------------
 
@@ -377,11 +445,11 @@ INSERT INTO `wp_drill_assignments` (`id`, `user_id`, `drill_id`, `assigned_by`, 
 (10, 5, 10, 1, '2025-07-17 03:28:38', NULL, 0, NULL, NULL, NULL, 1),
 (11, 5, 11, 1, '2025-07-17 03:28:38', NULL, 0, NULL, NULL, NULL, 0),
 (12, 3, 13, 1, '2025-07-24 23:02:10', NULL, 0, NULL, '', 'I would like to see if Matt can do this', 0),
-(13, 1, 15, 1, '2025-07-25 02:44:00', NULL, 0, NULL, '', '', 1),
+(13, 1, 15, 1, '2025-07-25 02:44:00', NULL, 1, '2025-08-23 06:31:47', '', '', 1),
 (14, 1, 8, 1, '2025-07-25 02:44:04', NULL, 0, NULL, '', '', 1),
 (15, 1, 12, 1, '2025-07-25 02:44:08', NULL, 0, NULL, '', '', 1),
 (16, 4, 15, 1, '2025-07-25 02:47:21', NULL, 0, NULL, '', '', 1),
-(17, 4, 13, 1, '2025-07-25 02:47:24', NULL, 0, NULL, '', '', 1);
+(17, 4, 13, 1, '2025-07-25 02:47:24', NULL, 0, NULL, '', '', 0);
 
 -- --------------------------------------------------------
 
@@ -511,7 +579,22 @@ INSERT INTO `wp_drill_scores` (`id`, `user_id`, `drill_id`, `score`, `max_possib
 (46, 1, 12, 9.00, 40, 1, 4, 1, '', '2025-07-24', '2025-07-24 22:19:28'),
 (47, 1, 15, 15.00, 15, 0, NULL, 1, '', '2025-07-27', '2025-07-27 13:23:54'),
 (48, 1, 16, 2.00, 10, 0, NULL, 1, '', '2025-08-02', '2025-08-02 17:04:28'),
-(49, 1, 8, 49.00, 50, 0, NULL, 1, '', '2025-08-09', '2025-08-09 20:23:12');
+(49, 1, 8, 49.00, 50, 0, NULL, 1, '', '2025-08-09', '2025-08-09 20:23:12'),
+(50, 1, 16, 10.00, 10, 0, NULL, 1, '', '2025-08-23', '2025-08-23 06:26:58'),
+(51, 1, 15, 15.00, 15, 1, 13, 1, '', '2025-08-23', '2025-08-23 06:31:47'),
+(52, 1, 15, 9.00, 15, 0, NULL, 1, 'Submitted from drill detail page', '2025-08-23', '2025-08-23 14:28:58'),
+(53, 1, 15, 15.00, 15, 0, NULL, 1, 'Submitted from drill detail page', '2025-08-23', '2025-08-23 23:07:15'),
+(54, 1, 15, 14.00, 15, 0, NULL, 1, 'Submitted from drill detail page', '2025-08-23', '2025-08-23 23:07:26'),
+(55, 1, 15, 15.00, 15, 0, NULL, 1, 'Submitted from drill detail page', '2025-08-23', '2025-08-23 23:07:33'),
+(56, 1, 15, 15.00, 15, 0, NULL, 1, 'Submitted from drill detail page', '2025-08-23', '2025-08-23 23:07:37'),
+(57, 1, 15, 14.00, 15, 0, NULL, 1, 'Submitted from drill detail page', '2025-08-23', '2025-08-23 23:07:42'),
+(58, 1, 15, 15.00, 15, 0, NULL, 1, 'Submitted from drill detail page', '2025-08-23', '2025-08-23 23:07:47'),
+(59, 1, 15, 13.00, 15, 0, NULL, 1, 'Submitted from drill detail page', '2025-08-25', '2025-08-25 10:25:36'),
+(60, 1, 15, 15.00, 15, 0, NULL, 1, 'Submitted from drill detail page', '2025-08-25', '2025-08-25 10:25:47'),
+(61, 1, 15, 15.00, 15, 0, NULL, 1, 'Submitted from drill detail page', '2025-08-25', '2025-08-25 10:25:52'),
+(62, 1, 12, 40.00, 40, 0, NULL, 1, 'Submitted from drill detail page', '2025-08-26', '2025-08-26 02:50:04'),
+(63, 1, 12, 13.00, 40, 0, NULL, 1, 'Submitted from drill detail page', '2025-08-26', '2025-08-26 02:50:13'),
+(64, 1, 12, 40.00, 40, 0, NULL, 1, 'Submitted from drill detail page', '2025-08-28', '2025-08-28 20:22:28');
 
 -- --------------------------------------------------------
 
@@ -537,7 +620,8 @@ INSERT INTO `wp_drill_skills` (`id`, `name`, `display_name`, `description`, `sor
 (1, 'fundamentals', 'Fundamentals', 'Basic stance, grip, and shooting form', 1, 1, '2025-07-17 03:28:38'),
 (2, 'cueball control', 'Cueball Control', 'Draw, follow, and english shots', 2, 1, '2025-07-17 03:28:38'),
 (3, 'position play', 'Position Play', 'Planning and executing position for next shot', 3, 1, '2025-07-17 03:28:38'),
-(4, 'pattern play', 'Pattern Play', 'Running multiple balls in sequence', 4, 1, '2025-07-17 03:28:38');
+(4, 'pattern play', 'Pattern Play', 'Running multiple balls in sequence', 4, 1, '2025-07-17 03:28:38'),
+(5, 'Kicking and Banking', 'Kicking and Banking', 'Kicking and Banking', 5, 1, '2025-07-17 03:28:38');
 
 -- --------------------------------------------------------
 
@@ -563,10 +647,10 @@ CREATE TABLE `wp_drill_users` (
 
 INSERT INTO `wp_drill_users` (`id`, `wp_user_id`, `email`, `display_name`, `user_type`, `is_active`, `created_at`, `updated_at`, `coach_id`) VALUES
 (1, NULL, 'shermanscs@gmail.com', 'Steve Sherman', 'admin', 1, '2025-07-17 03:28:38', '2025-07-19 14:34:45', NULL),
-(2, NULL, 'admin', 'Administrator', 'admin', 1, '2025-07-17 03:28:38', '2025-08-21 02:27:23', NULL),
+(2, NULL, 'admin', 'Administrator', 'admin', 1, '2025-07-17 03:28:38', '2025-08-31 21:28:54', NULL),
 (3, NULL, 'shermanm352@gmail.com', 'Matt Thibedeau', 'player', 1, '2025-07-17 03:28:38', '2025-08-05 04:51:50', 5),
 (4, NULL, 'steve@example.com', 'Steve Student', 'player', 1, '2025-07-17 03:28:38', '2025-08-05 04:51:50', 5),
-(5, NULL, 'coach@example.com', 'Coach Smith', 'coach', 1, '2025-07-17 03:28:38', '2025-08-21 02:29:24', NULL),
+(5, NULL, 'coach@example.com', 'Coach Smith', 'coach', 1, '2025-07-17 03:28:38', '2025-08-28 23:36:12', NULL),
 (6, NULL, 'steve@coach.com', 'Steve Sherman', 'coach', 1, '2025-07-29 03:11:29', '2025-08-05 23:20:14', NULL);
 
 -- --------------------------------------------------------
@@ -621,9 +705,39 @@ CREATE TABLE `wp_training_content` (
 --
 
 INSERT INTO `wp_training_content` (`id`, `name`, `description`, `content_type`, `category_id`, `skill_id`, `difficulty_level`, `original_filename`, `file_size`, `mime_type`, `file_url`, `external_url`, `thumbnail_url`, `visibility`, `download_count`, `created_by`, `is_active`, `created_at`, `updated_at`, `credit_id`) VALUES
-(1, 'MS Core', 'MSCore describes the core fundamental bridges - Mechanical, Specialty, Closed, Open, Rail and Extended Rail bridges. test', 'image', 1, 1, 'beginner', 'Ms Core cartoon.jpg', 85555, '0', 'https://steveshermanbilliards.com/wp-content/uploads/training-content/content_1.jpg', NULL, 'https://steveshermanbilliards.com/wp-content/uploads/training-content/thumbnails/thumb_content_1.jpg', 'public', 0, 2, 1, '2025-08-01 21:36:48', '2025-08-21 01:39:22', 1),
-(2, 'Break Physics', 'This document goes over the technical aspects of break physics', 'pdf', 2, 1, 'intermediate', 'Break Physics 2.pdf', 296794, '0', 'https://steveshermanbilliards.com/wp-content/uploads/training-content/content_2.pdf', NULL, NULL, 'public', 0, 2, 1, '2025-08-01 23:50:01', '2025-08-01 23:50:01', NULL),
-(3, 'testing with url linked data v5', 'testing with url linked data v5 desc', 'link', 1, 1, 'beginner', NULL, NULL, NULL, NULL, 'https://youtu.be/GGm08omfgwA?si=YzgBlvFN0pwtuUqf', NULL, 'public', 0, 2, 1, '2025-08-02 16:52:01', '2025-08-02 16:52:01', NULL);
+(1, 'MS Core', 'MSCore describes the core fundamental bridges - Mechanical, Specialty, Closed, Open, Rail and Extended Rail bridges.', 'image', 1, 1, 'beginner', 'Ms Core cartoon.jpg', 85555, '0', 'https://steveshermanbilliards.com/wp-content/uploads/training-content/content_1.jpg', NULL, 'https://steveshermanbilliards.com/wp-content/uploads/training-content/thumbnails/thumb_content_1.jpg', 'public', 0, 2, 1, '2025-08-01 21:36:48', '2025-08-26 04:07:42', 1),
+(2, 'Break Physics', 'This document goes over the technical aspects of break physics', 'pdf', 2, 1, 'intermediate', 'Break Physics 2.pdf', 296794, '0', 'https://steveshermanbilliards.com/wp-content/uploads/training-content/content_2.pdf', NULL, NULL, 'public', 0, 2, 1, '2025-08-01 23:50:01', '2025-08-26 04:02:08', 1),
+(3, 'testing with url linked data v5', 'testing with url linked data v5 desc', 'link', 1, 1, 'beginner', NULL, NULL, NULL, NULL, 'https://youtu.be/GGm08omfgwA?si=YzgBlvFN0pwtuUqf', NULL, 'public', 0, 2, 0, '2025-08-02 16:52:01', '2025-08-26 04:01:45', NULL),
+(4, 'Two rail kicks - long rail first', 'This is a diamond system used when kicking at a ball, striking the long rail first, then coming off the short rail to make contact with the object ball', 'link', 2, 5, 'beginner', NULL, NULL, NULL, NULL, 'https://youtu.be/jwTb-z0nUdU', NULL, 'private', 0, 1, 1, '2025-08-26 03:51:48', '2025-08-26 03:51:48', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `wp_training_content_assignments`
+--
+
+CREATE TABLE `wp_training_content_assignments` (
+  `id` int NOT NULL,
+  `user_id` int NOT NULL,
+  `content_id` int NOT NULL,
+  `assigned_by` int NOT NULL,
+  `assigned_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `due_date` date DEFAULT NULL,
+  `is_completed` tinyint(1) DEFAULT '0',
+  `completed_date` timestamp NULL DEFAULT NULL,
+  `notes` text,
+  `coach_comments` text,
+  `is_active` tinyint(1) DEFAULT '1',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `wp_training_content_assignments`
+--
+
+INSERT INTO `wp_training_content_assignments` (`id`, `user_id`, `content_id`, `assigned_by`, `assigned_date`, `due_date`, `is_completed`, `completed_date`, `notes`, `coach_comments`, `is_active`, `created_at`, `updated_at`) VALUES
+(1, 4, 2, 5, '2025-08-24 18:02:50', NULL, 0, NULL, '', '', 1, '2025-08-24 18:02:50', '2025-08-24 18:02:50');
 
 -- --------------------------------------------------------
 
@@ -775,7 +889,9 @@ INSERT INTO `wp_training_program_content` (`id`, `unit_id`, `content_type`, `dri
 (6, 2, 'drill', 15, NULL, '', '', NULL, 1, 1, NULL, 15, 1, 1, '2025-07-31 22:08:23', '2025-07-31 22:08:23'),
 (7, 2, 'drill', 8, NULL, NULL, NULL, NULL, 2, 1, NULL, 50, 1, 1, '2025-08-04 17:00:17', '2025-08-04 17:00:17'),
 (8, 2, 'training_content', NULL, 1, NULL, NULL, NULL, 3, 1, NULL, NULL, 1, 1, '2025-08-04 23:55:01', '2025-08-04 23:55:01'),
-(9, 2, 'training_content', NULL, 2, NULL, NULL, NULL, 4, 1, NULL, NULL, 1, 1, '2025-08-05 00:10:41', '2025-08-05 00:10:41');
+(9, 2, 'training_content', NULL, 2, NULL, NULL, NULL, 4, 1, NULL, NULL, 1, 1, '2025-08-05 00:10:41', '2025-08-05 00:10:41'),
+(10, 13, 'training_content', NULL, 1, NULL, NULL, NULL, 1, 1, NULL, NULL, 1, 0, '2025-08-26 04:06:04', '2025-08-26 04:06:47'),
+(11, 13, 'training_content', NULL, 1, NULL, NULL, NULL, 1, 1, NULL, NULL, 1, 1, '2025-08-26 04:06:59', '2025-08-26 04:06:59');
 
 -- --------------------------------------------------------
 
@@ -920,18 +1036,19 @@ CREATE TABLE `wp_training_program_units` (
 --
 
 INSERT INTO `wp_training_program_units` (`id`, `program_id`, `name`, `description`, `unit_order`, `estimated_duration_days`, `is_active`, `created_at`, `updated_at`) VALUES
-(1, 1, 'Stance and Grip Fundamentals', 'Master the basic stance, grip, and bridge formation', 1, 7, 1, '2025-07-30 19:10:58', '2025-07-30 19:10:58'),
-(2, 1, 'Straight Shot Mastery', 'Develop accuracy with straight shots and basic aim', 2, 7, 1, '2025-07-30 19:10:58', '2025-07-30 19:10:58'),
-(3, 1, 'Basic Cue Ball Control', 'Introduction to stop shots, draw, and follow', 3, 14, 1, '2025-07-30 19:10:58', '2025-07-30 19:10:58'),
-(4, 1, 'Simple Position Play', 'Learn to think one ball ahead', 4, 14, 1, '2025-07-30 19:10:58', '2025-07-30 19:10:58'),
-(5, 1, 'Pattern Recognition', 'Identify and execute basic patterns', 5, 14, 1, '2025-07-30 19:10:58', '2025-07-30 19:10:58'),
-(6, 1, 'Game Strategy Basics', 'Understand basic 8-ball and 9-ball strategy', 6, 14, 1, '2025-07-30 19:10:58', '2025-07-30 19:10:58'),
+(1, 1, 'Stance and Grip Fundamentals', 'Master the basic stance, grip, and bridge formation', 2, 7, 1, '2025-07-30 19:10:58', '2025-08-26 04:05:36'),
+(2, 1, 'Straight Shot Mastery', 'Develop accuracy with straight shots and basic aim', 3, 7, 1, '2025-07-30 19:10:58', '2025-08-26 04:05:30'),
+(3, 1, 'Basic Cue Ball Control', 'Introduction to stop shots, draw, and follow', 4, 14, 1, '2025-07-30 19:10:58', '2025-08-26 04:05:18'),
+(4, 1, 'Simple Position Play', 'Learn to think one ball ahead', 5, 14, 1, '2025-07-30 19:10:58', '2025-08-26 04:05:11'),
+(5, 1, 'Pattern Recognition', 'Identify and execute basic patterns', 6, 14, 1, '2025-07-30 19:10:58', '2025-08-26 04:05:04'),
+(6, 1, 'Game Strategy Basics', 'Understand basic 8-ball and 9-ball strategy', 7, 14, 1, '2025-07-30 19:10:58', '2025-08-26 04:04:58'),
 (7, 2, 'Advanced Draw Techniques', 'Master various draw shot applications', 1, 10, 1, '2025-07-30 19:11:18', '2025-07-30 19:11:18'),
 (8, 2, 'Follow Shot Precision', 'Perfect follow shot control and speed', 2, 10, 1, '2025-07-30 19:11:18', '2025-07-30 19:11:18'),
 (9, 2, 'English and Spin Control', 'Advanced use of side spin and english', 3, 14, 1, '2025-07-30 19:11:18', '2025-07-30 19:11:18'),
 (10, 2, 'Multi-Ball Position Planning', 'Think 3-5 balls ahead consistently', 4, 21, 1, '2025-07-30 19:11:18', '2025-07-30 19:11:18'),
 (11, 2, 'Pattern Play Excellence', 'Execute complex patterns with confidence', 5, 21, 1, '2025-07-30 19:11:18', '2025-07-30 19:11:18'),
-(12, 2, 'Pressure Situation Management', 'Maintain form under competitive pressure', 6, 14, 1, '2025-07-30 19:11:18', '2025-07-30 19:11:18');
+(12, 2, 'Pressure Situation Management', 'Maintain form under competitive pressure', 6, 14, 1, '2025-07-30 19:11:18', '2025-07-30 19:11:18'),
+(13, 1, 'Bridges', 'In this guide/unit we will meet Ms Core who will help us focus on our four foundation bridges: Open, Closed, Rail, and Extended Rail. There will be specialty bridges that we will add in later units as we progress through the program. We will go over the mechanical bridge after the unit on stance. The first step in creating a beautiful and consistent stroke is to create a stable and effective bridge.', 1, 7, 1, '2025-08-26 04:03:35', '2025-08-26 04:04:19');
 
 -- --------------------------------------------------------
 
@@ -1019,6 +1136,24 @@ INSERT INTO `wp_training_program_units_assigned` (`id`, `assignment_id`, `origin
 --
 -- Indexes for dumped tables
 --
+
+--
+-- Indexes for table `wp_achievement_levels`
+--
+ALTER TABLE `wp_achievement_levels`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `unique_level_per_type` (`achievement_type_id`,`level_number`),
+  ADD KEY `idx_achievement_levels_type` (`achievement_type_id`),
+  ADD KEY `idx_achievement_levels_thresholds` (`achievement_type_id`,`min_threshold`,`max_threshold`);
+
+--
+-- Indexes for table `wp_achievement_types`
+--
+ALTER TABLE `wp_achievement_types`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `name` (`name`),
+  ADD KEY `idx_achievement_types_active` (`is_active`),
+  ADD KEY `idx_achievement_types_method` (`calculation_method`);
 
 --
 -- Indexes for table `wp_admin_passwords`
@@ -1109,7 +1244,8 @@ ALTER TABLE `wp_drills`
   ADD KEY `name` (`name`),
   ADD KEY `idx_drills_category_skill` (`category_id`,`skill_id`,`is_active`),
   ADD KEY `idx_drills_diagram_id` (`diagram_id`),
-  ADD KEY `idx_drills_credit_id` (`credit_id`);
+  ADD KEY `idx_drills_credit_id` (`credit_id`),
+  ADD KEY `idx_drills_achievement_type` (`achievement_type_id`);
 
 --
 -- Indexes for table `wp_drill_assignments`
@@ -1191,6 +1327,17 @@ ALTER TABLE `wp_training_content`
   ADD KEY `fk_content_created_by` (`created_by`),
   ADD KEY `idx_content_external_url` (`external_url`),
   ADD KEY `idx_training_content_credit_id` (`credit_id`);
+
+--
+-- Indexes for table `wp_training_content_assignments`
+--
+ALTER TABLE `wp_training_content_assignments`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `unique_content_assignment` (`user_id`,`content_id`,`is_active`),
+  ADD KEY `user_id` (`user_id`),
+  ADD KEY `content_id` (`content_id`),
+  ADD KEY `assigned_by` (`assigned_by`),
+  ADD KEY `idx_content_assignments_user_active` (`user_id`,`is_active`);
 
 --
 -- Indexes for table `wp_training_programs`
@@ -1304,6 +1451,18 @@ ALTER TABLE `wp_training_program_units_assigned`
 --
 
 --
+-- AUTO_INCREMENT for table `wp_achievement_levels`
+--
+ALTER TABLE `wp_achievement_levels`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `wp_achievement_types`
+--
+ALTER TABLE `wp_achievement_types`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
 -- AUTO_INCREMENT for table `wp_admin_passwords`
 --
 ALTER TABLE `wp_admin_passwords`
@@ -1379,13 +1538,13 @@ ALTER TABLE `wp_drill_journal`
 -- AUTO_INCREMENT for table `wp_drill_scores`
 --
 ALTER TABLE `wp_drill_scores`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=65;
 
 --
 -- AUTO_INCREMENT for table `wp_drill_skills`
 --
 ALTER TABLE `wp_drill_skills`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `wp_drill_users`
@@ -1403,7 +1562,13 @@ ALTER TABLE `wp_practice_sessions`
 -- AUTO_INCREMENT for table `wp_training_content`
 --
 ALTER TABLE `wp_training_content`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT for table `wp_training_content_assignments`
+--
+ALTER TABLE `wp_training_content_assignments`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `wp_training_programs`
@@ -1427,7 +1592,7 @@ ALTER TABLE `wp_training_program_assignments`
 -- AUTO_INCREMENT for table `wp_training_program_content`
 --
 ALTER TABLE `wp_training_program_content`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `wp_training_program_content_assigned`
@@ -1445,7 +1610,7 @@ ALTER TABLE `wp_training_program_progress`
 -- AUTO_INCREMENT for table `wp_training_program_units`
 --
 ALTER TABLE `wp_training_program_units`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `wp_training_program_units_assigned`
@@ -1474,6 +1639,12 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 --
 -- Constraints for dumped tables
 --
+
+--
+-- Constraints for table `wp_achievement_levels`
+--
+ALTER TABLE `wp_achievement_levels`
+  ADD CONSTRAINT `wp_achievement_levels_ibfk_1` FOREIGN KEY (`achievement_type_id`) REFERENCES `wp_achievement_types` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `wp_admin_passwords`
@@ -1532,7 +1703,8 @@ ALTER TABLE `wp_drills`
   ADD CONSTRAINT `fk_drills_credit` FOREIGN KEY (`credit_id`) REFERENCES `wp_credit_to` (`id`) ON DELETE SET NULL,
   ADD CONSTRAINT `fk_drills_diagram_id` FOREIGN KEY (`diagram_id`) REFERENCES `wp_diagrams` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
   ADD CONSTRAINT `wp_drills_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `wp_drill_categories` (`id`),
-  ADD CONSTRAINT `wp_drills_ibfk_2` FOREIGN KEY (`skill_id`) REFERENCES `wp_drill_skills` (`id`);
+  ADD CONSTRAINT `wp_drills_ibfk_2` FOREIGN KEY (`skill_id`) REFERENCES `wp_drill_skills` (`id`),
+  ADD CONSTRAINT `wp_drills_ibfk_3` FOREIGN KEY (`achievement_type_id`) REFERENCES `wp_achievement_types` (`id`) ON DELETE SET NULL;
 
 --
 -- Constraints for table `wp_drill_assignments`
