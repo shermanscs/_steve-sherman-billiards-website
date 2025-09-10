@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Achievement Types Test Harness</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background: #1a1a1a;
+            color: #00ff00;
+            padding: 20px;
+            margin: 0;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #000;
+            border: 2px solid #00ff00;
+            border-radius: 10px;
+            padding: 20px;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #00ffff;
+            text-shadow: 0 0 10px #00ffff;
+            margin-bottom: 30px;
+        }
+        
+        .test-section {
+            margin-bottom: 30px;
+            border: 1px solid #333;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        
+        .section-title {
+            color: #ffff00;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .test-button {
+            background: #004400;
+            color: #00ff00;
+            border: 2px solid #00ff00;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-family: inherit;
+            margin: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .test-button:hover {
+            background: #006600;
+            box-shadow: 0 0 10px #00ff00;
+        }
+        
+        .output {
+            background: #111;
+            border: 1px solid #333;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 3px;
+            white-space: pre-wrap;
+            font-size: 12px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .success {
+            color: #00ff00;
+        }
+        
+        .error {
+            color: #ff0000;
+        }
+        
+        .warning {
+            color: #ffaa00;
+        }
+        
+        .info {
+            color: #00aaff;
+        }
+        
+        .json {
+            color: #ffff88;
+        }
+        
+        .loading {
+            color: #aaaaaa;
+            animation: blink 1s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0.3; }
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        
+        th, td {
+            border: 1px solid #333;
+            padding: 8px;
+            text-align: left;
+        }
+        
+        th {
+            background: #222;
+            color: #00ffff;
+        }
+        
+        tr:nth-child(even) {
+            background: #111;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+        
+        .status-success {
+            background: #00ff00;
+            box-shadow: 0 0 5px #00ff00;
+        }
+        
+        .status-error {
+            background: #ff0000;
+            box-shadow: 0 0 5px #ff0000;
+        }
+        
+        .status-warning {
+            background: #ffaa00;
+            box-shadow: 0 0 5px #ffaa00;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏆 Achievement Types Test Harness 🏆</h1>
+        
+        <div class="test-section">
+            <div class="section-title">📡 API Endpoint Tests</div>
+            <button class="test-button" onclick="testAchievementTypesAPI()">Test Achievement Types API</button>
+            <button class="test-button" onclick="testDrillsAPI()">Test Drills API (for comparison)</button>
+            <button class="test-button" onclick="testAllEndpoints()">Test All Endpoints</button>
+            <div id="apiOutput" class="output"></div>
+        </div>
+        
+        <div class="test-section">
+            <div class="section-title">🔍 Data Structure Analysis</div>
+            <button class="test-button" onclick="analyzeAchievementStructure()">Analyze Achievement Type Structure</button>
+            <button class="test-button" onclick="validateRequiredFields()">Validate Required Fields</button>
+            <div id="structureOutput" class="output"></div>
+        </div>
+        
+        <div class="test-section">
+            <div class="section-title">📊 Achievement Types Data Table</div>
+            <button class="test-button" onclick="displayAchievementTable()">Display Achievement Types Table</button>
+            <div id="tableOutput" class="output"></div>
+        </div>
+        
+        <div class="test-section">
+            <div class="section-title">🧪 Dropdown Simulation</div>
+            <button class="test-button" onclick="simulateDropdownPopulation()">Simulate Dropdown Population</button>
+            <div id="dropdownOutput" class="output"></div>
+        </div>
+        
+        <div class="test-section">
+            <div class="section-title">🛠️ Debug Tools</div>
+            <button class="test-button" onclick="clearAllOutput()">Clear All Output</button>
+            <button class="test-button" onclick="exportTestResults()">Export Test Results</button>
+            <button class="test-button" onclick="runFullDiagnostic()">🚀 Run Full Diagnostic</button>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'https://steveshermanbilliards.com/drill-api.php';
+        let testResults = {};
+        
+        // Utility functions
+        function log(message, type = 'info', outputId = 'apiOutput') {
+            const output = document.getElementById(outputId);
+            const timestamp = new Date().toLocaleTimeString();
+            const colorClass = type === 'error' ? 'error' : 
+                             type === 'success' ? 'success' : 
+                             type === 'warning' ? 'warning' : 
+                             type === 'json' ? 'json' : 'info';
+            
+            output.innerHTML += `<span class="${colorClass}">[${timestamp}] ${message}</span>\n`;
+            output.scrollTop = output.scrollHeight;
+        }
+        
+        function clearOutput(outputId) {
+            document.getElementById(outputId).innerHTML = '';
+        }
+        
+        function clearAllOutput() {
+            ['apiOutput', 'structureOutput', 'tableOutput', 'dropdownOutput'].forEach(clearOutput);
+            testResults = {};
+            log('🧹 All output cleared', 'info', 'apiOutput');
+        }
+        
+        // API Testing Functions
+        async function testAchievementTypesAPI() {
+            clearOutput('apiOutput');
+            log('🚀 Testing Achievement Types API...', 'info', 'apiOutput');
+            
+            try {
+                const url = `${API_BASE_URL}/achievement-types`;
+                log(`📡 Making request to: ${url}`, 'info', 'apiOutput');
+                
+                const response = await fetch(url);
+                log(`📊 Response Status: ${response.status} ${response.statusText}`, 
+                    response.ok ? 'success' : 'error', 'apiOutput');
+                
+                const rawText = await response.text();
+                log(`📄 Raw Response Length: ${rawText.length} characters`, 'info', 'apiOutput');
+                
+                if (rawText.length > 0) {
+                    log(`📄 Raw Response Text:\n${rawText.substring(0, 500)}${rawText.length > 500 ? '...' : ''}`, 'json', 'apiOutput');
+                }
+                
+                const data = JSON.parse(rawText);
+                log(`✅ JSON Parsed Successfully`, 'success', 'apiOutput');
+                log(`📊 Response Structure: ${JSON.stringify(data, null, 2)}`, 'json', 'apiOutput');
+                
+                if (data.success && data.data) {
+                    log(`🎯 Success! Found ${data.data.length} achievement types`, 'success', 'apiOutput');
+                    testResults.achievementTypes = data.data;
+                } else {
+                    log(`❌ API returned success=false or no data`, 'error', 'apiOutput');
+                    log(`📄 Error message: ${data.message || 'No message provided'}`, 'error', 'apiOutput');
+                }
+                
+            } catch (error) {
+                log(`💥 ERROR: ${error.message}`, 'error', 'apiOutput');
+                log(`📄 Error Stack: ${error.stack}`, 'error', 'apiOutput');
+            }
+        }
+        
+        async function testDrillsAPI() {
+            log('\n🔧 Testing Drills API for comparison...', 'info', 'apiOutput');
+            
+            try {
+                const url = `${API_BASE_URL}/drills`;
+                log(`📡 Making request to: ${url}`, 'info', 'apiOutput');
+                
+                const response = await fetch(url);
+                log(`📊 Drills Response Status: ${response.status} ${response.statusText}`, 
+                    response.ok ? 'success' : 'error', 'apiOutput');
+                
+                const rawText = await response.text();
+                log(`📄 Drills Raw Response Length: ${rawText.length} characters`, 'info', 'apiOutput');
+                
+                if (rawText.includes('Fatal error') || rawText.includes('PHP Fatal error')) {
+                    log(`💥 FOUND PHP FATAL ERROR IN DRILLS API!`, 'error', 'apiOutput');
+                    log(`📄 Error details: ${rawText.substring(0, 300)}`, 'error', 'apiOutput');
+                    return;
+                }
+                
+                const data = JSON.parse(rawText);
+                log(`✅ Drills JSON Parsed Successfully`, 'success', 'apiOutput');
+                
+                if (data.success && data.data) {
+                    log(`🎯 Drills API working! Found ${data.data.length} drills`, 'success', 'apiOutput');
+                } else {
+                    log(`❌ Drills API returned success=false`, 'error', 'apiOutput');
+                }
+                
+            } catch (error) {
+                log(`💥 DRILLS API ERROR: ${error.message}`, 'error', 'apiOutput');
+            }
+        }
+        
+        async function testAllEndpoints() {
+            log('\n🔍 Testing All API Endpoints...', 'info', 'apiOutput');
+            
+            const endpoints = ['categories', 'skills', 'drills', 'diagrams', 'credits', 'achievement-types'];
+            
+            for (const endpoint of endpoints) {
+                try {
+                    const url = `${API_BASE_URL}/${endpoint}`;
+                    const response = await fetch(url);
+                    const status = response.ok ? '✅' : '❌';
+                    log(`${status} ${endpoint}: ${response.status} ${response.statusText}`, 
+                        response.ok ? 'success' : 'error', 'apiOutput');
+                    
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        if (errorText.includes('Fatal error')) {
+                            log(`💥 ${endpoint} has PHP Fatal Error!`, 'error', 'apiOutput');
+                        }
+                    }
+                } catch (error) {
+                    log(`❌ ${endpoint}: ${error.message}`, 'error', 'apiOutput');
+                }
+            }
+        }
+        
+        // Data Analysis Functions
+        async function analyzeAchievementStructure() {
+            clearOutput('structureOutput');
+            
+            if (!testResults.achievementTypes) {
+                log('⚠️ No achievement types data loaded. Running API test first...', 'warning', 'structureOutput');
+                await testAchievementTypesAPI();
+            }
+            
+            if (!testResults.achievementTypes || testResults.achievementTypes.length === 0) {
+                log('❌ No achievement types data available for analysis', 'error', 'structureOutput');
+                return;
+            }
+            
+            log('🔍 Analyzing Achievement Type Data Structure...', 'info', 'structureOutput');
+            
+            const data = testResults.achievementTypes;
+            log(`📊 Total Records: ${data.length}`, 'info', 'structureOutput');
+            
+            // Analyze each record
+            data.forEach((item, index) => {
+                log(`\n📋 Record ${index + 1}:`, 'info', 'structureOutput');
+                log(`   🔑 Keys: ${Object.keys(item).join(', ')}`, 'info', 'structureOutput');
+                log(`   📄 Full Data: ${JSON.stringify(item, null, 2)}`, 'json', 'structureOutput');
+            });
+            
+            // Analyze field consistency
+            const allKeys = new Set();
+            data.forEach(item => Object.keys(item).forEach(key => allKeys.add(key)));
+            log(`\n🔧 All Available Fields: ${Array.from(allKeys).join(', ')}`, 'success', 'structureOutput');
+            
+            // Check for required fields
+            const requiredFields = ['id', 'name', 'display_name'];
+            const missingFields = [];
+            
+            requiredFields.forEach(field => {
+                const hasField = data.every(item => item.hasOwnProperty(field));
+                if (hasField) {
+                    log(`✅ ${field}: Present in all records`, 'success', 'structureOutput');
+                } else {
+                    log(`❌ ${field}: Missing in some records`, 'error', 'structureOutput');
+                    missingFields.push(field);
+                }
+            });
+            
+            if (missingFields.length === 0) {
+                log(`🎯 All required fields present!`, 'success', 'structureOutput');
+            } else {
+                log(`⚠️ Missing required fields: ${missingFields.join(', ')}`, 'warning', 'structureOutput');
+            }
+        }
+        
+        async function validateRequiredFields() {
+            if (!testResults.achievementTypes) {
+                await testAchievementTypesAPI();
+            }
+            
+            if (!testResults.achievementTypes) {
+                log('❌ Cannot validate - no data available', 'error', 'structureOutput');
+                return;
+            }
+            
+            log('\n🧪 Validating Fields for Dropdown Population...', 'info', 'structureOutput');
+            
+            const data = testResults.achievementTypes;
+            const dropdownRequiredFields = ['id', 'display_name'];
+            const previewRequiredFields = ['color_code', 'icon_class', 'description', 'points_value'];
+            
+            data.forEach((item, index) => {
+                log(`\n📋 Record ${index + 1} (ID: ${item.id || 'MISSING'}):`, 'info', 'structureOutput');
+                
+                // Check dropdown required fields
+                dropdownRequiredFields.forEach(field => {
+                    if (item[field]) {
+                        log(`   ✅ ${field}: "${item[field]}"`, 'success', 'structureOutput');
+                    } else {
+                        log(`   ❌ ${field}: MISSING or empty`, 'error', 'structureOutput');
+                    }
+                });
+                
+                // Check preview fields
+                previewRequiredFields.forEach(field => {
+                    if (item[field]) {
+                        log(`   📄 ${field}: "${item[field]}"`, 'info', 'structureOutput');
+                    } else {
+                        log(`   ⚠️ ${field}: not set`, 'warning', 'structureOutput');
+                    }
+                });
+            });
+        }
+        
+        // Display Functions
+        async function displayAchievementTable() {
+            clearOutput('tableOutput');
+            
+            if (!testResults.achievementTypes) {
+                await testAchievementTypesAPI();
+            }
+            
+            if (!testResults.achievementTypes) {
+                log('❌ No data to display', 'error', 'tableOutput');
+                return;
+            }
+            
+            const data = testResults.achievementTypes;
+            
+            // Create table
+            let html = '<table><thead><tr>';
+            
+            // Get all unique keys
+            const allKeys = new Set();
+            data.forEach(item => Object.keys(item).forEach(key => allKeys.add(key)));
+            
+            Array.from(allKeys).forEach(key => {
+                html += `<th>${key}</th>`;
+            });
+            html += '</tr></thead><tbody>';
+            
+            // Add data rows
+            data.forEach(item => {
+                html += '<tr>';
+                Array.from(allKeys).forEach(key => {
+                    const value = item[key] || '';
+                    html += `<td>${value}</td>`;
+                });
+                html += '</tr>';
+            });
+            
+            html += '</tbody></table>';
+            
+            log(`📊 Achievement Types Data Table (${data.length} records):`, 'success', 'tableOutput');
+            document.getElementById('tableOutput').innerHTML += html;
+        }
+        
+        // Dropdown Simulation
+        async function simulateDropdownPopulation() {
+            clearOutput('dropdownOutput');
+            
+            if (!testResults.achievementTypes) {
+                await testAchievementTypesAPI();
+            }
+            
+            if (!testResults.achievementTypes) {
+                log('❌ No data for dropdown simulation', 'error', 'dropdownOutput');
+                return;
+            }
+            
+            log('🎭 Simulating Dropdown Population...', 'info', 'dropdownOutput');
+            
+            const data = testResults.achievementTypes;
+            
+            // Simulate the exact logic from the admin page
+            log('📝 Simulating setupAchievementTypeSelect() function:', 'info', 'dropdownOutput');
+            
+            let optionCount = 1; // Start with 1 for the default option
+            log('➕ Default option: "No achievement type assignment"', 'info', 'dropdownOutput');
+            
+            // Sort by sort_order, then by display_name
+            const sortedAchievements = [...data].sort((a, b) => {
+                const orderA = a.sort_order || 999;
+                const orderB = b.sort_order || 999;
+                if (orderA !== orderB) return orderA - orderB;
+                const nameA = a.display_name || a.name || '';
+                const nameB = b.display_name || b.name || '';
+                return nameA.localeCompare(nameB);
+            });
+            
+            sortedAchievements.forEach((achievement, index) => {
+                const displayText = achievement.display_name || achievement.name || `Achievement ${achievement.id}`;
+                log(`➕ Option ${optionCount}: value="${achievement.id}" text="${displayText}"`, 'success', 'dropdownOutput');
+                optionCount++;
+                
+                // Check for potential issues
+                if (!achievement.id) {
+                    log(`   ⚠️ WARNING: Missing ID for achievement ${index}`, 'warning', 'dropdownOutput');
+                }
+                if (!displayText || displayText.startsWith('Achievement ')) {
+                    log(`   ⚠️ WARNING: Missing or default display text`, 'warning', 'dropdownOutput');
+                }
+            });
+            
+            log(`\n📊 Summary: ${optionCount} total options (1 default + ${optionCount-1} achievements)`, 'success', 'dropdownOutput');
+            
+            // Test HTML generation
+            log('\n🔧 Testing HTML Option Generation:', 'info', 'dropdownOutput');
+            let htmlOptions = '<option value="">No achievement type assignment</option>\n';
+            
+            sortedAchievements.forEach(achievement => {
+                const displayText = achievement.display_name || achievement.name || `Achievement ${achievement.id}`;
+                htmlOptions += `<option value="${achievement.id}">${displayText}</option>\n`;
+            });
+            
+            log('📄 Generated HTML:\n' + htmlOptions, 'json', 'dropdownOutput');
+        }
+        
+        // Full Diagnostic
+        async function runFullDiagnostic() {
+            clearAllOutput();
+            log('🚀 Running Full Diagnostic Suite...', 'success', 'apiOutput');
+            
+            // Test 1: API Endpoints
+            log('\n=== TEST 1: API ENDPOINTS ===', 'success', 'apiOutput');
+            await testAllEndpoints();
+            
+            // Test 2: Achievement Types API
+            log('\n=== TEST 2: ACHIEVEMENT TYPES API ===', 'success', 'apiOutput');
+            await testAchievementTypesAPI();
+            
+            // Test 3: Data Structure
+            log('\n=== TEST 3: DATA STRUCTURE ANALYSIS ===', 'success', 'structureOutput');
+            await analyzeAchievementStructure();
+            
+            // Test 4: Field Validation
+            await validateRequiredFields();
+            
+            // Test 5: Table Display
+            log('\n=== TEST 4: DATA TABLE ===', 'success', 'tableOutput');
+            await displayAchievementTable();
+            
+            // Test 6: Dropdown Simulation
+            log('\n=== TEST 5: DROPDOWN SIMULATION ===', 'success', 'dropdownOutput');
+            await simulateDropdownPopulation();
+            
+            log('\n🎯 Full Diagnostic Complete!', 'success', 'apiOutput');
+        }
+        
+        // Export function
+        function exportTestResults() {
+            const results = {
+                timestamp: new Date().toISOString(),
+                apiUrl: API_BASE_URL,
+                testResults: testResults,
+                outputs: {
+                    api: document.getElementById('apiOutput').innerText,
+                    structure: document.getElementById('structureOutput').innerText,
+                    table: document.getElementById('tableOutput').innerText,
+                    dropdown: document.getElementById('dropdownOutput').innerText
+                }
+            };
+            
+            const blob = new Blob([JSON.stringify(results, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'achievement-types-test-results.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            log('📁 Test results exported to JSON file', 'success', 'apiOutput');
+        }
+        
+        // Auto-run on page load
+        window.addEventListener('load', () => {
+            log('🏆 Achievement Types Test Harness Ready', 'success', 'apiOutput');
+            log('💡 Click "Run Full Diagnostic" to test everything at once', 'info', 'apiOutput');
+        });
+    </script>
+</body>
+</html>

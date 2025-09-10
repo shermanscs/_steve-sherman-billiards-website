@@ -280,6 +280,33 @@
             font-size: 12px;
         }
 
+        /* Achievement Type Display Styles */
+        .achievement-info {
+            font-size: 13px;
+        }
+
+        .achievement-name {
+            font-weight: 600;
+            color: #333;
+            font-size: 13px;
+        }
+
+        .achievement-method {
+            font-size: 11px;
+            color: #666;
+            background: #e9ecef;
+            padding: 2px 6px;
+            border-radius: 3px;
+            display: inline-block;
+            margin-top: 2px;
+        }
+
+        .no-achievement {
+            color: #999;
+            font-style: italic;
+            font-size: 12px;
+        }
+
         .action-buttons {
             display: flex;
             gap: 8px;
@@ -473,6 +500,115 @@
         }
 
         .clear-credit-btn {
+            padding: 6px 12px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        /* Achievement Type Selection Styles */
+        .achievement-selection {
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 15px;
+            background: #f8f9fa;
+        }
+
+        .achievement-preview {
+            display: none;
+            margin-top: 15px;
+            padding: 15px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+        }
+
+        .achievement-preview.show {
+            display: block;
+        }
+
+        .achievement-preview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .achievement-preview-name {
+            font-weight: 600;
+            color: #333;
+            font-size: 16px;
+        }
+
+        .achievement-preview-method {
+            font-size: 12px;
+            color: #666;
+            background: #e9ecef;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .achievement-preview-description {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .achievement-levels {
+            border-top: 1px solid #eee;
+            padding-top: 12px;
+        }
+
+        .achievement-levels-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .level-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .level-item:last-child {
+            border-bottom: none;
+        }
+
+        .level-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: white;
+            font-weight: bold;
+        }
+
+        .level-info {
+            flex: 1;
+        }
+
+        .level-name {
+            font-weight: 600;
+            color: #333;
+            font-size: 13px;
+        }
+
+        .level-threshold {
+            font-size: 11px;
+            color: #666;
+        }
+
+        .clear-achievement-btn {
             padding: 6px 12px;
             background: #dc3545;
             color: white;
@@ -739,7 +875,7 @@
 <body>
     <div class="header">
         <h1>🎱 Drill Administration</h1>
-        <p>Steve Sherman Billiards - Manage Your Training Drills with Credit Support</p>
+        <p>Steve Sherman Billiards - Manage Your Training Drills with Credit Support & Achievement Types</p>
     </div>
 
     <div class="container">
@@ -749,7 +885,7 @@
                 <button class="nav-btn primary" onclick="refreshData()">🔄 Refresh Data</button>
             </div>
             <div class="user-info">
-                <span>Admin Panel | Version 5.0 - Credit Support & Diagram Integration</span>
+                <span>Admin Panel | Version 5.2 - Complete Achievement Types Integration</span>
             </div>
         </div>
 
@@ -836,6 +972,28 @@
                         <div style="display: flex; align-items: center;">
                             <input type="color" class="form-input" id="drillColor" value="#667eea">
                             <div class="color-preview" id="colorPreview"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Achievement Type Assignment Section -->
+                <div class="form-group">
+                    <label class="form-label">Achievement Type (Optional)</label>
+                    <div class="achievement-selection">
+                        <select class="form-select" id="drillAchievementType" onchange="updateAchievementPreview()">
+                            <option value="">No achievement system</option>
+                        </select>
+                        <div class="achievement-preview" id="achievementPreview">
+                            <div class="achievement-preview-header">
+                                <span class="achievement-preview-name" id="achievementPreviewName"></span>
+                                <span class="achievement-preview-method" id="achievementPreviewMethod"></span>
+                                <button type="button" class="clear-achievement-btn" onclick="clearAchievementSelection()">×</button>
+                            </div>
+                            <div class="achievement-preview-description" id="achievementPreviewDescription"></div>
+                            <div class="achievement-levels">
+                                <div class="achievement-levels-title">Achievement Levels:</div>
+                                <div id="achievementLevelsList"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -933,6 +1091,7 @@
         let allSkills = [];
         let allDiagrams = [];
         let allCredits = [];
+        let allAchievementTypes = [];
         let filteredDiagrams = [];
         let selectedDiagramId = null;
         let currentEditId = null;
@@ -1002,7 +1161,7 @@
         // ========================================
 
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('🎯 Enhanced Drill Admin Interface Loading with Credit Support...');
+            console.log('🎯 Enhanced Drill Admin Interface Loading with Achievement Types...');
             initializeAdmin();
             setupEventListeners();
         });
@@ -1012,22 +1171,31 @@
                 console.log('🚀 Loading data from API...');
                 showMessage('Loading drill data...', 'info');
                 
-                // Load all data including credits
-                const [categories, skills, drills, diagrams, credits] = await Promise.all([
+                // Load all data including credits and achievement types
+                const [categories, skills, drills, diagrams, credits, achievementTypes] = await Promise.all([
                     apiRequest('categories'),
                     apiRequest('skills'),
                     apiRequest('drills'),
                     apiRequest('diagrams'),
-                    apiRequest('credits')
+                    apiRequest('credits'),
+                    apiRequest('achievement-types')
                 ]);
                 
-                console.log('✅ Data loaded:', { categories, skills, drills, diagrams, credits });
+                console.log('✅ Data loaded:', { categories, skills, drills, diagrams, credits, achievementTypes });
+                
+                // ENHANCED: Verify achievement type data in drills
+                const drillsWithAchievements = drills.filter(d => d.achievement_type_id);
+                console.log('🏆 Drills with achievement types:', drillsWithAchievements.length);
+                if (drillsWithAchievements.length > 0) {
+                    console.log('🏆 Sample drill with achievement data:', drillsWithAchievements[0]);
+                }
                 
                 allCategories = categories;
                 allSkills = skills;
                 allDrills = drills;
                 allDiagrams = diagrams;
                 allCredits = credits || [];
+                allAchievementTypes = achievementTypes || [];
                 filteredDrills = [...allDrills];
                 filteredDiagrams = [...allDiagrams];
                 
@@ -1035,10 +1203,15 @@
                 setupFilters();
                 setupModalSelects();
                 setupCreditSelect();
+                setupAchievementTypeSelect();
                 renderDrillsTable();
                 
                 clearMessage();
-                console.log('✅ Enhanced Admin interface with credit support initialized');
+                console.log('✅ Enhanced Admin interface with achievement types initialized');
+                console.log('📊 Final counts - Drills:', allDrills.length, 'Achievement Types:', allAchievementTypes.length);
+                
+                // Make debug function available
+                window.debugAchievementTypes();
                 
             } catch (error) {
                 console.error('❌ Error initializing admin:', error);
@@ -1137,6 +1310,98 @@
                 option.textContent = skill.display_name;
                 skillSelect.appendChild(option);
             });
+        }
+
+        // ========================================
+        // ACHIEVEMENT TYPE MANAGEMENT FUNCTIONS
+        // ========================================
+
+        function setupAchievementTypeSelect() {
+            const achievementSelect = document.getElementById('drillAchievementType');
+            achievementSelect.innerHTML = '<option value="">No achievement system</option>';
+            
+            if (!allAchievementTypes || allAchievementTypes.length === 0) {
+                console.log('⚠️ No achievement types available for dropdown');
+                return;
+            }
+            
+            allAchievementTypes.forEach(achievementType => {
+                const option = document.createElement('option');
+                option.value = achievementType.id;
+                option.textContent = `${achievementType.name} (${achievementType.level_count} levels)`;
+                achievementSelect.appendChild(option);
+            });
+            
+            console.log('✅ Achievement type dropdown populated with', allAchievementTypes.length, 'types');
+        }
+
+        async function updateAchievementPreview() {
+            const achievementSelect = document.getElementById('drillAchievementType');
+            const achievementPreview = document.getElementById('achievementPreview');
+            const selectedAchievementId = achievementSelect.value;
+
+            if (!selectedAchievementId || !allAchievementTypes || allAchievementTypes.length === 0) {
+                achievementPreview.classList.remove('show');
+                return;
+            }
+
+            const selectedAchievement = allAchievementTypes.find(a => a.id == selectedAchievementId);
+            if (!selectedAchievement) {
+                achievementPreview.classList.remove('show');
+                return;
+            }
+
+            // Update preview header
+            document.getElementById('achievementPreviewName').textContent = selectedAchievement.name;
+            document.getElementById('achievementPreviewMethod').textContent = selectedAchievement.calculation_method || 'absolute';
+            document.getElementById('achievementPreviewDescription').textContent = selectedAchievement.description || '';
+
+            // Load and display levels
+            try {
+                const levels = await apiRequest(`achievement-levels/${selectedAchievementId}`);
+                const levelsList = document.getElementById('achievementLevelsList');
+                levelsList.innerHTML = '';
+
+                if (levels && levels.length > 0) {
+                    levels.forEach(level => {
+                        const levelItem = document.createElement('div');
+                        levelItem.className = 'level-item';
+                        
+                        const thresholdText = selectedAchievement.calculation_method === 'percentage' 
+                            ? `${level.min_threshold}% - ${level.max_threshold}%`
+                            : `${level.min_threshold} - ${level.max_threshold} points`;
+
+                        levelItem.innerHTML = `
+                            <div class="level-icon" style="background-color: ${level.display_color || '#ccc'}">
+                                ${level.display_icon || level.level_number}
+                            </div>
+                            <div class="level-info">
+                                <div class="level-name">${level.level_name}</div>
+                                <div class="level-threshold">${thresholdText}</div>
+                            </div>
+                        `;
+                        
+                        levelsList.appendChild(levelItem);
+                    });
+                } else {
+                    levelsList.innerHTML = '<div style="color: #666; font-style: italic;">No levels configured</div>';
+                }
+
+                achievementPreview.classList.add('show');
+                console.log('🏆 Achievement preview updated for:', selectedAchievement.name, 'with', levels.length, 'levels');
+
+            } catch (error) {
+                console.error('❌ Error loading achievement levels:', error);
+                const levelsList = document.getElementById('achievementLevelsList');
+                levelsList.innerHTML = '<div style="color: #dc3545;">Error loading levels</div>';
+                achievementPreview.classList.add('show');
+            }
+        }
+
+        function clearAchievementSelection() {
+            document.getElementById('drillAchievementType').value = '';
+            document.getElementById('achievementPreview').classList.remove('show');
+            console.log('🗑️ Achievement type selection cleared');
         }
 
         // ========================================
@@ -1376,6 +1641,7 @@
                             <th>Skill</th>
                             <th>Max Score</th>
                             <th>Difficulty</th>
+                            <th>Achievement Type</th>
                             <th>Credit To</th>
                             <th>Resources</th>
                             <th>Actions</th>
@@ -1411,6 +1677,17 @@
                     </div>
                 </div>
             ` : '<span class="no-credit">No credit assigned</span>';
+
+            // Achievement type information display
+            const achievementInfo = drill.achievement_type_name ? `
+                <div class="achievement-info">
+                    <div class="achievement-name">${drill.achievement_type_name}</div>
+                    <div class="achievement-method">
+                        ${drill.achievement_calculation_method || 'absolute'}
+                    </div>
+                    ${drill.achievement_level_count ? `<div style="font-size: 11px; color: #666; margin-top: 2px;">${drill.achievement_level_count} levels</div>` : ''}
+                </div>
+            ` : '<span class="no-achievement">No achievement system</span>';
             
             return `
                 <tr data-drill-id="${drill.id}">
@@ -1429,6 +1706,9 @@
                     </td>
                     <td>
                         <span style="color: #666;">${drill.difficulty_rating || 1.0}/5</span>
+                    </td>
+                    <td>
+                        ${achievementInfo}
                     </td>
                     <td>
                         ${creditInfo}
@@ -1462,11 +1742,12 @@
             updateColorPreview();
             clearDiagramSelection();
             clearCreditSelection();
+            clearAchievementSelection();
             document.getElementById('drillModal').style.display = 'block';
             console.log('✅ Add modal opened');
         }
 
-        function editDrill(id) {
+        async function editDrill(id) {
             console.log('✏️ Edit Drill called with ID:', id, 'Type:', typeof id);
             
             try {
@@ -1496,6 +1777,12 @@
                 }
                 
                 console.log('✅ Found drill to edit:', drill);
+                console.log('🏆 Drill achievement data:', {
+                    achievement_type_id: drill.achievement_type_id,
+                    achievement_type_name: drill.achievement_type_name,
+                    achievement_calculation_method: drill.achievement_calculation_method,
+                    achievement_level_count: drill.achievement_level_count
+                });
                 
                 currentEditId = drillIdNum;
                 document.getElementById('modalTitle').textContent = 'Edit Drill';
@@ -1511,6 +1798,23 @@
                 document.getElementById('drillTime').value = drill.estimated_time_minutes || '';
                 document.getElementById('drillColor').value = drill.color_code || '#667eea';
                 document.getElementById('drillVideoUrl').value = drill.video_url || '';
+                
+                // ENHANCED: Handle achievement type selection with better error handling
+                const achievementSelect = document.getElementById('drillAchievementType');
+                if (drill.achievement_type_id && drill.achievement_type_id !== null && drill.achievement_type_id !== '') {
+                    console.log('🏆 Setting achievement type to:', drill.achievement_type_id);
+                    achievementSelect.value = drill.achievement_type_id;
+                    
+                    // Trigger the preview update
+                    setTimeout(() => {
+                        updateAchievementPreview();
+                    }, 100);
+                    
+                    console.log('🏆 Achievement type set. Current select value:', achievementSelect.value);
+                } else {
+                    console.log('🏆 No achievement type for this drill, clearing selection');
+                    clearAchievementSelection();
+                }
                 
                 // Handle credit selection
                 if (drill.credit_id) {
@@ -1573,6 +1877,9 @@
             const creditSelectValue = document.getElementById('drillCredit').value;
             const creditId = creditSelectValue ? parseInt(creditSelectValue) : null;
             
+            const achievementSelectValue = document.getElementById('drillAchievementType').value;
+            const achievementTypeId = achievementSelectValue ? parseInt(achievementSelectValue) : null;
+            
             const formData = {
                 name: document.getElementById('drillName').value,
                 category_id: parseInt(document.getElementById('drillCategory').value),
@@ -1585,16 +1892,16 @@
                 color_code: document.getElementById('drillColor').value,
                 diagram_id: parseInt(document.getElementById('drillDiagramId').value) || null,
                 video_url: document.getElementById('drillVideoUrl').value,
-                credit_id: creditId
+                credit_id: creditId,
+                achievement_type_id: achievementTypeId
             };
             
             console.log('📝 Form data to submit:', formData);
-            console.log('📝 Credit field details:');
-            console.log('   - Raw credit select value:', creditSelectValue);
-            console.log('   - Parsed credit_id:', creditId);
-            console.log('   - Type of credit_id:', typeof creditId);
-            console.log('   - Is credit_id null?:', creditId === null);
-            console.log('   - Is credit_id number?:', typeof creditId === 'number');
+            console.log('🏆 Achievement type submission details:');
+            console.log('   - Raw achievement select value:', achievementSelectValue);
+            console.log('   - Parsed achievement_type_id:', achievementTypeId);
+            console.log('   - Type of achievement_type_id:', typeof achievementTypeId);
+            console.log('   - Will send null?', achievementTypeId === null);
             
             // Additional validation
             if (!formData.name || !formData.category_id || !formData.skill_id) {
@@ -1603,20 +1910,31 @@
             }
             
             try {
+                let result;
                 if (currentEditId) {
                     console.log('📝 Updating drill ID:', currentEditId);
                     console.log('📝 Sending PUT request with data:', JSON.stringify(formData, null, 2));
-                    await apiRequest(`drills/${currentEditId}`, 'PUT', formData);
+                    result = await apiRequest(`drills/${currentEditId}`, 'PUT', formData);
                     showMessage('Drill updated successfully!', 'success');
                 } else {
                     console.log('📝 Creating new drill');
                     console.log('📝 Sending POST request with data:', JSON.stringify(formData, null, 2));
-                    await apiRequest('drills', 'POST', formData);
+                    result = await apiRequest('drills', 'POST', formData);
                     showMessage('Drill created successfully!', 'success');
                 }
                 
+                console.log('✅ Save operation result:', result);
+                
                 closeModal();
-                refreshData();
+                await refreshData();
+                
+                // If this was an achievement type assignment, show confirmation
+                if (achievementTypeId) {
+                    const achievementType = allAchievementTypes.find(a => a.id == achievementTypeId);
+                    if (achievementType) {
+                        showMessage(`Drill saved with achievement type: ${achievementType.name}`, 'success');
+                    }
+                }
                 
             } catch (error) {
                 console.error('💥 Error saving drill:', error);
@@ -1625,11 +1943,6 @@
                     stack: error.stack,
                     formData: formData
                 });
-                
-                // Try to save without credit_id to isolate the issue
-                console.log('🔧 Attempting to save without credit_id for debugging...');
-                const formDataWithoutCredit = { ...formData };
-                delete formDataWithoutCredit.credit_id;
                 
                 showMessage(`Error saving drill: ${error.message}. Check the console for details.`, 'error');
             }
@@ -1683,7 +1996,7 @@
                 
                 showMessage('Drill deleted successfully!', 'success');
                 
-                console.log('🔄 Refreshing drill list after delete...');
+                console.log('📄 Refreshing drill list after delete...');
                 await refreshData();
                 
                 console.log('✅ Delete operation completed');
@@ -1696,7 +2009,7 @@
 
         async function refreshData() {
             try {
-                console.log('🔄 Refreshing drill data...');
+                console.log('📄 Refreshing drill data...');
                 showMessage('Refreshing data...', 'info');
                 
                 allDrills = [];
@@ -1722,7 +2035,7 @@
                 allDrills = drills;
                 filteredDrills = [...allDrills];
                 
-                // Also refresh diagrams and credits
+                // Also refresh other data
                 try {
                     allDiagrams = await apiRequest('diagrams');
                     filteredDiagrams = [...allDiagrams];
@@ -1731,8 +2044,12 @@
                     allCredits = await apiRequest('credits');
                     setupCreditSelect();
                     console.log('✅ Credits refreshed:', allCredits.length);
+
+                    allAchievementTypes = await apiRequest('achievement-types');
+                    setupAchievementTypeSelect();
+                    console.log('✅ Achievement types refreshed:', allAchievementTypes.length);
                 } catch (refreshError) {
-                    console.warn('⚠️ Could not refresh diagrams/credits:', refreshError.message);
+                    console.warn('⚠️ Could not refresh some data:', refreshError.message);
                 }
                 
                 filterDrills();
@@ -1772,7 +2089,7 @@
         document.addEventListener('click', function(e) {
             if (e.target.classList.contains('btn-edit')) {
                 const drillId = e.target.getAttribute('data-drill-id');
-                console.log('🔍 Edit button clicked - Drill ID from data attribute:', drillId);
+                console.log('📝 Edit button clicked - Drill ID from data attribute:', drillId);
             }
         });
 
@@ -1788,15 +2105,44 @@
             console.log('All skills:', allSkills.length);
             console.log('All diagrams:', allDiagrams.length);
             console.log('All credits:', allCredits.length);
+            console.log('All achievement types:', allAchievementTypes.length);
             if (allDrills.length > 0) {
                 console.log('Sample drill:', allDrills[0]);
             }
-            if (allCredits.length > 0) {
-                console.log('Sample credit:', allCredits[0]);
+            if (allAchievementTypes.length > 0) {
+                console.log('Sample achievement type:', allAchievementTypes[0]);
             }
         };
 
-        console.log('🎯 Enhanced Drill Admin Interface Ready - Version 5.0 with Credit Support');
+        // Debug function to check achievement type data flow
+        window.debugAchievementTypes = function() {
+            console.log('🔍 Achievement Types Debug Info:');
+            console.log('Available achievement types:', allAchievementTypes);
+            console.log('Sample drill with achievement data:');
+            
+            const drillWithAchievement = allDrills.find(d => d.achievement_type_id);
+            if (drillWithAchievement) {
+                console.log('Found drill with achievement:', {
+                    id: drillWithAchievement.id,
+                    name: drillWithAchievement.name,
+                    achievement_type_id: drillWithAchievement.achievement_type_id,
+                    achievement_type_name: drillWithAchievement.achievement_type_name,
+                    achievement_calculation_method: drillWithAchievement.achievement_calculation_method,
+                    achievement_level_count: drillWithAchievement.achievement_level_count
+                });
+            } else {
+                console.log('No drills with achievement types found');
+            }
+            
+            // Check if dropdown is populated
+            const dropdown = document.getElementById('drillAchievementType');
+            console.log('Achievement dropdown options:', dropdown.options.length);
+            for (let i = 0; i < dropdown.options.length; i++) {
+                console.log(`  Option ${i}: value="${dropdown.options[i].value}" text="${dropdown.options[i].text}"`);
+            }
+        };
+
+        console.log('🎯 Enhanced Drill Admin Interface Ready - Version 5.2 with Complete Achievement Types');
         console.log('📡 API URL:', API_BASE_URL);
         
         window.debugAdmin = {
@@ -1805,93 +2151,11 @@
             allSkills: () => allSkills,
             allDiagrams: () => allDiagrams,
             allCredits: () => allCredits,
+            allAchievementTypes: () => allAchievementTypes,
             testAPI: () => apiRequest('categories').then(console.log).catch(console.error),
             testEdit: (id) => editDrill(id),
-            openDiagramBrowser: () => openDiagramBrowser(),
-            launchDrillDisplay: (id) => launchDrillDisplay(id),
-            testCredit: () => apiRequest('credits').then(console.log).catch(console.error),
-            // NEW: Debug functions for credit issues
-            testSaveWithoutCredit: async () => {
-                const testData = {
-                    name: "Test Drill - No Credit",
-                    category_id: 1,
-                    skill_id: 1,
-                    description: "Test description",
-                    instructions: "Test instructions",
-                    max_score: 10,
-                    difficulty_rating: 1.0,
-                    estimated_time_minutes: null,
-                    color_code: "#667eea",
-                    diagram_id: null,
-                    video_url: ""
-                    // Note: NO credit_id field
-                };
-                console.log('🧪 Testing drill save WITHOUT credit_id:', testData);
-                try {
-                    const result = await apiRequest('drills', 'POST', testData);
-                    console.log('✅ Save without credit succeeded:', result);
-                    return result;
-                } catch (error) {
-                    console.error('❌ Save without credit failed:', error);
-                    throw error;
-                }
-            },
-            testSaveWithCredit: async () => {
-                const testData = {
-                    name: "Test Drill - With Credit",
-                    category_id: 1,
-                    skill_id: 1,
-                    description: "Test description",
-                    instructions: "Test instructions",
-                    max_score: 10,
-                    difficulty_rating: 1.0,
-                    estimated_time_minutes: null,
-                    color_code: "#667eea",
-                    diagram_id: null,
-                    video_url: "",
-                    credit_id: allCredits.length > 0 ? allCredits[0].id : null
-                };
-                console.log('🧪 Testing drill save WITH credit_id:', testData);
-                try {
-                    const result = await apiRequest('drills', 'POST', testData);
-                    console.log('✅ Save with credit succeeded:', result);
-                    return result;
-                } catch (error) {
-                    console.error('❌ Save with credit failed:', error);
-                    throw error;
-                }
-            },
-            testUpdateWithCredit: async (drillId) => {
-                if (!drillId) drillId = allDrills.length > 0 ? allDrills[0].id : null;
-                if (!drillId) {
-                    console.error('❌ No drill ID available for testing');
-                    return;
-                }
-                
-                const testData = {
-                    name: "Updated Test Drill - With Credit",
-                    category_id: 1,
-                    skill_id: 1,
-                    description: "Updated test description",
-                    instructions: "Updated test instructions",
-                    max_score: 15,
-                    difficulty_rating: 2.0,
-                    estimated_time_minutes: null,
-                    color_code: "#667eea",
-                    diagram_id: null,
-                    video_url: "",
-                    credit_id: allCredits.length > 0 ? allCredits[0].id : null
-                };
-                console.log('🧪 Testing drill UPDATE WITH credit_id:', testData);
-                try {
-                    const result = await apiRequest(`drills/${drillId}`, 'PUT', testData);
-                    console.log('✅ Update with credit succeeded:', result);
-                    return result;
-                } catch (error) {
-                    console.error('❌ Update with credit failed:', error);
-                    throw error;
-                }
-            }
+            testAchievementTypes: () => apiRequest('achievement-types').then(console.log).catch(console.error),
+            testAchievementLevels: (typeId) => apiRequest(`achievement-levels/${typeId}`).then(console.log).catch(console.error)
         };
     </script>
 </body>

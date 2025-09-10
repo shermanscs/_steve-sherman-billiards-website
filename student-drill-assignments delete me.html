@@ -1,0 +1,1183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Assignments - Steve Sherman Billiards</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo {
+            width: 50px;
+            height: 50px;
+        }
+
+        .header-text h1 {
+            font-size: 2.2em;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 5px;
+        }
+
+        .header-text p {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-info {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .user-info {
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .user-details {
+            color: #333;
+            font-weight: 600;
+        }
+
+        .summary-stats {
+            background: rgba(40, 167, 69, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+
+        .summary-title {
+            color: #155724;
+            font-size: 1.2em;
+            font-weight: 600;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 15px;
+            text-align: center;
+        }
+
+        .stat-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-value {
+            font-size: 1.8em;
+            font-weight: 600;
+            color: #28a745;
+            margin-bottom: 5px;
+        }
+
+        .stat-value.score-excellent { color: #28a745; }
+        .stat-value.score-good { color: #ffc107; }
+        .stat-value.score-needs-work { color: #dc3545; }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .assignments-table {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+
+        .table-header {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .table-header h3 {
+            font-size: 1.4em;
+            margin-bottom: 5px;
+        }
+
+        .table-header p {
+            opacity: 0.9;
+            font-size: 0.9em;
+        }
+
+        .assignments-list {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .assignment-row {
+            display: grid;
+            grid-template-columns: 1fr 120px 120px 120px 200px;
+            gap: 15px;
+            padding: 20px;
+            border-bottom: 1px solid #e9ecef;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .assignment-row:hover {
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .assignment-row:last-child {
+            border-bottom: none;
+        }
+
+        .drill-info {
+            min-width: 0;
+        }
+
+        .drill-name {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+            word-wrap: break-word;
+        }
+
+        .drill-details {
+            color: #666;
+            font-size: 0.9em;
+            line-height: 1.4;
+        }
+
+        .drill-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        .meta-tag {
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: 500;
+        }
+
+        .assignment-info {
+            color: #666;
+            font-size: 0.85em;
+            line-height: 1.3;
+        }
+
+        .assignment-date {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .stats-cell {
+            text-align: center;
+        }
+
+        .attempts-count {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #17a2b8;
+            margin-bottom: 3px;
+        }
+
+        .avg-score {
+            font-size: 1.3em;
+            font-weight: 600;
+            margin-bottom: 3px;
+        }
+
+        .score-excellent { color: #28a745; }
+        .score-good { color: #ffc107; }
+        .score-needs-work { color: #dc3545; }
+
+        .stats-label {
+            color: #666;
+            font-size: 0.8em;
+        }
+
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 12px;
+            border-radius: 6px;
+            text-align: center;
+            min-width: 90px;
+        }
+
+        .no-assignments {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+
+        .no-assignments-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .no-assignments h3 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                width: calc(100% - 20px);
+                padding: 20px;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+
+            .header-text h1 {
+                font-size: 1.8em;
+            }
+
+            .assignment-row {
+                grid-template-columns: 1fr;
+                gap: 10px;
+                text-align: center;
+            }
+
+            .drill-meta {
+                justify-content: center;
+            }
+
+            .action-buttons {
+                flex-direction: row;
+                justify-content: center;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .user-info {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header-text h1 {
+                font-size: 1.5em;
+            }
+
+            .btn {
+                padding: 8px 12px;
+                font-size: 12px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Status indicators */
+        .status-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+
+        .status-active { background: #28a745; }
+        .status-overdue { background: #dc3545; }
+        .status-due-soon { background: #ffc107; }
+
+        /* Responsive table scrolling */
+        .assignments-list::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .assignments-list::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        .assignments-list::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 4px;
+        }
+
+        .assignments-list::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-left">
+                <img src="images/logo.png" alt="Steve Sherman Billiards Logo" class="logo">
+                <div class="header-text">
+                    <h1>My Assignments</h1>
+                    <p>Track your assigned drills and progress</p>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-secondary" onclick="goBackToPortal()">
+                    ← Back to Portal
+                </button>
+                <button class="btn btn-info" onclick="refreshAssignments()">
+                    🔄 Refresh
+                </button>
+            </div>
+        </div>
+
+        <!-- User Info -->
+        <div class="user-info">
+            <div class="user-details">
+                <span>Welcome, <strong id="currentStudent">Loading...</strong></span><br>
+                <small>Assignment Dashboard | <span id="currentDateTime"></span></small>
+            </div>
+        </div>
+
+        <!-- Loading State -->
+        <div id="loadingState" class="loading">
+            <div class="loading-spinner"></div>
+            <p>Loading your assignments...</p>
+        </div>
+
+        <!-- Error State -->
+        <div id="errorState" class="error-message" style="display: none;">
+            <p id="errorMessage">Failed to load assignments. Please try again.</p>
+        </div>
+
+        <!-- Assignments Table -->
+        <div id="assignmentsTable" class="assignments-table" style="display: none;">
+            <div class="table-header">
+                <h3>Active Drill Assignments</h3>
+                <p>Click buttons to view scores or enter new scores for each assignment</p>
+            </div>
+            <div class="assignments-list" id="assignmentsList">
+                <!-- Assignment rows will be populated here -->
+            </div>
+        </div>
+
+        <!-- No Assignments State -->
+        <div id="noAssignmentsState" class="no-assignments" style="display: none;">
+            <div class="no-assignments-icon">📋</div>
+            <h3>No Active Assignments</h3>
+            <p>You don't have any active drill assignments at the moment.<br>
+            Check back later or contact your coach for new assignments.</p>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const API_BASE_URL = 'https://steveshermanbilliards.com/drill-api.php';
+        
+        // Current user session
+        let currentSession = null;
+        let assignments = [];
+        let scores = [];
+        let refreshTimeout = null;
+        let isRefreshing = false;
+        let lastFocusTime = Date.now();
+
+        // ========================================
+        // PAGE VISIBILITY AND FOCUS HANDLERS
+        // ========================================
+
+        function scheduleRefresh() {
+            if (refreshTimeout) {
+                clearTimeout(refreshTimeout);
+            }
+            refreshTimeout = setTimeout(() => {
+                if (!isRefreshing && currentSession) {
+                    refreshAssignments();
+                }
+            }, 500);
+        }
+
+        // Auto-refresh when user returns to the page
+        document.addEventListener('visibilitychange', function() {
+            if (!document.hidden && currentSession) {
+                console.log('🔄 Page became visible - scheduling refresh...');
+                scheduleRefresh();
+            }
+        });
+
+        // Auto-refresh when window gains focus
+        window.addEventListener('focus', function() {
+            const currentTime = Date.now();
+            const timeSinceLastFocus = currentTime - lastFocusTime;
+            
+            // If the window was unfocused for more than 5 seconds, likely came back from another page
+            if (timeSinceLastFocus > 5000 && currentSession) {
+                console.log('🔄 Window regained focus after extended absence - auto-refreshing...');
+                handleProgressReturn();
+            } else if (currentSession) {
+                console.log('🔄 Window gained focus - scheduling refresh...');
+                scheduleRefresh();
+            }
+            
+            lastFocusTime = currentTime;
+        });
+
+        // ========================================
+        // INITIALIZATION
+        // ========================================
+
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Student Drill Assignments Page Loaded');
+            
+            // Update current date/time
+            updateDateTime();
+            setInterval(updateDateTime, 30000); // Update every 30 seconds
+            
+            // Initialize session and load data
+            initializeSession();
+        });
+
+        function updateDateTime() {
+            const now = new Date();
+            const formatted = now.toLocaleString('en-US', {
+                weekday: 'short',
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            document.getElementById('currentDateTime').textContent = formatted;
+        }
+
+        function initializeSession() {
+            try {
+                // Try to get session from URL parameters first
+                const urlParams = new URLSearchParams(window.location.search);
+                const userParam = urlParams.get('user');
+                
+                if (userParam) {
+                    try {
+                        const userData = JSON.parse(atob(userParam));
+                        currentSession = {
+                            userId: userData.id,
+                            name: userData.name,
+                            email: userData.email,
+                            type: userData.type,
+                            fromUrl: true
+                        };
+                        console.log('📦 Session loaded from URL:', currentSession);
+                    } catch (e) {
+                        console.error('❌ Failed to parse URL user data:', e);
+                    }
+                }
+                
+                // Fallback to stored session
+                if (!currentSession) {
+                    const savedSession = sessionStorage.getItem('studentSession');
+                    if (savedSession) {
+                        currentSession = JSON.parse(savedSession);
+                        console.log('📦 Session loaded from storage:', currentSession);
+                    }
+                }
+
+                if (currentSession && currentSession.userId) {
+                    // Update UI with user info
+                    document.getElementById('currentStudent').textContent = currentSession.name || 'Student';
+                    
+                    // Load assignments
+                    loadAssignments();
+                } else {
+                    showError('No user session found. Please return to the student portal and login again.');
+                }
+                
+            } catch (error) {
+                console.error('❌ Session initialization error:', error);
+                showError('Failed to initialize user session. Please try again.');
+            }
+        }
+
+        // ========================================
+        // API FUNCTIONS
+        // ========================================
+
+        async function apiRequest(endpoint, method = 'GET', data = null, bustCache = false) {
+            try {
+                const options = {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                };
+                
+                if (data) {
+                    options.body = JSON.stringify(data);
+                }
+                
+                // Simplified cache busting - timestamp is sufficient
+                let url = `${API_BASE_URL}/${endpoint}`;
+                if (bustCache || method === 'GET') {
+                    const separator = url.includes('?') ? '&' : '?';
+                    url += `${separator}_t=${Date.now()}`;
+                }
+                
+                // Add no-cache headers for fresh data
+                if (bustCache || method === 'GET') {
+                    options.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate';
+                    options.headers['Pragma'] = 'no-cache';
+                    options.headers['Expires'] = '0';
+                }
+                
+                console.log('🌐 API Request (cache busted):', method, url);
+                
+                let response;
+                try {
+                    response = await fetch(url, options);
+                } catch (networkError) {
+                    throw new Error(`Network error: ${networkError.message}. Please check your internet connection.`);
+                }
+                
+                if (!response.ok) {
+                    let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+                    try {
+                        const errorBody = await response.text();
+                        if (errorBody) {
+                            errorMessage += ` - ${errorBody}`;
+                        }
+                    } catch (e) {
+                        // Ignore parsing errors for error body
+                    }
+                    throw new Error(errorMessage);
+                }
+                
+                let result;
+                try {
+                    result = await response.json();
+                } catch (parseError) {
+                    throw new Error('Invalid JSON response from server');
+                }
+                
+                console.log('📄 API Response:', result);
+                
+                if (!result.success) {
+                    throw new Error(result.message || 'API request failed');
+                }
+                
+                return result;
+            } catch (error) {
+                console.error('❌ API Error:', error);
+                throw error;
+            }
+        }
+
+        // ========================================
+        // DATA LOADING FUNCTIONS
+        // ========================================
+
+        async function loadAssignments() {
+            try {
+                showLoading();
+                
+                console.log('📋 Loading assignments for user ID:', currentSession.userId);
+                
+                // Force fresh data with cache busting
+                const assignmentsResponse = await apiRequest(`assignments?user_id=${currentSession.userId}`, 'GET', null, true);
+                assignments = assignmentsResponse.data || assignmentsResponse || [];
+                
+                // Filter for active assignments only
+                assignments = assignments.filter(assignment => assignment.is_active == 1);
+                
+                console.log('📋 Loaded assignments:', assignments.length);
+                
+                // Load all scores for this user with cache busting to get fresh data
+                const scoresResponse = await apiRequest(`scores?user_id=${currentSession.userId}&limit=1000`, 'GET', null, true);
+                scores = scoresResponse.data || scoresResponse || [];
+                
+                // Additional client-side filtering to ensure only this user's scores
+                scores = scores.filter(score => 
+                    score.user_id == currentSession.userId || 
+                    score.userId == currentSession.userId ||
+                    score.student_id == currentSession.userId
+                );
+                
+                console.log('📊 Loaded fresh scores:', scores.length);
+                
+                // Process and display assignments
+                await processAssignments();
+                
+            } catch (error) {
+                console.error('❌ Error loading assignments:', error);
+                showError('Failed to load assignments: ' + error.message);
+            }
+        }
+
+        async function processAssignments() {
+            try {
+                if (assignments.length === 0) {
+                    showNoAssignments();
+                    return;
+                }
+
+                console.log('📊 Processing assignments and calculating individual drill statistics');
+                
+                // Render assignments table
+                renderAssignments();
+                showAssignments();
+                
+            } catch (error) {
+                console.error('❌ Error processing assignments:', error);
+                showError('Failed to process assignment data: ' + error.message);
+            }
+        }
+
+        function getScoreClass(score) {
+            if (score >= 80) return 'score-excellent';
+            if (score >= 60) return 'score-good';
+            return 'score-needs-work';
+        }
+
+        function getScoresForAssignment(assignment) {
+            if (!assignment.assigned_date) {
+                console.warn(`⚠️ Assignment ${assignment.drill_name} has no assigned_date`);
+                return [];
+            }
+            
+            // Add small buffer to assignment date to account for timezone issues
+            const assignmentDate = new Date(assignment.assigned_date);
+            assignmentDate.setHours(0, 0, 0, 0); // Start of assignment day
+            
+            console.log(`📊 Calculating scores for assignment ${assignment.drill_name}:`, {
+                drillId: assignment.drill_id,
+                assignmentDate: assignmentDate.toISOString(),
+                totalScoresInDB: scores.length
+            });
+            
+            const relevantScores = scores.filter(score => {
+                // Normalize user ID comparison
+                const scoreUserId = score.user_id || score.userId || score.student_id;
+                const isCorrectUser = scoreUserId == currentSession.userId;
+                
+                if (!isCorrectUser) return false;
+                
+                const isCorrectDrill = score.drill_id == assignment.drill_id;
+                if (!isCorrectDrill) return false;
+                
+                // Parse score date
+                const scoreDateStr = score.submitted_at || score.practice_date;
+                if (!scoreDateStr) return false;
+                
+                const scoreDate = new Date(scoreDateStr);
+                scoreDate.setHours(0, 0, 0, 0); // Start of score day
+                
+                const isAfterAssignment = scoreDate >= assignmentDate;
+                
+                return isAfterAssignment;
+            });
+            
+            console.log(`📊 Found ${relevantScores.length} relevant scores for ${assignment.drill_name}`);
+            return relevantScores;
+        }
+
+        function renderAssignments() {
+            const listContainer = document.getElementById('assignmentsList');
+            listContainer.innerHTML = '';
+            
+            assignments.forEach(assignment => {
+                const assignmentScores = getScoresForAssignment(assignment);
+                const attemptCount = assignmentScores.length;
+                
+                // Calculate average score and max score for this drill
+                let avgScore = 0;
+                let maxScore = 0;
+                
+                if (attemptCount > 0) {
+                    const totalPercentage = assignmentScores.reduce((sum, score) => {
+                        const percentage = parseFloat(score.percentage || 0);
+                        if (percentage > maxScore) {
+                            maxScore = percentage;
+                        }
+                        return sum + percentage;
+                    }, 0);
+                    avgScore = Math.round(totalPercentage / attemptCount);
+                }
+                
+                console.log(`📊 Drill ${assignment.drill_name} stats:`, {
+                    attempts: attemptCount,
+                    average: avgScore,
+                    max: maxScore
+                });
+                
+                // Create assignment row
+                const row = createAssignmentRow(assignment, attemptCount, avgScore, maxScore);
+                listContainer.appendChild(row);
+            });
+        }
+
+        function createAssignmentRow(assignment, attemptCount, avgScore, maxScore) {
+            const row = document.createElement('div');
+            row.className = 'assignment-row';
+            
+            // Add data attributes for easier debugging and future enhancements
+            row.setAttribute('data-drill-id', assignment.drill_id);
+            row.setAttribute('data-assignment-id', assignment.id);
+            row.setAttribute('data-drill-name', assignment.drill_name);
+            row.setAttribute('data-assigned-date', assignment.assigned_date);
+            
+            // Determine score color classes
+            let avgScoreClass = getScoreClass(avgScore);
+            let maxScoreClass = getScoreClass(maxScore);
+            
+            // Format assignment date
+            const assignedDate = new Date(assignment.assigned_date);
+            const formattedDate = assignedDate.toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric'
+            });
+            
+            // Determine due date status
+            let dueDateInfo = '';
+            let statusIndicator = '<span class="status-indicator status-active"></span>';
+            
+            if (assignment.due_date) {
+                const dueDate = new Date(assignment.due_date);
+                const today = new Date();
+                const timeDiff = dueDate.getTime() - today.getTime();
+                const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
+                
+                if (daysDiff < 0) {
+                    dueDateInfo = `<br><span style="color: #dc3545; font-weight: 600;">Overdue by ${Math.abs(daysDiff)} days</span>`;
+                    statusIndicator = '<span class="status-indicator status-overdue"></span>';
+                } else if (daysDiff <= 3) {
+                    dueDateInfo = `<br><span style="color: #ffc107; font-weight: 600;">Due in ${daysDiff} days</span>`;
+                    statusIndicator = '<span class="status-indicator status-due-soon"></span>';
+                } else {
+                    dueDateInfo = `<br>Due: ${dueDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
+                }
+            }
+            
+            // Escape drill name for onclick handler
+            const escapedDrillName = assignment.drill_name.replace(/'/g, "\\'");
+            
+            row.innerHTML = `
+                <div class="drill-info">
+                    <div class="drill-name">${statusIndicator}${assignment.drill_name}</div>
+                    <div class="drill-details">
+                        ${assignment.drill_description || 'Practice drill as assigned'}
+                    </div>
+                    <div class="drill-meta">
+                        <span class="meta-tag">${assignment.category_display}</span>
+                        <span class="meta-tag">${assignment.skill_display}</span>
+                        <span class="meta-tag">Max: ${assignment.max_score} pts</span>
+                    </div>
+                    <div class="assignment-info">
+                        <span class="assignment-date">Assigned: ${formattedDate}</span>
+                        ${dueDateInfo}
+                        ${assignment.notes ? `<br><em>"${assignment.notes}"</em>` : ''}
+                    </div>
+                </div>
+                
+                <div class="stats-cell">
+                    <div class="attempts-count">${attemptCount}</div>
+                    <div class="stats-label">Attempts</div>
+                </div>
+                
+                <div class="stats-cell">
+                    <div class="avg-score ${avgScoreClass}">${attemptCount > 0 ? avgScore + '%' : '--'}</div>
+                    <div class="stats-label">Average</div>
+                </div>
+                
+                <div class="stats-cell">
+                    <div class="avg-score ${maxScoreClass}">${attemptCount > 0 ? maxScore + '%' : '--'}</div>
+                    <div class="stats-label">Best Score</div>
+                </div>
+                
+                <div class="action-buttons">
+                    <button class="btn btn-info btn-small" 
+                            onclick="viewScores(${assignment.drill_id}, '${escapedDrillName}')">
+                        📊 View Progress
+                    </button>
+                    <button class="btn btn-success btn-small" 
+                            onclick="enterScore(${assignment.drill_id}, '${escapedDrillName}', ${assignment.id})">
+                        ➕ Enter Score
+                    </button>
+                </div>
+            `;
+            
+            return row;
+        }
+
+        // ========================================
+        // UI STATE FUNCTIONS
+        // ========================================
+
+        function showLoading() {
+            document.getElementById('loadingState').style.display = 'block';
+            document.getElementById('errorState').style.display = 'none';
+            document.getElementById('assignmentsTable').style.display = 'none';
+            document.getElementById('noAssignmentsState').style.display = 'none';
+        }
+
+        function showError(message) {
+            document.getElementById('errorMessage').textContent = message;
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('errorState').style.display = 'block';
+            document.getElementById('assignmentsTable').style.display = 'none';
+            document.getElementById('noAssignmentsState').style.display = 'none';
+        }
+
+        function showAssignments() {
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('errorState').style.display = 'none';
+            document.getElementById('assignmentsTable').style.display = 'block';
+            document.getElementById('noAssignmentsState').style.display = 'none';
+        }
+
+        function showNoAssignments() {
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('errorState').style.display = 'none';
+            document.getElementById('assignmentsTable').style.display = 'none';
+            document.getElementById('noAssignmentsState').style.display = 'block';
+        }
+
+        // ========================================
+        // ACTION FUNCTIONS
+        // ========================================
+
+        function goBackToPortal() {
+            if (confirm('Return to student portal?')) {
+                window.close(); // Close if opened in new tab
+                // Fallback for browsers that don't allow window.close()
+                setTimeout(() => {
+                    window.location.href = 'student-portal.html';
+                }, 100);
+            }
+        }
+
+        async function refreshAssignments() {
+            if (isRefreshing) {
+                console.log('⏳ Refresh already in progress, skipping...');
+                return;
+            }
+            
+            isRefreshing = true;
+            console.log('🔄 Refreshing assignments with force refresh...');
+            
+            try {
+                // Clear any cached data
+                assignments = [];
+                scores = [];
+                
+                // Force reload with cache busting
+                await loadAssignments();
+            } finally {
+                isRefreshing = false;
+            }
+        }
+
+        // Enhanced viewScores function to integrate with assignment-progress.html
+        function viewScores(drillId, drillName) {
+            if (!drillId || !drillName) {
+                console.error('❌ Invalid parameters for viewScores');
+                alert('Invalid drill information. Please try again.');
+                return;
+            }
+            
+            if (!currentSession || !currentSession.userId) {
+                alert('Please login first to view scores.');
+                return;
+            }
+            
+            console.log('📊 Opening assignment progress for drill:', drillId, drillName);
+            
+            try {
+                // Find the assignment for this drill to get the assignment date
+                const assignment = assignments.find(a => a.drill_id == drillId);
+                
+                if (!assignment) {
+                    console.error('❌ Assignment not found for drill ID:', drillId);
+                    alert('Assignment information not found. Please refresh the page and try again.');
+                    return;
+                }
+                
+                // Encode user data for URL
+                const userData = btoa(JSON.stringify({
+                    id: currentSession.userId,
+                    name: currentSession.name,
+                    email: currentSession.email,
+                    type: currentSession.type
+                }));
+                
+                // Prepare URL parameters
+                const params = new URLSearchParams({
+                    user: userData,
+                    drill: encodeURIComponent(drillName),
+                    drillId: drillId,
+                    date: assignment.assigned_date,
+                    assignmentId: assignment.id,
+                    t: Date.now() // Cache busting
+                });
+                
+                // Create the assignment progress URL
+                const progressUrl = `assignment-progress.html?${params.toString()}`;
+                
+                console.log('🌐 Opening assignment progress page with parameters:', {
+                    drill: drillName,
+                    drillId: drillId,
+                    assignmentDate: assignment.assigned_date,
+                    assignmentId: assignment.id
+                });
+                
+                // Open in new tab/window
+                const newWindow = window.open(progressUrl, '_blank');
+                
+                // Check if popup was blocked
+                if (!newWindow || newWindow.closed || typeof newWindow.closed == 'undefined') {
+                    // Fallback: navigate in same window
+                    if (confirm(`Popup blocked. Open assignment progress in this window?\n\nDrill: ${drillName}`)) {
+                        window.location.href = progressUrl;
+                    }
+                }
+                
+            } catch (error) {
+                console.error('❌ Error opening assignment progress:', error);
+                alert('Failed to open progress view. Please try again.');
+            }
+        }
+
+        function enterScore(drillId, drillName, assignmentId) {
+            if (!drillId || !drillName) {
+                console.error('❌ Invalid parameters for enterScore');
+                return;
+            }
+            
+            if (!currentSession || !currentSession.userId) {
+                alert('Please login first to enter scores.');
+                return;
+            }
+            
+            console.log('➕ Enter score for drill:', drillId, drillName, 'Assignment:', assignmentId);
+            
+            // Create URL with user data and drill parameters
+            let userData;
+            try {
+                userData = btoa(JSON.stringify({
+                    id: currentSession.userId,
+                    name: currentSession.name,
+                    email: currentSession.email,
+                    type: currentSession.type
+                }));
+            } catch (encodingError) {
+                console.error('❌ Failed to encode user data:', encodingError);
+                alert('Error preparing session data. Please try again.');
+                return;
+            }
+            
+            // Prepare drill app session with assignment context
+            const drillAppSession = {
+                userId: currentSession.userId,
+                name: currentSession.name,
+                email: currentSession.email,
+                type: currentSession.type,
+                token: currentSession.token || 'no-token',
+                loginTime: currentSession.loginTime || new Date(),
+                fromPortal: true,
+                fromAssignments: true,
+                preSelectDrill: {
+                    drillId: drillId,
+                    drillName: drillName,
+                    assignmentId: assignmentId
+                },
+                timestamp: new Date().toISOString()
+            };
+            
+            try {
+                // Store enhanced session for drill app to pick up
+                sessionStorage.setItem('drillAppSession', JSON.stringify(drillAppSession));
+                console.log('✅ Drill app session stored with assignment context');
+                
+                // Also ensure studentSession is available as backup
+                sessionStorage.setItem('studentSession', JSON.stringify(currentSession));
+                console.log('✅ Student session backup stored');
+                
+            } catch (e) {
+                console.error('❌ Could not prepare drill app session:', e);
+                alert('Error preparing session. Please try again.');
+                return;
+            }
+            
+            // Open drill app with assignment context
+            const drillAppUrl = `drill-app.html?portal=student&user=${userData}&assignment=${assignmentId}&drill=${drillId}&t=${Date.now()}`;
+            console.log('🌐 Opening drill app with assignment context');
+            
+            // Small delay to ensure session is written
+            setTimeout(() => {
+                window.open(drillAppUrl, '_blank');
+            }, 100);
+        }
+
+        // Handle the assignment progress page return
+        function handleProgressReturn() {
+            // This function can be called when returning from the progress page
+            // to refresh the data and show any updates
+            console.log('🔄 Handling return from progress page - refreshing data...');
+            refreshAssignments();
+        }
+
+        // ========================================
+        // UTILITY FUNCTIONS
+        // ========================================
+
+        // Handle browser back button
+        window.addEventListener('beforeunload', function() {
+            // No special handling needed for now
+        });
+
+        console.log('📋 Student Drill Assignments - Ready');
+        console.log('📡 API URL:', API_BASE_URL);
+    </script>
+</body>
+</html>

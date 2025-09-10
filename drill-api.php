@@ -1520,8 +1520,8 @@ private function getCoachName($coach_id) {
      * DRILLS
      */
 
-    /**
- * ENHANCED getDrills with credit support
+/**
+ * ENHANCED getDrills with achievement type support
  */
 public function getDrills($params = []) {
     $where = ["d.is_active = 1"];
@@ -1542,6 +1542,13 @@ public function getDrills($params = []) {
         $types .= "i";
     }
     
+    // Filter by achievement type
+    if (!empty($params['achievement_type_id'])) {
+        $where[] = "d.achievement_type_id = ?";
+        $bindings[] = $params['achievement_type_id'];
+        $types .= "i";
+    }
+    
     // Filter by user assignments
     if (!empty($params['user_id']) && !empty($params['assigned_only'])) {
         $where[] = "EXISTS (SELECT 1 FROM wp_drill_assignments da WHERE da.drill_id = d.id AND da.user_id = ? AND da.is_active = 1)";
@@ -1549,7 +1556,7 @@ public function getDrills($params = []) {
         $types .= "i";
     }
     
-    // ENHANCED SQL: Added credit information
+    // ENHANCED SQL: Added achievement type information
     $sql = "SELECT d.*, 
                    dc.name as category_name, dc.display_name as category_display,
                    ds.name as skill_name, ds.display_name as skill_display,
@@ -1558,12 +1565,20 @@ public function getDrills($params = []) {
                    cr.organization_name as credit_organization_name,
                    cr.website_url as credit_website_url,
                    cr.icon_url as credit_icon_url,
-                   cr.description as credit_description
+                   cr.description as credit_description,
+                   
+                   -- Achievement type information
+                   at.name as achievement_type_name,
+                   at.description as achievement_type_description,
+                   at.calculation_method as achievement_calculation_method,
+                   (SELECT COUNT(*) FROM wp_achievement_levels al 
+                    WHERE al.achievement_type_id = at.id) as achievement_level_count
                    
             FROM wp_drills d
             JOIN wp_drill_categories dc ON d.category_id = dc.id
             JOIN wp_drill_skills ds ON d.skill_id = ds.id
             LEFT JOIN wp_credit_to cr ON d.credit_id = cr.id AND cr.is_active = 1
+            LEFT JOIN wp_achievement_types at ON d.achievement_type_id = at.id AND at.is_active = 1
             WHERE " . implode(' AND ', $where) . "
             ORDER BY dc.sort_order, ds.sort_order, d.name";
     
@@ -1578,20 +1593,21 @@ public function getDrills($params = []) {
     
     $drills = [];
     while ($row = $result->fetch_assoc()) {
-        // Log credit information for debugging
-        if ($row['credit_id']) {
-            error_log("Drill '{$row['name']}' has credit_id: {$row['credit_id']}, organization: {$row['credit_organization_name']}");
+        // Log achievement information for debugging
+        if ($row['achievement_type_id']) {
+            error_log("Drill '{$row['name']}' has achievement_type_id: {$row['achievement_type_id']}, type: {$row['achievement_type_name']}");
         }
         
         $drills[] = $row;
     }
     
-    error_log("getDrills returning " . count($drills) . " drills with credit info");
+    error_log("getDrills returning " . count($drills) . " drills with achievement type info");
     $this->sendSuccess($drills);
 }
+
     
 /**
- * ENHANCED getDrill with credit support
+ * ENHANCED getDrill with achievement type support
  */
 public function getDrill($id) {
     $stmt = $this->db->prepare("
@@ -1606,13 +1622,21 @@ public function getDrill($id) {
                cr.organization_name as credit_organization_name,
                cr.website_url as credit_website_url,
                cr.icon_url as credit_icon_url,
-               cr.description as credit_description
+               cr.description as credit_description,
+               
+               -- Achievement type information
+               at.name as achievement_type_name,
+               at.description as achievement_type_description,
+               at.calculation_method as achievement_calculation_method,
+               (SELECT COUNT(*) FROM wp_achievement_levels al 
+                WHERE al.achievement_type_id = at.id) as achievement_level_count
                
         FROM wp_drills d
         JOIN wp_drill_categories dc ON d.category_id = dc.id
         JOIN wp_drill_skills ds ON d.skill_id = ds.id
         LEFT JOIN wp_diagrams diag ON d.diagram_id = diag.id AND diag.is_active = 1
         LEFT JOIN wp_credit_to cr ON d.credit_id = cr.id AND cr.is_active = 1
+        LEFT JOIN wp_achievement_types at ON d.achievement_type_id = at.id AND at.is_active = 1
         WHERE d.id = ? AND d.is_active = 1
     ");
     
@@ -1621,9 +1645,9 @@ public function getDrill($id) {
     $result = $stmt->get_result();
     
     if ($drill = $result->fetch_assoc()) {
-        // Log credit information for debugging
-        if ($drill['credit_id']) {
-            error_log("Single drill '{$drill['name']}' has credit_id: {$drill['credit_id']}, organization: {$drill['credit_organization_name']}");
+        // Log achievement information for debugging
+        if ($drill['achievement_type_id']) {
+            error_log("Single drill '{$drill['name']}' has achievement_type_id: {$drill['achievement_type_id']}, type: {$drill['achievement_type_name']}");
         }
         
         $this->sendSuccess($drill);
@@ -1631,6 +1655,8 @@ public function getDrill($id) {
         $this->sendError('Drill not found', 404);
     }
 }
+
+
 
 /**
  * NEW METHOD: Add this to your DrillAPI class
@@ -1716,8 +1742,9 @@ public function getDrillStats($params = []) {
     }
 }
     
+
 /**
- * ENHANCED createDrill with credit support
+ * ENHANCED createDrill with achievement type support
  */
 public function createDrill($data) {
     $name = trim($data['name'] ?? '');
@@ -1732,6 +1759,7 @@ public function createDrill($data) {
     $estimated_time = $data['estimated_time_minutes'] ?? null;
     $color_code = trim($data['color_code'] ?? '#667eea');
     $credit_id = !empty($data['credit_id']) ? intval($data['credit_id']) : null;
+    $achievement_type_id = !empty($data['achievement_type_id']) ? intval($data['achievement_type_id']) : null;
     
     if (empty($name) || !$category_id || !$skill_id) {
         $this->sendError('Name, category, and skill are required', 400);
@@ -1749,35 +1777,56 @@ public function createDrill($data) {
         }
     }
     
-    // ENHANCED SQL: Added credit_id field
+    // Verify achievement type exists if provided
+    if ($achievement_type_id !== null) {
+        $achievementCheck = $this->db->prepare("SELECT id, name FROM wp_achievement_types WHERE id = ? AND is_active = 1");
+        $achievementCheck->bind_param('i', $achievement_type_id);
+        $achievementCheck->execute();
+        $achievementResult = $achievementCheck->get_result();
+        if ($achievementResult->num_rows === 0) {
+            $this->sendError('Invalid achievement type selected', 400);
+            return;
+        }
+        $achievementType = $achievementResult->fetch_assoc();
+    }
+    
+    // ENHANCED SQL: Added achievement_type_id field
     $stmt = $this->db->prepare("
         INSERT INTO wp_drills 
         (name, category_id, skill_id, description, instructions, max_score, image_url, video_url, 
-         difficulty_rating, estimated_time_minutes, color_code, credit_id) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+         difficulty_rating, estimated_time_minutes, color_code, credit_id, achievement_type_id) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ");
     
-    $stmt->bind_param('siisssissisi', $name, $category_id, $skill_id, $description, $instructions, 
+    $stmt->bind_param('siisssissisii', $name, $category_id, $skill_id, $description, $instructions, 
                      $max_score, $image_url, $video_url, $difficulty_rating, $estimated_time, 
-                     $color_code, $credit_id);
+                     $color_code, $credit_id, $achievement_type_id);
     
     if ($stmt->execute()) {
         $drill_id = $this->db->insert_id;
-        error_log("Drill created successfully with ID: $drill_id, credit_id: " . ($credit_id ?? 'none'));
+        error_log("Drill created successfully with ID: $drill_id, credit_id: " . ($credit_id ?? 'none') . 
+                  ", achievement_type_id: " . ($achievement_type_id ?? 'none'));
         
-        $this->sendSuccess([
+        $response = [
             'id' => $drill_id, 
             'message' => 'Drill created successfully',
-            'credit_assigned' => !empty($credit_id)
-        ]);
+            'credit_assigned' => !empty($credit_id),
+            'achievement_type_assigned' => !empty($achievement_type_id)
+        ];
+        
+        if ($achievement_type_id) {
+            $response['achievement_type_name'] = $achievementType['name'];
+        }
+        
+        $this->sendSuccess($response);
     } else {
         $this->sendError('Failed to create drill: ' . $this->db->error, 500);
     }
 }
-    
+   
 
 /**
- * ENHANCED updateDrill with credit support
+ * ENHANCED updateDrill with achievement type support
  */
 public function updateDrill($id, $data) {
     $name = trim($data['name'] ?? '');
@@ -1787,6 +1836,7 @@ public function updateDrill($id, $data) {
     $max_score = $data['max_score'] ?? 100;
     $diagram_id = isset($data['diagram_id']) ? ($data['diagram_id'] ?: null) : null;
     $credit_id = isset($data['credit_id']) ? (!empty($data['credit_id']) ? intval($data['credit_id']) : null) : null;
+    $achievement_type_id = isset($data['achievement_type_id']) ? (!empty($data['achievement_type_id']) ? intval($data['achievement_type_id']) : null) : null;
     
     if (empty($name) || !$category_id || !$skill_id) {
         $this->sendError('Name, category, and skill are required', 400);
@@ -1813,91 +1863,49 @@ public function updateDrill($id, $data) {
         }
     }
     
-    // ENHANCED SQL: Added credit_id field
+    // Verify achievement type exists if provided
+    $achievementType = null;
+    if ($achievement_type_id !== null) {
+        $achievementCheck = $this->db->prepare("SELECT id, name FROM wp_achievement_types WHERE id = ? AND is_active = 1");
+        $achievementCheck->bind_param('i', $achievement_type_id);
+        $achievementCheck->execute();
+        $achievementResult = $achievementCheck->get_result();
+        if ($achievementResult->num_rows === 0) {
+            $this->sendError('Invalid achievement type selected', 400);
+            return;
+        }
+        $achievementType = $achievementResult->fetch_assoc();
+    }
+    
+    // ENHANCED SQL: Added achievement_type_id field
     $stmt = $this->db->prepare("
         UPDATE wp_drills 
         SET name = ?, description = ?, category_id = ?, skill_id = ?, max_score = ?, 
-            diagram_id = ?, credit_id = ?, updated_at = NOW()
+            diagram_id = ?, credit_id = ?, achievement_type_id = ?, updated_at = NOW()
         WHERE id = ?
     ");
-    $stmt->bind_param('ssiiiiii', $name, $description, $category_id, $skill_id, $max_score, $diagram_id, $credit_id, $id);
+    $stmt->bind_param('ssiiiiiii', $name, $description, $category_id, $skill_id, $max_score, 
+                     $diagram_id, $credit_id, $achievement_type_id, $id);
     
     if ($stmt->execute()) {
-        error_log("Drill updated successfully - ID: $id, credit_id: " . ($credit_id ?? 'none'));
+        error_log("Drill updated successfully - ID: $id, credit_id: " . ($credit_id ?? 'none') . 
+                  ", achievement_type_id: " . ($achievement_type_id ?? 'none'));
         
-        $this->sendSuccess([
+        $response = [
             'message' => 'Drill updated successfully',
-            'credit_assigned' => !empty($credit_id)
-        ]);
+            'credit_assigned' => !empty($credit_id),
+            'achievement_type_assigned' => !empty($achievement_type_id)
+        ];
+        
+        if ($achievement_type_id && $achievementType) {
+            $response['achievement_type_name'] = $achievementType['name'];
+        }
+        
+        $this->sendSuccess($response);
     } else {
         $this->sendError('Failed to update drill: ' . $this->db->error, 500);
     }
 }
-    
-    public function deleteDrill($id) {
-        // Ensure ID is an integer
-        $id = (int)$id;
-        
-        if ($id <= 0) {
-            $this->sendError('Invalid drill ID', 400);
-        }
-        
-        // First check if drill exists
-        $checkStmt = $this->db->prepare("SELECT id, name FROM wp_drills WHERE id = ?");
-        $checkStmt->bind_param('i', $id);
-        $checkStmt->execute();
-        $result = $checkStmt->get_result();
-        
-        if ($result->num_rows === 0) {
-            $this->sendError('Drill not found', 404);
-        }
-        
-        $drill = $result->fetch_assoc();
-        
-        // Check if drill is already inactive
-        $activeCheck = $this->db->prepare("SELECT is_active FROM wp_drills WHERE id = ?");
-        $activeCheck->bind_param('i', $id);
-        $activeCheck->execute();
-        $activeResult = $activeCheck->get_result();
-        $drillStatus = $activeResult->fetch_assoc();
-        
-        if ($drillStatus['is_active'] == 0) {
-            $this->sendError('Drill is already deleted', 404);
-        }
-        
-        // Start transaction for safe deletion
-        $this->db->begin_transaction();
-        
-        try {
-            // Option 1: Soft delete - just mark drill as inactive
-            // This preserves all historical data (scores, assignments)
-            $stmt = $this->db->prepare("UPDATE wp_drills SET is_active = 0, updated_at = NOW() WHERE id = ?");
-            $stmt->bind_param('i', $id);
-            
-            if (!$stmt->execute()) {
-                throw new Exception('Failed to update drill: ' . $this->db->error);
-            }
-            
-            if ($stmt->affected_rows === 0) {
-                throw new Exception('No changes made to drill');
-            }
-            
-            // Optionally, also deactivate assignments (but keep scores for history)
-            $assignmentStmt = $this->db->prepare("UPDATE wp_drill_assignments SET is_active = 0 WHERE drill_id = ?");
-            $assignmentStmt->bind_param('i', $id);
-            $assignmentStmt->execute();
-            
-            // Commit transaction
-            $this->db->commit();
-            
-            $this->sendSuccess(['message' => "Drill '{$drill['name']}' deleted successfully. Historical scores and assignments have been preserved."]);
-            
-        } catch (Exception $e) {
-            // Rollback transaction on error
-            $this->db->rollback();
-            $this->sendError('Failed to delete drill: ' . $e->getMessage(), 500);
-        }
-    }
 
 /**
  * TRAINING PROGRAMS MANAGEMENT

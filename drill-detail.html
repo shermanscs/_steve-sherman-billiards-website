@@ -1,0 +1,1471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drill Details & Scoring</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.2em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Navigation Header */
+        .nav-header {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-title {
+            font-size: 1.3em;
+            font-weight: 600;
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 8px 16px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-1px);
+        }
+
+        .user-info {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* Main Content Grid */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 450px;
+            min-height: 600px;
+            gap: 0;
+        }
+
+        /* Left Column - Drill Details */
+        .drill-details {
+            padding: 30px;
+            border-right: 1px solid #e0e0e0;
+        }
+
+        .drill-image-section {
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .drill-image {
+            width: 100%;
+            max-width: 500px;
+            height: 300px;
+            border-radius: 12px;
+            object-fit: cover;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            margin: 0 auto;
+            display: block;
+        }
+
+        .drill-image-placeholder {
+            width: 100%;
+            max-width: 500px;
+            height: 300px;
+            background: linear-gradient(135deg, #2d5a27 0%, #1a3d1a 50%, #2d5a27 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 8s ease infinite;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 4em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            margin: 0 auto;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .drill-image-placeholder::before {
+            content: '🎱';
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .drill-header {
+            margin-bottom: 20px;
+        }
+
+        .drill-title {
+            font-size: 1.8em;
+            color: #333;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .drill-tags {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .drill-tag {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 6px 12px;
+            border-radius: 15px;
+        }
+
+        .tag-category {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .tag-skill {
+            background: #f3e5f5;
+            color: #7b1fa2;
+        }
+
+        .tag-assigned {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .drill-meta {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+        }
+
+        .meta-item {
+            text-align: center;
+        }
+
+        .meta-value {
+            font-size: 1.4em;
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .meta-label {
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 4px;
+        }
+
+        .drill-content h3 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .drill-description, .drill-instructions {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .video-section {
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .video-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(45deg, #ff6b6b, #ff8e53);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .video-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.3);
+        }
+
+        /* Right Column - Score Entry & History */
+        .score-panel {
+            background: #f8f9fa;
+            padding: 30px 25px;
+            display: flex;
+            flex-direction: column;
+            min-height: 600px;
+        }
+
+        .score-section {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            flex-shrink: 0;
+        }
+
+        .score-section h3 {
+            color: #333;
+            margin-bottom: 12px;
+            font-size: 1.2em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .current-best {
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            color: #7c6f00;
+            text-align: center;
+            padding: 12px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .score-form {
+            margin-bottom: 15px;
+        }
+
+        .score-input-group {
+            margin-bottom: 12px;
+        }
+
+        .score-input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .score-select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            background: white;
+        }
+
+        .score-select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .submit-score-btn {
+            width: 100%;
+            background: linear-gradient(45deg, #28a745, #20c997);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .submit-score-btn:hover {
+            background: linear-gradient(45deg, #218838, #1fa589);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3);
+        }
+
+        .submit-score-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .recent-scores {
+            flex: 1;
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .score-stats {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .stats-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .stats-title {
+            font-size: 14px;
+            font-weight: 600;
+            opacity: 0.9;
+        }
+
+        .stats-count {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 18px;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            opacity: 0.8;
+            margin-top: 2px;
+        }
+
+        .mini-chart {
+            height: 40px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            padding: 5px;
+            margin-top: 8px;
+        }
+
+        .chart-line {
+            stroke: rgba(255, 255, 255, 0.9);
+            stroke-width: 2;
+            fill: none;
+        }
+
+        .chart-area {
+            fill: rgba(255, 255, 255, 0.2);
+        }
+
+        .chart-dot {
+            fill: #fff;
+            r: 2;
+        }
+
+        .chart-dot.best {
+            fill: #ffd700;
+            r: 3;
+        }
+
+        .score-history-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+
+        .score-history {
+            /* No scrolling - just show last 10 entries */
+        }
+
+        .score-entry {
+            background: white;
+            padding: 8px 10px;
+            margin-bottom: 4px;
+            border-radius: 6px;
+            border-left: 4px solid #667eea;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            line-height: 1.3;
+        }
+
+        .score-entry:hover {
+            transform: translateX(3px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .score-entry.personal-best {
+            border-left-color: #ffd700;
+            background: linear-gradient(90deg, #fffef7, #ffffff);
+        }
+
+        .score-entry.perfect-score {
+            border-left-color: #ff6b6b;
+            background: linear-gradient(90deg, #fff5f5, #ffffff);
+        }
+
+        .score-entry-info {
+            flex: 1;
+        }
+
+        .score-entry-score {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .score-entry-date {
+            font-size: 11px;
+            color: #999;
+            margin-top: 2px;
+            line-height: 1.2;
+        }
+
+        /* Messages */
+        .messages-section {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1001;
+            max-width: 350px;
+        }
+
+        .success-message, .error-message, .personal-best-message, .perfect-score-message, .halfway-message {
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            display: none;
+            animation: slideInRight 0.3s ease;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            border-left: 4px solid #28a745;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            border-left: 4px solid #dc3545;
+        }
+
+        .personal-best-message {
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            color: #7c6f00;
+            border-left: 4px solid #d4af37;
+        }
+
+        .perfect-score-message {
+            background: linear-gradient(135deg, #ff6b6b, #ff8e53);
+            color: white;
+            border-left: 4px solid #ff4757;
+            animation: perfectGradient 2s ease-in-out infinite;
+        }
+
+        .halfway-message {
+            background: linear-gradient(135deg, #17a2b8, #20c997);
+            color: white;
+            border-left: 4px solid #138496;
+        }
+
+        @keyframes perfectGradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .version-info {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 11px;
+            font-family: monospace;
+            z-index: 1000;
+        }
+        .loading {
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .container {
+                margin: 0;
+            }
+
+            .content-grid {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+
+            .drill-details {
+                border-right: none;
+                border-bottom: 1px solid #e0e0e0;
+                padding: 20px;
+            }
+
+            .score-panel {
+                padding: 20px;
+                min-height: auto;
+            }
+
+            .nav-header {
+                padding: 15px 20px;
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
+
+            .nav-actions {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .drill-meta {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .drill-image, .drill-image-placeholder {
+                height: 200px;
+            }
+        }
+
+        @media (max-width: 1100px) {
+            .content-grid {
+                grid-template-columns: 1fr 400px;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .score-panel {
+                border-top: 1px solid #e0e0e0;
+                min-height: auto;
+            }
+            
+            .drill-details {
+                border-right: none;
+                border-bottom: 1px solid #e0e0e0;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .drill-meta {
+                grid-template-columns: 1fr;
+            }
+
+            .messages-section {
+                left: 10px;
+                right: 10px;
+                max-width: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎱 Drill Details & Scoring - v2.6-RATING-FIX</h1>
+    </div>
+
+    <div class="container">
+        <div class="nav-header">
+            <div class="nav-title" id="drillPageTitle">Loading drill...</div>
+            <div class="nav-actions">
+                <a href="#" class="nav-btn" id="backToBrowser">← Back to Browser</a>
+                <div class="user-info">
+                    <span id="currentUserName">Loading...</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-grid">
+            <!-- Left Column - Drill Details -->
+            <div class="drill-details">
+                <div id="drillDetailsContent">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        Loading drill details...
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column - Score Entry -->
+            <div class="score-panel">
+                <div class="score-section">
+                    <h3>🎯 Enter Your Score</h3>
+                    
+                    <div id="currentRatingSection" class="current-best" style="display: none;">
+                        <div>Current Rating</div>
+                        <div id="currentRatingText" style="font-size: 1.5em;">-</div>
+                    </div>
+
+                    <div class="score-form">
+                        <div class="score-input-group">
+                            <label for="scoreSelect">Your Score:</label>
+                            <select id="scoreSelect" class="score-select">
+                                <option value="">Select your score...</option>
+                            </select>
+                        </div>
+                        <button id="submitScoreBtn" class="submit-score-btn">Submit Score</button>
+                    </div>
+                </div>
+
+                <div class="score-section recent-scores">
+                    <h3>📈 Recent Attempts</h3>
+                    <div id="scoreStatsContent"></div>
+                    <div class="score-history-container">
+                        <div id="scoreHistoryContent" class="score-history">
+                            <div class="loading">
+                                <div class="spinner"></div>
+                                Loading your scores...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Messages Section -->
+    <div class="messages-section">
+        <div id="successMessage" class="success-message"></div>
+        <div id="errorMessage" class="error-message"></div>
+        <div id="personalBestMessage" class="personal-best-message"></div>
+        <div id="perfectScoreMessage" class="perfect-score-message"></div>
+        <div id="halfwayMessage" class="halfway-message"></div>
+    </div>
+
+    <!-- Version Info -->
+    <div class="version-info">v2.6-rating-fix</div>
+
+    <script>
+        // ========================================
+        // CONFIGURATION
+        // ========================================
+        
+        const API_BASE_URL = 'https://steveshermanbilliards.com/drill-api.php';
+        
+        // Global variables
+        let currentUser = null;
+        let currentDrill = null;
+        let userPersonalBests = new Map();
+        let drillId = null;
+        
+        // ========================================
+        // API HELPER FUNCTIONS
+        // ========================================
+        
+        async function apiRequest(endpoint, method = 'GET', data = null, bustCache = false) {
+            try {
+                const options = {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                };
+                
+                if (data) {
+                    options.body = JSON.stringify(data);
+                }
+                
+                let url = `${API_BASE_URL}/${endpoint}`;
+                if (bustCache || method === 'GET') {
+                    const separator = url.includes('?') ? '&' : '?';
+                    url += `${separator}_t=${Date.now()}&_r=${Math.random()}`;
+                }
+                
+                if (bustCache || method === 'GET') {
+                    options.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate';
+                    options.headers['Pragma'] = 'no-cache';
+                    options.headers['Expires'] = '0';
+                }
+                
+                console.log(`📡 API ${method} ${url}`, data ? data : '');
+                
+                const response = await fetch(url, options);
+                
+                console.log(`📡 Response ${response.status} ${response.statusText}`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const result = await response.json();
+                
+                console.log('📄 API Result:', result);
+                
+                if (!result.success) {
+                    throw new Error(result.message || 'API request failed');
+                }
+                
+                return result.data;
+            } catch (error) {
+                console.error(`⚠️ API Error (${method} ${endpoint}):`, error);
+                
+                if (error.name === 'TypeError' && error.message.includes('fetch')) {
+                    throw new Error('Network error: Could not connect to server');
+                } else if (error.message.includes('HTTP 404')) {
+                    throw new Error('API endpoint not found');
+                } else if (error.message.includes('HTTP 500')) {
+                    throw new Error('Server error occurred');
+                } else {
+                    throw error;
+                }
+            }
+        }
+        
+        // ========================================
+        // DEBUG & VERSION INFO
+        // ========================================
+        
+        window.debugDrillDetail = function() {
+            console.log('🔍 Drill Detail Page Debug Info:');
+            console.log('Version: 2.6-RATING-FIX - Current Rating Uses Average Score');
+            console.log('Current User:', currentUser);
+            console.log('Current Drill:', currentDrill);
+            console.log('Drill ID:', drillId);
+            console.log('Personal Bests:', userPersonalBests);
+            console.log('Functions Available:', {
+                createMiniChart: typeof createMiniChart,
+                loadScoreHistory: typeof loadScoreHistory,
+                submitScore: typeof submitScore,
+                updateCurrentRating: typeof updateCurrentRating
+            });
+            return {
+                version: '2.6-RATING-FIX',
+                features: ['Performance Stats', 'Mini Chart', 'Rating Badges', 'Average-Based Rating'],
+                currentDrill,
+                currentUser,
+                drillId
+            };
+        };
+
+        // ========================================
+        // INITIALIZATION
+        // ========================================
+        
+        async function initializePage() {
+            try {
+                // Get drill ID from URL
+                const urlParams = new URLSearchParams(window.location.search);
+                drillId = urlParams.get('drill_id');
+                
+                if (!drillId) {
+                    showError('No drill ID provided');
+                    return;
+                }
+                
+                console.log('📋 Loading drill ID:', drillId);
+                
+                // Load drill details
+                await loadDrillDetails();
+                await loadUserPersonalBests();
+                await loadScoreHistory();
+                
+                setupScoreForm();
+                
+            } catch (error) {
+                console.error('⚠️ Error initializing page:', error);
+                showError('Failed to load drill details: ' + error.message);
+            }
+        }
+
+        async function loadDrillDetails() {
+            try {
+                console.log('📋 Loading drill details for ID:', drillId);
+                
+                // Load drill details
+                const drills = await apiRequest('drills');
+                currentDrill = drills.find(d => d.id == drillId);
+                
+                if (!currentDrill) {
+                    throw new Error('Drill not found');
+                }
+                
+                console.log('✅ Drill loaded:', currentDrill);
+                
+                // Try to load diagram if available
+                if (currentDrill.diagram_id) {
+                    try {
+                        const diagrams = await apiRequest('diagrams');
+                        const diagram = diagrams.find(d => d.id == currentDrill.diagram_id);
+                        if (diagram) {
+                            currentDrill.image_url = diagram.image_url || diagram.thumbnail_url;
+                            console.log('🖼️ Diagram image loaded:', currentDrill.image_url);
+                        }
+                    } catch (diagramError) {
+                        console.log('⚠️ Could not load diagram:', diagramError.message);
+                    }
+                }
+                
+                renderDrillDetails();
+                
+            } catch (error) {
+                console.error('⚠️ Error loading drill details:', error);
+                throw error;
+            }
+        }
+
+        function renderDrillDetails() {
+            const content = document.getElementById('drillDetailsContent');
+            document.getElementById('drillPageTitle').textContent = currentDrill.name;
+            
+            const isAssigned = false; // TODO: Check if drill is assigned to user
+            
+            let imageSection = '';
+            if (currentDrill.image_url) {
+                imageSection = `
+                    <div class="drill-image-section">
+                        <img src="${currentDrill.image_url}" alt="${currentDrill.name}" class="drill-image" 
+                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="drill-image-placeholder" style="display: none;"></div>
+                    </div>
+                `;
+            } else {
+                imageSection = `
+                    <div class="drill-image-section">
+                        <div class="drill-image-placeholder"></div>
+                    </div>
+                `;
+            }
+            
+            let videoSection = '';
+            if (currentDrill.video_url) {
+                videoSection = `
+                    <div class="video-section">
+                        <h3>📹 Video Tutorial</h3>
+                        <a href="${currentDrill.video_url}" target="_blank" class="video-btn">
+                            ▶️ Watch Video
+                        </a>
+                    </div>
+                `;
+            }
+            
+            content.innerHTML = `
+                ${imageSection}
+                
+                <div class="drill-header">
+                    <div class="drill-title">${currentDrill.name}</div>
+                    <div class="drill-tags">
+                        <span class="drill-tag tag-category">${currentDrill.category_display || currentDrill.category_name}</span>
+                        <span class="drill-tag tag-skill">${currentDrill.skill_display || currentDrill.skill_name}</span>
+                        ${isAssigned ? '<span class="drill-tag tag-assigned">ASSIGNED</span>' : ''}
+                    </div>
+                    
+                    <div class="drill-meta">
+                        <div class="meta-item">
+                            <div class="meta-value">${currentDrill.max_score}</div>
+                            <div class="meta-label">Max Score</div>
+                        </div>
+                        <div class="meta-item">
+                            <div class="meta-value">${currentDrill.difficulty_rating || '1.0'}/5</div>
+                            <div class="meta-label">Difficulty</div>
+                        </div>
+                        <div class="meta-item">
+                            <div class="meta-value">${currentDrill.estimated_time_minutes || 'N/A'}</div>
+                            <div class="meta-label">Est. Time (min)</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="drill-content">
+                    ${currentDrill.description ? `
+                        <h3>📝 Description</h3>
+                        <div class="drill-description">${currentDrill.description}</div>
+                    ` : ''}
+                    
+                    ${currentDrill.instructions ? `
+                        <h3>📋 Instructions</h3>
+                        <div class="drill-instructions">${currentDrill.instructions}</div>
+                    ` : ''}
+                </div>
+                
+                ${videoSection}
+            `;
+        }
+
+        function setupScoreForm() {
+            const scoreSelect = document.getElementById('scoreSelect');
+            scoreSelect.innerHTML = '<option value="">Select your score...</option>';
+            
+            for (let i = 1; i <= currentDrill.max_score; i++) {
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = i;
+                scoreSelect.appendChild(option);
+            }
+            
+            // Current rating will be updated after score history is loaded
+        }
+
+        function updateCurrentRating(avgScore, personalBest) {
+            if (!avgScore && !personalBest) return;
+            
+            // Use average score for rating calculation (more representative of current skill)
+            const scoreToUse = avgScore || personalBest;
+            const percentage = (scoreToUse / currentDrill.max_score) * 100;
+            
+            let rating = '';
+            let ratingColor = '';
+            let ratingDescription = '';
+            
+            if (percentage < 50) {
+                rating = '🔰 Learning';
+                ratingColor = '#ff9800'; // Orange
+                ratingDescription = 'Based on average performance';
+            } else if (percentage < 80) {
+                rating = '🔥 Intermediate';
+                ratingColor = '#2196f3'; // Blue
+                ratingDescription = 'Based on average performance';
+            } else {
+                rating = '👑 Proficient';
+                ratingColor = '#4caf50'; // Green
+                ratingDescription = 'Based on average performance';
+            }
+            
+            document.getElementById('currentRatingSection').style.display = 'block';
+            const ratingText = document.getElementById('currentRatingText');
+            ratingText.innerHTML = `${rating} (${Math.round(percentage)}%)<br><small style="font-size: 0.7em; opacity: 0.8;">${ratingDescription}</small>`;
+            ratingText.style.color = ratingColor;
+        }
+
+        // ========================================
+        // PERSONAL BESTS AND SCORE HISTORY
+        // ========================================
+
+        async function loadUserPersonalBests() {
+            if (!currentUser) return;
+            
+            try {
+                const allScores = await apiRequest(`scores?user_id=${currentUser.id}&limit=1000`, 'GET', null, true);
+                const personalBests = new Map();
+                
+                allScores.forEach(score => {
+                    const scoresDrillId = score.drill_id;
+                    const currentScore = parseFloat(score.score);
+                    
+                    if (!personalBests.has(scoresDrillId) || currentScore > personalBests.get(scoresDrillId)) {
+                        personalBests.set(scoresDrillId, currentScore);
+                    }
+                });
+                
+                userPersonalBests = personalBests;
+                console.log('✅ Personal bests loaded:', userPersonalBests.size, 'drills');
+                
+            } catch (error) {
+                console.error('⚠️ Error loading personal bests:', error);
+                userPersonalBests = new Map();
+            }
+        }
+
+        async function loadScoreHistory() {
+            if (!currentUser) {
+                document.getElementById('scoreHistoryContent').innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">Please log in to view your scores</p>';
+                return;
+            }
+            
+            try {
+                const scores = await apiRequest(`scores?user_id=${currentUser.id}&drill_id=${drillId}&limit=25`, 'GET', null, true);
+                
+                if (scores.length === 0) {
+                    document.getElementById('scoreHistoryContent').innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">No attempts yet. Be the first to try this drill!</p>';
+                    return;
+                }
+                
+                // Calculate stats
+                const scoreValues = scores.map(s => parseFloat(s.score));
+                const lowScore = Math.min(...scoreValues);
+                const highScore = Math.max(...scoreValues);
+                const avgScore = scoreValues.reduce((a, b) => a + b, 0) / scoreValues.length;
+                const personalBest = userPersonalBests.get(parseInt(drillId));
+                
+                // Calculate avgPercentage - THIS WAS THE MISSING LINE
+                const avgPercentage = Math.round((avgScore / currentDrill.max_score) * 100);
+                
+                // Create mini chart data (last 10 scores)
+                const chartScores = scores.slice(0, 10).reverse(); // Most recent first, then reverse for chronological chart
+                const chartSVG = createMiniChart(chartScores, currentDrill.max_score, personalBest);
+                
+                // Build stats section
+                const statsHTML = `
+                    <div class="score-stats">
+                        <div class="stats-header">
+                            <div class="stats-title">📊 Performance Summary</div>
+                            <div class="stats-count">${scores.length} attempt${scores.length !== 1 ? 's' : ''}</div>
+                        </div>
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <div class="stat-value">${Math.round(lowScore)}</div>
+                                <div class="stat-label">Low</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">${Math.round(avgScore)}</div>
+                                <div class="stat-label">Average (${avgPercentage}%)</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">${Math.round(highScore)}</div>
+                                <div class="stat-label">High</div>
+                            </div>
+                        </div>
+                        <div class="mini-chart">
+                            ${chartSVG}
+                        </div>
+                    </div>
+                `;
+                
+                const historyHTML = scores.map(score => {
+                    const entryDate = new Date(score.submitted_at || score.practice_date);
+                    const dateStr = entryDate.toLocaleDateString() + ' ' + entryDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                    
+                    const isCurrentBest = personalBest && parseFloat(score.score) === personalBest;
+                    const isPerfect = parseFloat(score.score) === parseFloat(score.max_possible_score || currentDrill.max_score);
+                    
+                    let entryClasses = 'score-entry';
+                    if (isPerfect) entryClasses += ' perfect-score';
+                    if (isCurrentBest) entryClasses += ' personal-best';
+                    
+                    const displayScore = Math.round(parseFloat(score.score));
+                    
+                    let badges = '';
+                    if (isCurrentBest && isPerfect) {
+                        badges = '<div style="font-size: 11px; margin-top: 4px;"><span style="background: #ffd700; color: #7c6f00; padding: 2px 6px; border-radius: 8px; margin-right: 4px;">👑 Best</span><span style="background: #ff6b6b; color: white; padding: 2px 6px; border-radius: 8px;">⭐ Perfect</span></div>';
+                    } else if (isCurrentBest) {
+                        badges = '<div style="color: #ffd700; font-size: 11px; margin-top: 4px;"><span style="background: #ffd700; color: #7c6f00; padding: 2px 6px; border-radius: 8px;">👑 Personal Best</span></div>';
+                    } else if (isPerfect) {
+                        badges = '<div style="color: #ff6b6b; font-size: 11px; margin-top: 4px;"><span style="background: #ff6b6b; color: white; padding: 2px 6px; border-radius: 8px;">⭐ Perfect Score</span></div>';
+                    }
+                    
+                    return `
+                        <div class="${entryClasses}">
+                            <div class="score-entry-info">
+                                <div style="font-weight: 600; display: flex; justify-content: space-between; align-items: center;">
+                                    <span>Score: ${displayScore}/${currentDrill.max_score}</span>
+                                    <span style="font-size: 1.1em; color: #667eea;">${displayScore}</span>
+                                </div>
+                                <div class="score-entry-date">${dateStr}</div>
+                                ${badges}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+                
+                document.getElementById('scoreHistoryContent').innerHTML = statsHTML + '<div class="score-history">' + historyHTML + '</div>';
+                
+                // Update current rating based on average performance
+                updateCurrentRating(avgScore, personalBest);
+                
+            } catch (error) {
+                console.error('⚠️ Error loading score history:', error);
+                document.getElementById('scoreHistoryContent').innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">Error loading scores</p>';
+            }
+        }
+
+        function createMiniChart(scores, maxScore, personalBest) {
+            if (scores.length < 2) {
+                return '<div style="text-align: center; color: rgba(255,255,255,0.7); font-size: 12px; padding: 10px;">Need more attempts for chart</div>';
+            }
+            
+            const width = 100;
+            const height = 30;
+            const padding = 2;
+            
+            // Create points
+            const points = scores.map((score, index) => {
+                const x = (index / (scores.length - 1)) * (width - padding * 2) + padding;
+                const y = height - padding - ((parseFloat(score.score) / maxScore) * (height - padding * 2));
+                return { x, y, score: parseFloat(score.score), isBest: personalBest && parseFloat(score.score) === personalBest };
+            });
+            
+            // Create path
+            const pathData = points.map((point, index) => 
+                `${index === 0 ? 'M' : 'L'} ${point.x} ${point.y}`
+            ).join(' ');
+            
+            // Create area path (for fill under line)
+            const areaPath = `M ${points[0].x} ${height - padding} L ${pathData.substring(2)} L ${points[points.length - 1].x} ${height - padding} Z`;
+            
+            return `
+                <svg width="100%" height="30" viewBox="0 0 ${width} ${height}">
+                    <path d="${areaPath}" class="chart-area"/>
+                    <path d="${pathData}" class="chart-line"/>
+                    ${points.map(point => 
+                        `<circle cx="${point.x}" cy="${point.y}" class="chart-dot ${point.isBest ? 'best' : ''}" title="Score: ${point.score}"/>`
+                    ).join('')}
+                </svg>
+            `;
+        }
+
+        // ========================================
+        // SCORE SUBMISSION
+        // ========================================
+
+        async function submitScore() {
+            const scoreSelect = document.getElementById('scoreSelect');
+            const score = parseFloat(scoreSelect.value);
+            const submitBtn = document.getElementById('submitScoreBtn');
+            
+            if (!currentUser) {
+                showError('Please log in to submit scores');
+                return;
+            }
+            
+            if (!currentDrill || isNaN(score) || !scoreSelect.value) {
+                showError('Please select a valid score');
+                return;
+            }
+            
+            console.log('🎯 Submitting score:', score, 'for drill:', currentDrill.name);
+            
+            try {
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Submitting...';
+                
+                const previousBest = userPersonalBests.get(parseInt(drillId));
+                const isNewPersonalBest = !previousBest || score > previousBest;
+                const isNewPerfectScore = score === currentDrill.max_score;
+                const isNewHalfwayScore = (score / currentDrill.max_score) >= 0.5 && (score / currentDrill.max_score) < 0.7;
+                
+                const scoreData = {
+                    user_id: currentUser.id,
+                    drill_id: parseInt(drillId),
+                    score: score,
+                    max_score: currentDrill.max_score,
+                    submitted_by: currentUser.id,
+                    is_assigned: 0, // TODO: Check if this is an assigned drill
+                    assignment_id: null,
+                    notes: 'Submitted from drill detail page',
+                    practice_date: new Date().toISOString().split('T')[0]
+                };
+                
+                console.log('📤 Sending score data:', scoreData);
+                
+                await apiRequest('scores', 'POST', scoreData);
+                
+                console.log('✅ Score submitted successfully');
+                
+                if (isNewPersonalBest) {
+                    userPersonalBests.set(parseInt(drillId), score);
+                }
+                
+                // Reset form
+                scoreSelect.value = '';
+                
+                // Show appropriate celebration message
+                if (isNewPerfectScore && isNewPersonalBest) {
+                    showPerfectScoreMessage(currentDrill.name, score);
+                    setTimeout(() => {
+                        showPersonalBestMessage(currentDrill.name, score, previousBest);
+                    }, 1000);
+                } else if (isNewPerfectScore) {
+                    showPerfectScoreMessage(currentDrill.name, score);
+                } else if (isNewPersonalBest) {
+                    showPersonalBestMessage(currentDrill.name, score, previousBest);
+                } else if (isNewHalfwayScore) {
+                    showHalfwayMessage(currentDrill.name, score, currentDrill.max_score);
+                } else {
+                    showSuccess(`Score submitted! You scored ${score} on ${currentDrill.name}.`);
+                }
+                
+                // Refresh score history and personal bests
+                await loadUserPersonalBests();
+                await loadScoreHistory();
+                
+            } catch (error) {
+                console.error('⚠️ Error submitting score:', error);
+                showError('Failed to submit score: ' + (error.message || 'Unknown error'));
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit Score';
+            }
+        }
+
+        // ========================================
+        // MESSAGE FUNCTIONS
+        // ========================================
+
+        function showSuccess(message) {
+            const successDiv = document.getElementById('successMessage');
+            clearAllMessages();
+            successDiv.textContent = message;
+            successDiv.style.display = 'block';
+            setTimeout(() => successDiv.style.display = 'none', 5000);
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            clearAllMessages();
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            setTimeout(() => errorDiv.style.display = 'none', 8000);
+        }
+
+        function showPersonalBestMessage(drillName, score, previousBest) {
+            const personalBestDiv = document.getElementById('personalBestMessage');
+            const roundedScore = Math.round(score);
+            
+            let message;
+            if (previousBest) {
+                const roundedPreviousBest = Math.round(previousBest);
+                message = `🏆 NEW PERSONAL BEST! 🏆<br>You scored ${roundedScore} on ${drillName}!<br>Previous best: ${roundedPreviousBest}`;
+            } else {
+                message = `🏆 FIRST SCORE ACHIEVED! 🏆<br>You scored ${roundedScore} on ${drillName}!<br>This is your baseline - keep improving!`;
+            }
+            
+            personalBestDiv.innerHTML = message;
+            personalBestDiv.style.display = 'block';
+            setTimeout(() => personalBestDiv.style.display = 'none', 8000);
+        }
+
+        function showPerfectScoreMessage(drillName, score) {
+            const perfectScoreDiv = document.getElementById('perfectScoreMessage');
+            const roundedScore = Math.round(score);
+            
+            const message = `⭐ PERFECT SCORE! ⭐<br>${roundedScore}/${roundedScore} on ${drillName}!`;
+            
+            perfectScoreDiv.innerHTML = message;
+            perfectScoreDiv.style.display = 'block';
+            setTimeout(() => perfectScoreDiv.style.display = 'none', 10000);
+        }
+
+        function showHalfwayMessage(drillName, score, maxScore) {
+            const halfwayDiv = document.getElementById('halfwayMessage');
+            const percentage = Math.round((score / maxScore) * 100);
+            const roundedScore = Math.round(score);
+            const roundedMaxScore = Math.round(maxScore);
+            
+            const message = `💪 You're getting there, keep working! 💪<br>${roundedScore}/${roundedMaxScore} (${percentage}%) on ${drillName}!`;
+            
+            halfwayDiv.innerHTML = message;
+            halfwayDiv.style.display = 'block';
+            setTimeout(() => halfwayDiv.style.display = 'none', 6000);
+        }
+
+        function clearAllMessages() {
+            document.getElementById('successMessage').style.display = 'none';
+            document.getElementById('errorMessage').style.display = 'none';
+            document.getElementById('personalBestMessage').style.display = 'none';
+            document.getElementById('perfectScoreMessage').style.display = 'none';
+            document.getElementById('halfwayMessage').style.display = 'none';
+        }
+
+        // ========================================
+        // EVENT HANDLERS
+        // ========================================
+
+        function setupEventHandlers() {
+            document.getElementById('submitScoreBtn').addEventListener('click', submitScore);
+            
+            // Setup back button
+            const backBtn = document.getElementById('backToBrowser');
+            const urlParams = new URLSearchParams(window.location.search);
+            const userParam = urlParams.get('user');
+            const portalParam = urlParams.get('portal');
+            
+            let backUrl = 'drill-browser.html';
+            if (portalParam && userParam) {
+                backUrl += `?portal=${portalParam}&user=${userParam}`;
+            } else if (portalParam) {
+                backUrl += `?portal=${portalParam}`;
+            }
+            
+            backBtn.href = backUrl;
+        }
+
+        // ========================================
+        // INITIALIZATION
+        // ========================================
+
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Drill Detail & Score Page v2.6-RATING-FIX Loading...');
+            
+            const urlParams = new URLSearchParams(window.location.search);
+            
+            // Try to get user from URL params first
+            const userParam = urlParams.get('user');
+            if (userParam) {
+                try {
+                    const userData = JSON.parse(atob(userParam));
+                    console.log('👤 User data from URL:', userData);
+                    
+                    currentUser = {
+                        id: userData.id,
+                        name: userData.name,
+                        email: userData.email,
+                        type: userData.type || 'player'
+                    };
+                    
+                    document.getElementById('currentUserName').textContent = currentUser.name;
+                    
+                } catch (e) {
+                    console.error('⚠️ Error parsing user data from URL:', e);
+                }
+            }
+            
+            // Fallback to session storage
+            if (!currentUser) {
+                try {
+                    const drillAppSession = sessionStorage.getItem('drillAppSession');
+                    
+                    if (drillAppSession) {
+                        const session = JSON.parse(drillAppSession);
+                        
+                        const sessionAge = Date.now() - new Date(session.loginTime).getTime();
+                        
+                        if (sessionAge < 24 * 60 * 60 * 1000 && session.fromPortal) {
+                            console.log('👤 User data from session:', session);
+                            
+                            currentUser = {
+                                id: session.userId,
+                                name: session.name,
+                                email: session.email,
+                                type: session.type || 'player'
+                            };
+                            
+                            document.getElementById('currentUserName').textContent = currentUser.name;
+                        }
+                    }
+                } catch (e) {
+                    console.error('⚠️ Session error:', e);
+                }
+            }
+            
+            if (!currentUser) {
+                console.log('⚠️ No user session found');
+                document.getElementById('currentUserName').textContent = 'Not logged in';
+            }
+            
+            setupEventHandlers();
+            initializePage();
+        });
+        
+        console.log('🎯 Drill Detail & Score Page v2.6-RATING-FIX Loaded');
+        console.log('⏰ Loaded at:', new Date().toISOString());
+        console.log('📊 Features: Performance Summary, Mini Chart, Rating Badges (🔰🔥👑)');
+        console.log('🔧 Rating now based on average score instead of personal best');
+    </script>
+</body>
+</html>

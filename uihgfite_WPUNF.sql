@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Sep 02, 2025 at 01:23 PM
+-- Generation Time: Sep 09, 2025 at 08:21 PM
 -- Server version: 8.0.43-34
 -- PHP Version: 8.3.23
 
@@ -358,7 +358,8 @@ INSERT INTO `wp_diagrams` (`id`, `name`, `description`, `diagram_type`, `visibil
 (6, 'long line drill to file', 'description of long line drill to file sdsdsdf', 'drill', 'public', 'Long Line Drill Level 1.jpg', 1, 1, '2025-07-26 02:52:35', '2025-07-26 03:54:23', 'https://steveshermanbilliards.com/wp-content/uploads/diagrams/diagram_6.jpg', 'https://steveshermanbilliards.com/wp-content/uploads/diagrams/thumbnails/thumb_diagram_6.jpg', NULL, 0, NULL),
 (7, 'my first draawing', 'this is a description of my first drawing\r\n\r\n[DRAWING_DATA]{\\\"balls\\\":[{\\\"type\\\":\\\"cue\\\",\\\"x\\\":135.71426391601562,\\\"y\\\":127.28570556640625},{\\\"type\\\":\\\"1\\\",\\\"x\\\":237.71426391601562,\\\"y\\\":138.28570556640625}],\\\"lines\\\":[{\\\"x1\\\":157.71426391601562,\\\"y1\\\":130.71426391601562,\\\"x2\\\":221.71426391601562,\\\"y2\\\":132.71426391601562,\\\"color\\\":\\\"white\\\",\\\"strokeWidth\\\":2},{\\\"x1\\\":267.7142639160156,\\\"y1\\\":134.71426391601562,\\\"x2\\\":348.7142639160156,\\\"y2\\\":49.714263916015625,\\\"color\\\":\\\"white\\\",\\\"strokeWidth\\\":2}],\\\"usedBalls\\\":[\\\"cue\\\",\\\"1\\\"]}[/DRAWING_DATA]', 'drill', 'public', 'my_first_draawing.png', 1, 1, '2025-07-26 03:48:56', '2025-07-26 03:48:56', 'https://steveshermanbilliards.com/wp-content/uploads/diagrams/diagram_7.png', 'https://steveshermanbilliards.com/wp-content/uploads/diagrams/thumbnails/thumb_diagram_7.png', NULL, 0, NULL),
 (9, 'Test 2 after configuring the new vector column', 'Test 2 after configuring the new vector column description\r\n\r\n[DRAWING_DATA]{\\\"balls\\\":[{\\\"type\\\":\\\"1\\\",\\\"x\\\":86.71426391601562,\\\"y\\\":104.28570556640625},{\\\"type\\\":\\\"2\\\",\\\"x\\\":419.7142639160156,\\\"y\\\":197.28570556640625}],\\\"lines\\\":[{\\\"x1\\\":400.7142639160156,\\\"y1\\\":189.71426391601562,\\\"x2\\\":107.71426391601562,\\\"y2\\\":112.71426391601562,\\\"color\\\":\\\"white\\\",\\\"strokeWidth\\\":2}],\\\"usedBalls\\\":[\\\"1\\\",\\\"2\\\"]}[/DRAWING_DATA]', 'drill', 'public', 'Test_2_after_configuring_the_new_vector_column.png', 1, 1, '2025-07-28 22:26:39', '2025-07-28 22:29:18', 'https://steveshermanbilliards.com/wp-content/uploads/diagrams/diagram_9.png', 'https://steveshermanbilliards.com/wp-content/uploads/diagrams/thumbnails/thumb_diagram_9.png', NULL, 0, NULL),
-(10, 'defense spin behind blocker', 'this is a description', 'drill', 'public', 'Spin two rails behind blocker balls.jpg', 2, 1, '2025-08-09 20:17:55', '2025-08-09 20:17:55', 'https://steveshermanbilliards.com/wp-content/uploads/diagrams/diagram_10.jpg', 'https://steveshermanbilliards.com/wp-content/uploads/diagrams/thumbnails/thumb_diagram_10.jpg', NULL, 0, NULL);
+(10, 'defense spin behind blocker', 'this is a description', 'drill', 'public', 'Spin two rails behind blocker balls.jpg', 2, 1, '2025-08-09 20:17:55', '2025-08-09 20:17:55', 'https://steveshermanbilliards.com/wp-content/uploads/diagrams/diagram_10.jpg', 'https://steveshermanbilliards.com/wp-content/uploads/diagrams/thumbnails/thumb_diagram_10.jpg', NULL, 0, NULL),
+(11, 'Wagon Wheel Level 1', 'Classic Wagon Wheel Drill', 'drill', 'public', 'Wagon Wheel Level 1.jpg', 2, 1, '2025-09-10 01:11:23', '2025-09-10 01:11:23', 'https://steveshermanbilliards.com/wp-content/uploads/diagrams/diagram_11.jpg', 'https://steveshermanbilliards.com/wp-content/uploads/diagrams/thumbnails/thumb_diagram_11.jpg', NULL, 0, NULL);
 
 -- --------------------------------------------------------
 
@@ -405,8 +406,8 @@ INSERT INTO `wp_drills` (`id`, `name`, `category_id`, `skill_id`, `description`,
 (12, 'Five ball position drill level 1', 3, 2, 'The five ball position drill is a very good way to start practicing cue ball control and the tangent line.', '1 point for each ball pocketed', 40, 'https://youtu.be/wIfK1YE7bCI', 1.0, NULL, 6, '#8B0000', 1, '2025-07-17 03:28:38', '2025-08-23 06:24:23', NULL, NULL),
 (13, 'Speed Control', 3, 2, 'Practice precise speed control', NULL, 35, '', 1.0, NULL, NULL, '#006400', 1, '2025-07-17 03:28:38', '2025-07-17 03:28:38', NULL, NULL),
 (14, 'Advanced Fundamentals', 3, 1, 'Refinement of fundamental techniques', NULL, 25, 'https://youtu.be/wIfK1YE7bCI', 1.0, NULL, NULL, '#4B0082', 0, '2025-07-17 03:28:38', '2025-07-17 20:25:20', NULL, NULL),
-(15, 'Use this 15 Across Drill it grabs diagram 7', 1, 1, 'The Fifteen Across drill will be one of our most \"go to\" drills. We will use it to focus on specific skill sets including rhythm, cadence, pre shot routine, stroke mechanics, ball approach and much more.', 'Ball in hand each shot, around the first diamond\nIf you are just beginning, you could start without a cueball\nShoot half the object balls in the top left corner\nShoot half the object balls in the top right corner\nWhen you can make all 15 , move one diamond down and continue the process\n\nScore 1 point if you performed the drill without a cueball\nIf you used a cueball, score the points equal to the diamond from where you shot the line of balls.\nScore 2 if the balls were lined up on the 2nd diamond, 3 if the balls were lined up on the 3rd diamond, 4, if the balls were lined up on side pocket (4 is the max)', 15, '', 1.0, NULL, 7, '#667eea', 1, '2025-07-18 23:18:09', '2025-08-22 18:36:22', 1, NULL),
-(16, 'test drill with new integration', 1, 2, 'sfsdfsdfsdf', 'sfdsdfsf', 10, '', 1.0, NULL, 9, '#667eea', 1, '2025-07-26 13:48:33', '2025-08-22 18:36:41', 2, NULL);
+(15, 'Use this 15 Across Drill it grabs diagram 7', 1, 1, 'The Fifteen Across drill will be one of our most \"go to\" drills. We will use it to focus on specific skill sets including rhythm, cadence, pre shot routine, stroke mechanics, ball approach and much more.', 'Ball in hand each shot, around the first diamond\nIf you are just beginning, you could start without a cueball\nShoot half the object balls in the top left corner\nShoot half the object balls in the top right corner\nWhen you can make all 15 , move one diamond down and continue the process\n\nScore 1 point if you performed the drill without a cueball\nIf you used a cueball, score the points equal to the diamond from where you shot the line of balls.\nScore 2 if the balls were lined up on the 2nd diamond, 3 if the balls were lined up on the 3rd diamond, 4, if the balls were lined up on side pocket (4 is the max)', 15, '', 1.0, NULL, 7, '#667eea', 1, '2025-07-18 23:18:09', '2025-09-10 00:58:11', 1, 3),
+(16, 'test drill with new integration', 1, 2, 'sfsdfsdfsdf', 'sfdsdfsf', 10, '', 1.0, NULL, 9, '#667eea', 1, '2025-07-26 13:48:33', '2025-09-10 00:58:47', 2, 1);
 
 -- --------------------------------------------------------
 
@@ -647,7 +648,7 @@ CREATE TABLE `wp_drill_users` (
 
 INSERT INTO `wp_drill_users` (`id`, `wp_user_id`, `email`, `display_name`, `user_type`, `is_active`, `created_at`, `updated_at`, `coach_id`) VALUES
 (1, NULL, 'shermanscs@gmail.com', 'Steve Sherman', 'admin', 1, '2025-07-17 03:28:38', '2025-07-19 14:34:45', NULL),
-(2, NULL, 'admin', 'Administrator', 'admin', 1, '2025-07-17 03:28:38', '2025-08-31 21:28:54', NULL),
+(2, NULL, 'admin', 'Administrator', 'admin', 1, '2025-07-17 03:28:38', '2025-09-10 00:57:56', NULL),
 (3, NULL, 'shermanm352@gmail.com', 'Matt Thibedeau', 'player', 1, '2025-07-17 03:28:38', '2025-08-05 04:51:50', 5),
 (4, NULL, 'steve@example.com', 'Steve Student', 'player', 1, '2025-07-17 03:28:38', '2025-08-05 04:51:50', 5),
 (5, NULL, 'coach@example.com', 'Coach Smith', 'coach', 1, '2025-07-17 03:28:38', '2025-08-28 23:36:12', NULL),
@@ -1508,7 +1509,7 @@ ALTER TABLE `wp_credit_to`
 -- AUTO_INCREMENT for table `wp_diagrams`
 --
 ALTER TABLE `wp_diagrams`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `wp_drills`

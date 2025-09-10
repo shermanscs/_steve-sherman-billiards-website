@@ -561,7 +561,12 @@
                     <h3 class="card-title">Drill Assignments</h3>
                     <p class="card-description">Assign specific drills to students and track progress</p>
                 </div>
-
+                <!-- Achievement Management Card -->
+                <div class="dashboard-card" onclick="openAchievementManagement()" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white;">
+                    <span class="card-icon">🏆</span>
+                    <h3 class="card-title" style="color: white;">Achievement Management</h3>
+                    <p class="card-description" style="color: white;">Manage achievement types and level naming themes</p>
+                </div>
                 <!-- User Management Card -->
                 <div class="dashboard-card coming-soon">
                     <span class="card-icon">👥</span>
@@ -853,7 +858,10 @@
             // Open drill assignments admin in new tab
             window.open('drill-assignment-admin.html', '_blank');
         }
-
+		function openAchievementManagement() {
+			// Open achievement management in new tab
+			window.open('achievement-admin.html', '_blank');
+		}
         // CREDIT MANAGEMENT FUNCTION
         function openCreditManagement() {
             // Open credit management in new tab, passing user ID in URL

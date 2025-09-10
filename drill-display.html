@@ -608,15 +608,14 @@
             console.log('💳 Processing credit information:', {
                 credit_organization_name: drill.credit_organization_name,
                 credit_website_url: drill.credit_website_url,
-                credit_icon_url: drill.credit_icon_url,
-                credit_description: drill.credit_description
+                credit_icon_url: drill.credit_icon_url
             });
             
             // Check if there's any credit information
             if (drill.credit_organization_name) {
                 let creditContent = '<div class="credit-content">';
                 
-                // Add credit icon if available (much smaller now)
+                // Add credit icon if available
                 if (drill.credit_icon_url) {
                     const iconUrl = buildImageUrl(drill.credit_icon_url);
                     if (iconUrl) {
@@ -629,22 +628,18 @@
                 
                 creditContent += '<div class="credit-info">';
                 
-                // Compact organization name and website on same line if possible
+                // Organization name
+                creditContent += `<div class="credit-organization">${drill.credit_organization_name}</div>`;
+                
+                // Website URL if available - show the actual URL
                 if (drill.credit_website_url) {
                     creditContent += `
-                        <div class="credit-organization">
+                        <div class="credit-description">
                             <a href="${drill.credit_website_url}" target="_blank" rel="noopener noreferrer" class="credit-website">
-                                ${drill.credit_organization_name}
+                                ${drill.credit_website_url}
                             </a>
                         </div>
                     `;
-                } else {
-                    creditContent += `<div class="credit-organization">${drill.credit_organization_name}</div>`;
-                }
-                
-                // Description if available (much smaller text)
-                if (drill.credit_description) {
-                    creditContent += `<div class="credit-description">${drill.credit_description}</div>`;
                 }
                 
                 creditContent += '</div></div>';
@@ -652,7 +647,7 @@
                 creditContainer.innerHTML = creditContent;
                 creditSection.style.display = 'block';
                 
-                console.log('✅ Compact credit section displayed');
+                console.log('✅ Compact credit section displayed with URL only');
             } else {
                 // Hide credit section if no credit information
                 creditSection.style.display = 'none';

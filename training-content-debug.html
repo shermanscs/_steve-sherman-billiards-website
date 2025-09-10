@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Training Content Debug - Steve Sherman Billiards</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f5f5f5;
+        }
+        .debug-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .debug-item {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background: #f9f9f9;
+        }
+        .debug-title {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .debug-content {
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            background: #fff;
+            padding: 10px;
+            border-radius: 4px;
+            white-space: pre-wrap;
+            overflow-x: auto;
+            border-left: 4px solid #007bff;
+        }
+        .error {
+            border-left-color: #dc3545;
+            background: #f8d7da;
+        }
+        .success {
+            border-left-color: #28a745;
+            background: #d4edda;
+        }
+        .btn {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        .url-test {
+            margin-top: 10px;
+            padding: 10px;
+            background: #e9ecef;
+            border-radius: 4px;
+        }
+        .highlight {
+            background: yellow;
+            padding: 2px 4px;
+            border-radius: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="debug-container">
+        <h1>🔍 Training Content Debug Tool</h1>
+        <p>This tool will help us debug the URL display issue for training content.</p>
+        
+        <button class="btn btn-primary" onclick="loadAndDebugContent()">🔄 Load & Debug Content</button>
+        <button class="btn btn-success" onclick="testSpecificItem()">🎯 Test Item ID 3 Specifically</button>
+        
+        <div id="debugOutput"></div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'https://steveshermanbilliards.com/drill-api.php';
+
+        async function apiRequest(endpoint, method = 'GET', data = null) {
+            try {
+                console.log(`🌐 API Request: ${method} ${API_BASE_URL}/${endpoint}`);
+                
+                const options = { 
+                    method,
+                    headers: {}
+                };
+                
+                if (data) {
+                    if (data instanceof FormData) {
+                        options.body = data;
+                    } else {
+                        options.headers['Content-Type'] = 'application/json';
+                        options.body = JSON.stringify(data);
+                    }
+                }
+                
+                const response = await fetch(`${API_BASE_URL}/${endpoint}`, options);
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`HTTP ${response.status}: ${errorText}`);
+                }
+                
+                const result = await response.json();
+                return result;
+                
+            } catch (error) {
+                console.error('💥 API Request failed:', error);
+                throw error;
+            }
+        }
+
+        async function loadAndDebugContent() {
+            const output = document.getElementById('debugOutput');
+            output.innerHTML = '<div class="debug-item"><div class="debug-title">Loading...</div></div>';
+
+            try {
+                const result = await apiRequest('training-content');
+                
+                let debugHtml = '';
+                
+                // Show raw API response
+                debugHtml += `
+                    <div class="debug-item">
+                        <div class="debug-title">📡 Raw API Response</div>
+                        <div class="debug-content">${JSON.stringify(result, null, 2)}</div>
+                    </div>
+                `;
+
+                if (result.success && result.data) {
+                    const allContent = result.data;
+                    
+                    // Show summary
+                    debugHtml += `
+                        <div class="debug-item">
+                            <div class="debug-title">📊 Content Summary</div>
+                            <div class="debug-content">Total items: ${allContent.length}
+Link content items: ${allContent.filter(item => item.content_type === 'link').length}
+File content items: ${allContent.filter(item => item.content_type !== 'link').length}</div>
+                        </div>
+                    `;
+
+                    // Debug each item
+                    allContent.forEach((item, index) => {
+                        const isLinkType = item.content_type === 'link';
+                        const urlField = getUrlForContent(item);
+                        
+                        debugHtml += `
+                            <div class="debug-item">
+                                <div class="debug-title">🔍 Item ${index + 1}: ${item.name} (ID: ${item.id})</div>
+                                <div class="debug-content">Content Type: <span class="highlight">${item.content_type}</span>
+                                
+📁 URL Fields Analysis:
+  - file_url: ${item.file_url || 'NULL'}
+  - external_url: ${item.external_url || 'NULL'}
+  - external_link: ${item.external_link || 'NULL'}
+
+🎯 URL Selection Logic:
+  - Is link type: ${isLinkType}
+  - Selected URL: <span class="highlight">${urlField || 'NONE'}</span>
+  - Selection reason: ${getUrlSelectionReason(item)}
+
+🔗 Preview Generation:
+  - Would show preview: ${urlField && urlField !== 'null' && urlField !== null ? 'YES' : 'NO'}
+  - Preview type: ${isLinkType ? 'Link icon (🔗)' : 'File icon'}
+
+📋 All Fields:
+${JSON.stringify(item, null, 2)}</div>
+                                ${urlField && urlField !== 'null' && urlField !== null ? 
+                                    `<div class="url-test">
+                                        <strong>🧪 URL Test:</strong>
+                                        <button onclick="testUrl('${urlField}')" class="btn btn-primary">Test URL: ${urlField}</button>
+                                    </div>` : 
+                                    '<div class="url-test"><strong>❌ No valid URL to test</strong></div>'
+                                }
+                            </div>
+                        `;
+                    });
+
+                    // Focus on ID 3 specifically
+                    const item3 = allContent.find(item => item.id === 3);
+                    if (item3) {
+                        debugHtml += `
+                            <div class="debug-item success">
+                                <div class="debug-title">🎯 SPECIFIC FOCUS: Item ID 3 Analysis</div>
+                                <div class="debug-content">This is the problematic item from your database:
+
+Database shows:
+  - content_type: 'link'
+  - file_url: NULL
+  - external_url: 'https://youtu.be/GGm08omfgwA?si=YzgBlvFN0pwtuUqf'
+
+API Response shows:
+  - content_type: ${item3.content_type}
+  - file_url: ${item3.file_url || 'NULL'}
+  - external_url: ${item3.external_url || 'NULL'}
+  - external_link: ${item3.external_link || 'NULL'}
+
+JavaScript function result:
+  - getUrlForContent() returns: <span class="highlight">${getUrlForContent(item3)}</span>
+  - Should show link preview: ${getUrlForContent(item3) && getUrlForContent(item3) !== 'null' ? 'YES ✅' : 'NO ❌'}
+
+${getUrlForContent(item3) && getUrlForContent(item3) !== 'null' ? 
+    '🎉 SUCCESS: URL is properly detected!' : 
+    '❌ PROBLEM: URL is not being detected properly'}
+</div>
+                            </div>
+                        `;
+                    }
+
+                } else {
+                    debugHtml += `
+                        <div class="debug-item error">
+                            <div class="debug-title">❌ API Error</div>
+                            <div class="debug-content">${result.message || 'Unknown error'}</div>
+                        </div>
+                    `;
+                }
+
+                output.innerHTML = debugHtml;
+
+            } catch (error) {
+                output.innerHTML = `
+                    <div class="debug-item error">
+                        <div class="debug-title">💥 Request Failed</div>
+                        <div class="debug-content">${error.message}</div>
+                    </div>
+                `;
+            }
+        }
+
+        async function testSpecificItem() {
+            const output = document.getElementById('debugOutput');
+            output.innerHTML = '<div class="debug-item"><div class="debug-title">Testing Item ID 3...</div></div>';
+
+            try {
+                const result = await apiRequest('training-content/3');
+                
+                let debugHtml = `
+                    <div class="debug-item">
+                        <div class="debug-title">🎯 Single Item API Response (ID: 3)</div>
+                        <div class="debug-content">${JSON.stringify(result, null, 2)}</div>
+                    </div>
+                `;
+
+                if (result.success && result.data) {
+                    const item = result.data;
+                    const urlField = getUrlForContent(item);
+                    
+                    debugHtml += `
+                        <div class="debug-item ${urlField ? 'success' : 'error'}">
+                            <div class="debug-title">🔍 URL Detection Test</div>
+                            <div class="debug-content">Item Name: ${item.name}
+Content Type: ${item.content_type}
+External URL: ${item.external_url || 'NULL'}
+File URL: ${item.file_url || 'NULL'}
+
+getUrlForContent() result: <span class="highlight">${urlField || 'NONE'}</span>
+
+${urlField ? '✅ SUCCESS: URL detected correctly!' : '❌ FAILURE: No URL detected'}
+</div>
+                            ${urlField ? 
+                                `<div class="url-test">
+                                    <button onclick="testUrl('${urlField}')" class="btn btn-primary">🧪 Test URL</button>
+                                </div>` : ''
+                            }
+                        </div>
+                    `;
+                }
+
+                output.innerHTML = debugHtml;
+
+            } catch (error) {
+                output.innerHTML = `
+                    <div class="debug-item error">
+                        <div class="debug-title">💥 Single Item Request Failed</div>
+                        <div class="debug-content">${error.message}</div>
+                    </div>
+                `;
+            }
+        }
+
+        function getUrlForContent(content) {
+            if (content.content_type === 'link') {
+                return content.external_url || content.external_link || content.file_url;
+            } else {
+                return content.file_url;
+            }
+        }
+
+        function getUrlSelectionReason(content) {
+            if (content.content_type === 'link') {
+                if (content.external_url) return 'external_url (primary for links)';
+                if (content.external_link) return 'external_link (fallback)';
+                if (content.file_url) return 'file_url (fallback)';
+                return 'no valid URL found';
+            } else {
+                if (content.file_url) return 'file_url (primary for files)';
+                return 'no file_url found';
+            }
+        }
+
+        function testUrl(url) {
+            if (!url || url === 'null' || url === 'undefined') {
+                alert('❌ Invalid URL: ' + url);
+                return;
+            }
+
+            // Test if URL is valid
+            try {
+                new URL(url);
+                alert('✅ URL is valid! Opening in new tab...');
+                window.open(url, '_blank', 'noopener,noreferrer');
+            } catch (error) {
+                alert('❌ Invalid URL format: ' + error.message);
+            }
+        }
+    </script>
+</body>
+</html>
